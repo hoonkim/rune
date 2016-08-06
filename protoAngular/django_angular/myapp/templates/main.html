@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+{% load staticfiles %}
+<html lang="en">
+<head>
+    <title>AngularJs Routes Example</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.5/angular.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.5/angular-route.min.js"></script>
+    <script src="{% static "angularapp/js/app.js" %}"> </script>
+</head>
+
+<body ng-app="sampleApp">
+
+<a href="#/route1"> Route 1 </a> <br/>
+<a href="#/route2"> Route 2 </a> <br/>
+
+<div ng-view></div>
+
+<script>
+var static_url = '{{STATIC_URL}}'
+</script>
+</body>
+</html>
