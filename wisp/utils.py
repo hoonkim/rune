@@ -1,5 +1,6 @@
 import importlib
 import importlib.machinery
+from module import Module
 import json
 
 
@@ -30,6 +31,18 @@ def message_to_function(raw_message):
     params = wisp["params"]
 
     loader = importlib.machinery.SourceFileLoader('name', path)
-    mod = loader.load_module()
 
-    return mod
+    mod = None
+
+    try :
+        mod = loader.load_module()
+    except FileNotFoundError:
+        print("Module not found")
+    except Exception:
+        print("Unknown Excpetion")
+    finally :
+        if mod is not None :
+            wisp_module = Module(mod, params)
+            return wisp_module
+        return mod
+
