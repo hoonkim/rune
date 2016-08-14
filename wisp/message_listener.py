@@ -1,5 +1,5 @@
 import pika
-from wisp.utils import *
+from utils import *
 
 
 class MessageListener:
@@ -21,6 +21,7 @@ class MessageListener:
         ))
         self._channel = _connection.channel()
         self._channel.queue_declare(queue=queue_name)
+        self._queue_name = queue_name
 
     def __str__(self):
         return self._quene_name

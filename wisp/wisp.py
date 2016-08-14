@@ -1,8 +1,8 @@
-import wisp.message_listener
 #import sys
+from message_listener import *
 
 if __name__ == "__main__":
-    listener = wisp.message_listener("localhost", "wisp")
+    listener = MessageListener("localhost", "wisp")
 
     print("Wisp now working press ctrl + c to stop")
     listener.listen()
