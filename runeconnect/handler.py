@@ -18,6 +18,8 @@ class RuneHttpHandler(BaseHTTPRequestHandler):
         self.send_header("Content-type", "text/html")
         self.end_headers()
 
+        #TODO: Make your procedure for response
+
     def do_POST(self):
         print('POST REQUEST', self)
 
@@ -33,7 +35,9 @@ class RuneHttpHandler(BaseHTTPRequestHandler):
         self.send_header("Content-type", "text/html")
         self.end_headers()
 
-
+        #TODO: Make your procedure for response
+        
+        # EXAMPLE
         self.wfile.write(bytes("RECEIVED: ","utf-8"))
         self.wfile.write(str(post_data).encode("utf-8"))
         
