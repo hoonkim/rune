@@ -1,16 +1,17 @@
 import pika
 
 connection = pika.BlockingConnection(pika.ConnectionParameters(
-        host='192.168.35.105'))
+        host='localhost'))
 channel = connection.channel()
 
-channel.queue_declare(queue='lambda')
+channel.queue_declare(queue='wisp')
 
 def callback(ch, method, properties, body):
     print(" [x] Received %r" % body)
+    # parse body by JSON Parser
 
 channel.basic_consume(callback,
-                      queue='lambda',
+                      queue='wisp',
                       no_ack=True)
 
 print(' [*] Waiting for messages. To exit press CTRL+C')

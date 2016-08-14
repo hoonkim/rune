@@ -1,13 +1,21 @@
 import pika
 
-connection = pika.BlockingConnection(pika.ConnectionParameters(
-        host='192.168.35.105'))
-channel = connection.channel()
 
-channel.queue_declare(queue='lambda')
+def SendFunctionCall ( username, project, function, params ): 
+	print ("start send function call")
+	print (username)
+	print (project)
+	print (function)
+	connection = pika.BlockingConnection(pika.ConnectionParameters(host='localhost'))
+	channel = connection.channel()
+	channel.queue_declare(queue='wisp')
+	channel.basic_publish(exchange='',
+                      routing_key='wisp',
+                      body='{ "user" :"'+ username+'", "project" :"'+ project+'", "function" :"'+function+'", "params" : [ "seoul", "kr", "nano" ] }')
+	connection.close()
 
-channel.basic_publish(exchange='',
-                      routing_key='lambda',
-                      body='printcall')
-print("lambda:print")
-connection.close()
+SendFunctionCall('kim', 'rune', 'getTime', '[ "seoul", "kr", "nano"]')
+
+
+
+
