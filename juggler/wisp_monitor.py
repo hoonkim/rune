@@ -28,7 +28,7 @@ class WispMonitor:
         if self._corr_id == properties.correlation_id:
             self._response = body
 
-    def call(self, body, unique_id=None):
+    def call(self, body, unique_id, call_back):
         """
         Pass json formatted request to wisp, format is discussed at
         "https://github.com/hoonkim/rune/issues/10".
@@ -36,9 +36,10 @@ class WispMonitor:
         Args:
             body(str): Json formatted message.
             unique_id(str): unique id.
+            call_back(function): call_back(result, unique_id)
 
         Returns:
-            the result of request.
+            None
 
         """
         self._response = None
