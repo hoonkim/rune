@@ -23,29 +23,29 @@ class Monitor:
         self.cpu_count = psutil.cpu_count()
         self.cpu_percent = psutil.cpu_percent(interval=1,percpu=True)
         self.mem = psutil.virtual_memory()
-		self.disk_usage = psutil.disk_usage('/')
-		self.disk_io = psutil.disk_io_counters()
-		self.net_io = psutil.net_io_counters()
-		self.hostname = socket.gethostname()
+        self.disk_usage = psutil.disk_usage('/')
+        self.disk_io = psutil.disk_io_counters()
+        self.net_io = psutil.net_io_counters()
+        self.hostname = socket.gethostname()
 
-	def MakeJSON(self) :
-		jsondata = json.dumps({"core":self.cpu_count, "core_usage":self.cpu_percent,"memory_usage": self.mem.percent, "storage_usage":self.disk_usage.percent ,"network_send":self.net_io.bytes_sent,"network_recv":self.net_io.bytes_recv, "hostname": self.hostname, "address":self.address})
-		return jsondata
+    def MakeJSON(self) :
+        jsondata = json.dumps({"core":self.cpu_count, "core_usage":self.cpu_percent,"memory_usage": self.mem.percent, "storage_usage":self.disk_usage.percent ,"network_send":self.net_io.bytes_sent,"network_recv":self.net_io.bytes_recv, "hostname": self.hostname, "address":self.address})
+        return jsondata
 
 
-	def SendJSON(self, jsondata) :
-		print("data sent successfully")
-		requestObject = RuneRequest()
-		data = json.loads(jsondata)
-		requestObject.insertRequest(data)
+    def SendJSON(self, jsondata) :
+        print("data sent successfully")
+	requestObject = RuneRequest()
+	data = json.loads(jsondata)
+	requestObject.insertRequest(data)
 
-		req = RuneRequestSender(requestObject)
-		ret = req.sendPOST("http://127.0.0.1:8000/test_post")
-		if(ret) :
-			print("GET REQUEST", ret.content)
-		else :
-			print("request fail")
-		return True
+	req = RuneRequestSender(requestObject)
+	ret = req.sendPOST("http://127.0.0.1:8000/test_post")
+	if(ret) :
+		print("GET REQUEST", ret.content)
+	else :
+		print("request fail")
+	return True
 
 
 

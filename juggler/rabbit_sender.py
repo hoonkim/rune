@@ -1,21 +1,31 @@
+from wisp_monitor import WispMonitor
 import pika
 import json 
 
 
 class FunctionCaller :
-    def SendFunctionCall ( username, project, function, params ): 
-        print ("start send function call")
-        print (username)
-        print (project)
-        print (function)
-        connection = pika.BlockingConnection(pika.ConnectionParameters(host='localhost'))
-        channel = connection.channel()
-        channel.queue_declare(queue='wisp')
-        channel.basic_publish(exchange='',routing_key='wisp',body='{ "user" :"'+ username+'", "project" :"'+ project+'", "function" :"'+function+'", "params" : [ "seoul", "kr", "nano" ] }')
-        connection.close()
+	port = 8000
+	wisp_monitor = None
+	call_queue_name="wisp"
+	receive_queue_name="detonate"	
 
-SendFunctionCall('kim', 'rune', 'getTime', '[ "seoul", "kr", "nano"]')
+	def __init__ (self):
+		self.wisp_monitor = WispMonitor()
+		print("created")
+	def ReceiveFunctionCall (self):
+		#receive Function Call request JSON
+		print ("start receive function call")
+	def ResponseFunctionCall (self, result, uId):
+		return None	
 
-
-
+	def SendFunctionCall (self,username, project, function, params ): 
+		print ("start send function call")
+		jsondata = json.dumps({"user":username,"project":project,"function":function, "prams":params})
+		print("send "+jsondata)
+		self.wisp_monitor.call(jsondata, ResponseFunctionCall)		
+		return True
+	
+	
+	def ReceiveFunctionResult(self):
+		return True
 
