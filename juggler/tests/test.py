@@ -1,12 +1,11 @@
 import sys
 sys.path.append("../")
 sys.path.append("../../runeHTTP")
+
 from instanceMonitor import Monitor
+from runeHTTP.request import RuneRequest
+from runeHTTP.request import RuneRequestSender
 
-
-# NOTICE 
-# Please run server before the test
-# to execute server, run this file ( ../../runeHTTP/run.py )
 
 
 # transfer system state 
