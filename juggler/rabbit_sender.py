@@ -4,10 +4,10 @@ import json
 import pika
 import json 
 
-sys.path.append("../runeHTTP")
+sys.path.append("../")
 
-from request import RuneRequestSender
-from request import RuneRequest
+from runeHTTP.request import RuneRequestSender
+from runeHTTP.request import RuneRequest
 
 class FunctionCaller :
 	port = 8000

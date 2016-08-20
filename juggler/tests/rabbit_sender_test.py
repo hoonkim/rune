@@ -2,8 +2,7 @@ import json
 import sys
 
 sys.path.append("../")
-sys.path.append("../../runeHTTP")
-
+sys.path.append("../../")
 from rabbit_sender import FunctionCaller
 
 uid = "DCASWW12SDV"
