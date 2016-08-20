@@ -1,7 +1,13 @@
 from wisp_monitor import WispMonitor
+import sys
+import json
 import pika
 import json 
 
+sys.path.append("../runeHTTP")
+
+from request import RuneRequestSender
+from request import RuneRequest
 
 class FunctionCaller :
 	port = 8000
@@ -15,8 +21,24 @@ class FunctionCaller :
 	def ReceiveFunctionCall (self):
 		#receive Function Call request JSON
 		print ("start receive function call")
+	
+	#this function will be executed on wisp monitor
+	#and send result data to controller
 	def ResponseFunctionCall (self, result, uId):
-		return None	
+		print("uid :" + uId)
+		print("function result :" + str(result))
+		#send Result
+		requestObject = RuneRequest()
+		requestObject.insertRequest(result)
+		req = RuneRequestSender(requestObject)
+		ret = req.sendPOST("http://127.0.0.1:8000/test_post")
+		if(ret) :
+			print("GET REQUEST", ret.content)
+			print("data sent successfully")
+			return True
+		else :
+			print("request fail")
+			return False
 
 	def SendFunctionCall (self,username, project, function, params ): 
 		print ("start send function call")
