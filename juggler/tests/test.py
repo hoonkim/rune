@@ -1,5 +1,6 @@
 import sys
 sys.path.append("../")
+sys.path.append("../../runeHTTP")
 
 from instanceMonitor import Monitor
 from runeHTTP.request import RuneRequest
