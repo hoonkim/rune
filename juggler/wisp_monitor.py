@@ -1,10 +1,16 @@
+import json
 import uuid
 import pika
 
 
 class WispMonitor:
-    _response = None
+    """
+    WispMontior provides functions to controll wisp.
+    """
+
     _corr_id = None
+
+    _callbacks = dict()
 
     def __init__(self, call_queue_name="wisp"):
         self._call_queue_name = call_queue_name
@@ -24,10 +30,12 @@ class WispMonitor:
         """
         Callback for request to wisp.
         """
-        if self._corr_id == properties.correlation_id:
-            self._response = body
+        parsed_body = json.loads(body)
+        result = parsed_body['result']
+        unique_id = parsed_body['uuid']
+        self._callbacks[unique_id](result, unique_id)
 
-    def call(self, body, unique_id, call_back):
+    def call(self, body, unique_id, callback):
         """
         Pass json formatted request to wisp, format is discussed at
         "https://github.com/hoonkim/rune/issues/10".
@@ -35,13 +43,14 @@ class WispMonitor:
         Args:
             body(str): Json formatted message.
             unique_id(str): unique id.
-            call_back(function): call_back(result, unique_id)
+            callback(function): call_back(result, unique_id)
 
         Returns:
             None
 
         """
-        self._response = None
+
+        # Init Starts from here.
 
         # Setting correlation id to identify request.
         if unique_id is None:
@@ -49,14 +58,19 @@ class WispMonitor:
         else:
             self._corr_id = unique_id
 
+        if unique_id in self._callbacks.keys():
+            return False
+
+        # Publish to MQ from here.
         self._channel.basic_publish(exchange='',
                                     routing_key=self._call_queue_name,
                                     properties=pika.BasicProperties(
                                        reply_to=self._receive_queue_name,
                                        correlation_id=self._corr_id,
-                                   ),
-                                    body=body)
-        while self.response is None:
-            self._connection.process_data_events()
+                                    ), body=body)
 
-        return str(self._response, "utf-8")
+        # Save callback in dictionary.
+        self._callbacks[unique_id] = callback
+
+        return True
+
