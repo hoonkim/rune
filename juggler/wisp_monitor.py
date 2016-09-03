@@ -50,8 +50,6 @@ class WispMonitor:
 
         """
 
-        # Init Starts from here.
-
         # Setting correlation id to identify request.
         if unique_id is None:
             self._corr_id = str(uuid.uuid4())
