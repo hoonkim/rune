@@ -22,6 +22,8 @@ class FunctionCaller :
         print ("start receive function call")	
     #this function will be executed on wisp monitor
     #and send result data to controller
+
+    # this function send response to sentinel
     def ResponseFunctionCall (self, result, uId):
         print("uid :" + uId)
         print("function result :" + str(result))
@@ -37,8 +39,12 @@ class FunctionCaller :
         else :
             print("request fail")
             return False
+
+
+    
+
+    #execute function on wisp
     def SendFunctionCall (self,username, project, function, params ): 
-        print ("start send function call")
         jsondata = json.dumps({"user":username,"project":project,"function":function, "prams":params})
         print("send "+jsondata)
         self.wisp_monitor.call(jsondata, ResponseFunctionCall)		
