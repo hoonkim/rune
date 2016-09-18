@@ -4,9 +4,13 @@ import json
 import psutil
 
 class Function :
+    userNmae = ""
+    projectName = ""
+    functionPath = ""
+    parameters = None
+
     uFid = None
     revisionSeq = None
-    functionPath = ""
     validationRequired = False    
 
     port = 8000
@@ -18,7 +22,7 @@ class Function :
     def __init__(self):
         print("Function Object created")
 
-    def __init__(self, functionData) :
+    def __init__(self, userName, projectName, functionData, parameters) :
         print("\n\nFunction Object Created")
         self.wisp_monitor = WispMonitor()
 
@@ -28,6 +32,10 @@ class Function :
         self.functionPath = functionData["function_path"]
         self.revisionSeq = functionData["revision_seq"]
         self.validationRequired = functionData["validation_required"]
+        self.userName = userName
+        self.projectName = projectName
+        self.parameters = parameters
+
 
         print("[[ function call log ]]")
         print("function uid : " + str(self.uFid))
@@ -52,13 +60,11 @@ class Function :
             print("request fail")
             return False
 
-
-
     #send function request to wisp 
     def SendFunctionRequest(self):
-        jsondata = json.dumps({"user":username,"project":project,"function":function, "prams":params})
+        jsondata = json.dumps({"user":self.userName,"project":self.projectName,"function":self.functionPath, "prams":self.parameters})
         print("send "+jsondata)
-        self.wisp_monitor.call(jsondata, ResponseFunctionCall)
+        self.wisp_monitor.call(jsondata,  self.uFid , self.ResponseFunctionCall)
 
         return True
 
@@ -90,13 +96,11 @@ class InstanceManager :
 
     def __init__(self) :
         print("instanceManager created")
-        instanceMonitor = Monitor()
+        self.instanceMonitor = Monitor()
     def RunManager(self):
         print("Instance Manage is activated")
         
         #run monitor 
-
-   
 
     def SendRequest(self):
         data = "SystemData"
@@ -139,7 +143,27 @@ class InstanceManager :
         print("[[ func obj ]]")
         print(type(functionObject))
         # call functions based on receved data from sentinel
-        f = Function(functionObject)
+        f = Function(user, project, functionObject, params)
+        
+        #call function
+        f.SendFunctionRequest()
+
+
+        #send instance monitor info
+        self.instanceMonitor.GetSystemState()
+        self.instanceMonitor.DetailState()
+
+
+        print('[[ resource state ]] ')       
+        print('--stuck--')
+        print(self.instanceMonitor.stuck)  
+
+        print('--running--')
+        print(self.instanceMonitor.running)
+        
+        print('--sleeping--')
+        print(self.instanceMonitor.sleeping)
+
 
  
         return True

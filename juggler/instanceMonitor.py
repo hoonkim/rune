@@ -9,17 +9,20 @@ sys.path.append("../runeHTTP/")
 from request import RuneRequestSender
 from request import RuneRequest
 
-class Monitor:
+
+class SystemState :
+    address = None
     cpu_count = 0
     cpu_percent = 0
-    instance_address = None
     mem = None
-    disk_usage = None 
+    disk_usage = None
     disk_io = None
     net_io = None
-    address = None
     hostname = None
-    stateJsonData = None
+
+    def __init__(self):
+        self.GetSystemState()
+         
     def GetSystemState(self):
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         s.connect(('8.8.8.8',0))
@@ -31,9 +34,43 @@ class Monitor:
         self.disk_io = psutil.disk_io_counters()
         self.net_io = psutil.net_io_counters()
         self.hostname = socket.gethostname()
+        
+ 
+
+
+class Monitor:
+    cpu_count = 0
+    cpu_percent = 0
+    instance_address = None
+    mem = None
+    disk_usage = None 
+    disk_io = None
+    net_io = None
+    address = None
+    hostname = None
+    stateJsonData = None
+    
+    sleeping = {}
+    running = {}
+    stuck = {}
+    def GetSystemState(self):
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        s.connect(('8.8.8.8',0))
+        self.address = s.getsockname()[0]
+        self.cpu_count = psutil.cpu_count()
+        self.cpu_percent = psutil.cpu_percent(interval=1,percpu=True)
+        self.mem = psutil.virtual_memory()
+        self.disk_usage = psutil.disk_usage('/')
+        self.disk_io = psutil.disk_io_counters()
+        self.net_io = psutil.net_io_counters()
+        self.hostname = socket.gethostname()
+
     def MakeJSON(self) :
         stateJsonData = json.dumps({"core":self.cpu_count, "core_usage":self.cpu_percent,"memory_usage": self.mem.percent, "storage_usage":self.disk_usage.percent ,"network_send":self.net_io.bytes_sent,"network_recv":self.net_io.bytes_recv, "hostname": self.hostname, "address":self.address})
         return stateJsonData
+
+
+    
     def SendJSON(self, jsondata) :
         requestObject = RuneRequest()
         data = json.loads(jsondata)
@@ -47,10 +84,8 @@ class Monitor:
         else :
             print("request fail")
             return False
+
     def DetailState(self):
-        sleeping = {}
-        running = {}
-        stuck = {}
         self.GetSystemState()
         state = self.MakeJSON()
         state = json.loads(state)		
@@ -75,11 +110,16 @@ class Monitor:
             else:
                 pid = pinfo['pid']
                 if 'sleeping' in pinfo['status']:
-                    sleeping[pid] = pinfo
+                    self.sleeping[pid] = pinfo
                 if 'running' in pinfo['status']:
-                    running[pid] = pinfo
+                    self.running[pid] = pinfo
                 if 'stuck' in pinfo['status']:
-                    stuck[pid] = pinfo
-m = Monitor()
-m.GetSystemState()
-m.DetailState()
+                    self.stuck[pid] = pinfo
+
+if __name__ == "__main__":
+    m = Monitor()
+    m.GetSystemState()
+    m.DetailState()
+    print(m.sleeping)
+    print(m.running)
+    print(m.stuck) 
