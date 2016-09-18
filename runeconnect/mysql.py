@@ -8,6 +8,7 @@ import pymysql
 RuneConn = RuneMySQLConnector(serverHost="175.126.112.130", userId="rune", userPw="fjsld89", userDb="rune_dev")
 RuneConn.sendRawQueryInsert("INSERT INTO test VALUES(0, 'HELLO_WORLD')";
 
+
 class  RuneMySQLConnector:
     __conn = None
 

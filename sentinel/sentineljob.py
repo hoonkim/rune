@@ -1,3 +1,6 @@
+import json
+
+
 data = '{ \
  "core" : 4, \
  "core_usage": [10, 20, 30, 40], \
@@ -29,6 +32,83 @@ data3 = '{ \
 }'
 
 
+a = json.loads(data);
+b = json.loads(data2);
+c = json.loads(data3);
+
+inst1 = SentinelInstance(a)
+inst2 = SentinelInstance(b)
+inst3 = SentinelInstance(c)
+
+print(inst1)
+print(inst2)
+print(inst3)
+
+
+class SentinelJobDistributer():
+    __instanceList = None
+    __currentMachineCount = 0
+
+    def addInstance(self, instance):
+        return self.__addInstance(instance)
+
+    def __addInstance(self, instance):
+        if not isinstance(instance, SentinelInstance):
+            return False
+
+        if self.__instnaceList == None:
+            self.__instanceList = list()
+
+        self.__instanceList.append(instance)
+        return True
+
+    def findInstance(self, uuid):
+        return self.__findInstance(uuid)
+
+    def __findInstance(self, uuid):
+        for item in self.__instanceList:
+            if(item.getUUID() == uuid):
+                return item
+
+        return None
+
+    def removeInstance(self, uuid):
+        return self.__removeInstance(uuid)
+
+    def __removeInstance(self, uuid):
+        targetInstance = self.findInstance(uuid)
+        __instnaceList.remove(targetInstance)
+        return targetInstance
+
+    def updateInstance(self, uuid, instanceData):
+        targetInstance = self.findInstance(uuid)
+        targetInstance.updateData(instnaceData)
+        return targetInstance
+
+
+    def findUsableInstance(self):
+        if len(self.__instanceList) == 0:
+            return None
+
+        #Apply Round robin 
+        return self.__findRoundRobinInstance()
+
+    def __findRoundRobinInstance(self):
+        self.__currentMachineCount++;
+
+        if self.__currentMachineCount <= len(self.__instanceList):
+            self.__currentMachineCount = 0
+
+        ret = self.__currentMachineCount
+        return ret
+
+
+    def __findLeastCpuUsageInstance(self):
+        #TBD
+        ret = None
+        return ret    
+
+
 class SentinelInstance():
     __uuid = None
     __core = None
@@ -51,7 +131,7 @@ class SentinelInstance():
             self.__core = 1
 
         if "core_usage" in list(data.keys()):
-            self.coreUsage = data["core_usage"]
+            self.__coreUsage = data["core_usage"]
         else:
             print("no core usage information - default setting: 0")
             coreUsage = []
@@ -74,14 +154,39 @@ class SentinelInstance():
         if "network_recv" in list(data.keys()):
             self.__networkRecv = data["network_recv"]
         else:
-            print("no storage usage information - default setting: 1")
+            print("no network receive information - default setting: 1")
             self.__networkRecv = 0
 
         if "network_send" in list(data.keys()):
-            self.__networkRecv = data["network_recv"]
+            self.__networkSend = data["network_send"]
         else:
-            print("no storage usage information - default setting: 1")
-            self.__networkRecv = 0
+            print("no network send information - default setting: 1")
+            self.__networkSend = 0
+
+    def updateData(self, data):
+        if "uuid" in list(data.keys()):
+            self.__uuid = data["uuid"]
+
+        if "core" in list(data.keys()):
+            self.__core = data["core"]
+
+        if "core_usage" in list(data.keys()):
+            self.__coreUsage = data["core_usage"]
+
+        if "memory_usage" in list(data.keys()):
+            self.__memoryUsage = data["memory_usage"]
+
+        if "storage_usage" in list(data.keys()):
+            self.__memoryUsage = data["storage_usage"]
+
+        if "network_recv" in list(data.keys()):
+            self.__networkRecv = data["network_recv"]
+
+        if "network_send" in list(data.keys()):
+            self.__networkSend = data["network_send"]
+
+    def __str__(self):
+        return "UUID: "+str(self.getUUID()) + " / Core: "  + str(self.__core) + " core - " + str(self.getCoreUsageTotal())  + " / memory: " + str(self.getMemoryUsage()) + " / storage: " + str(self.getStorageUsage()) +  " / network: " + str(self.getNetworkUsage())
 
 
     def getUUID(self):
@@ -91,7 +196,7 @@ class SentinelInstance():
         sum = 0
         for i in range(0,self.__core):
             sum += self.__coreUsage[i]
-        return int(round(sum  / self._core))
+        return int(round(sum  / self.__core))
 
     def getMemoryUsage(self):
         return self.__memoryUsage
@@ -99,12 +204,8 @@ class SentinelInstance():
     def getStorageUsage(self):
         return self.__storageUsage
 
-    def networkUsage(self):
+    def getNetworkUsage(self):
         #down: 1Gps = 1000Mbps = 125MBps
         #up: 125MBPs / ? = ???
 
-        return int(round((self.__networkSend + self.__networkRecv / 125*1024*1024)*100))
-
-
-def SentinelJobDistributer():
-    print("GO")
+        return round(((self.__networkSend + self.__networkRecv) / (125*1024*1024))*100, 2)
