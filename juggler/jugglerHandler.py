@@ -65,7 +65,9 @@ class RuneHttpHandler(BaseHTTPRequestHandler):
         oldObject = None
         firstObject = None
 
+        print("--- split result ---")
         print(splitResult)
+        print("--- split result end ---")
 
         for data in splitResult:
             if data == '':

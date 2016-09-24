@@ -21,10 +21,10 @@ class Function :
 
 
     def __init__(self):
-        print("Function Object created")
+        print("\n\n[[[ Function Object created ]]]")
 
     def __init__(self, userName, projectName, functionData, parameters) :
-        print("\n\nFunction Object Created")
+        print("\n\n[[[  Function Object Created ]]]")
         self.wisp_monitor = WispMonitor()
 
         functionData = json.loads(functionData)
@@ -96,6 +96,7 @@ class Function :
         #call the function
         self.wisp_monitor.call(jsondata, self.uFid, self.ResponseFunctionCall)
 
+        print("wisp_monitor called successfully")       
         return True
 
     def FunctionSourceCrawler(self):
@@ -125,10 +126,10 @@ class InstanceManager :
 
 
     def __init__(self) :
-        print("instanceManager created")
+        print("\n\n[[[ instanceManager created ]]]")
         self.instanceMonitor = Monitor()
     def RunManager(self):
-        print("Instance Manage is activated")
+        print("\n\n[[[ Instance Manage is activated ]]]")
         
         #run monitor 
 
