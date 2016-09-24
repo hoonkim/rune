@@ -115,8 +115,6 @@ class Function :
         print(str(uFid) + " function file created")
 
 
-
-
 # main class of Juggler
 class InstanceManager :
     instanceMonitor = None 
@@ -160,6 +158,8 @@ class InstanceManager :
         
         #get data from Sentinel
         self.jsonRequest = json.loads(jsonRequest)
+        print(self.jsonRequest)
+
         user = self.jsonRequest["user"][0]
         project = self.jsonRequest["project"][0]
         functionObject = self.jsonRequest["function_object"][0]

@@ -91,7 +91,7 @@ class SentinelHttpHandler(RuneHttpHandler):
 
         #temporary data for test
         functionObject = '{ "uFid" : 1, "function_path" : "/foo/bar/", "revision_seq" : 1, "validation_required" : true}'
-        data = '{ "user" : "kim", "project" : "rune", "function" : '+functionObject+', "params" : [ "seoul", "kr", "nano" ] }'
+        data = '{ "user" : "kim", "project" : "rune", "function_object" : '+functionObject+', "params" : [ "seoul", "kr", "nano" ] }'
 
 
         requestData = json.loads(data)
@@ -101,4 +101,4 @@ class SentinelHttpHandler(RuneHttpHandler):
 
         requestSender = RuneRequestSender(requestObject)
 
-        requestSender.sendPOST("http://127.0.0.1:8000")
+        requestSender.sendPOST("http://127.0.0.1:8000/test_post")

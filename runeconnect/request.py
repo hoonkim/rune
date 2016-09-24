@@ -86,7 +86,8 @@ class RuneRequestSender:
             print("no request object")
             return False
 
-        r = requests.post(requestAddr, self._requestObject.getQueryJson())
+        #r = requests.post(requestAddr, self._requestObject.getQueryJson())
+        r = requests.post(requestAddr, self._requestObject.queries)
     
         return r
 
