@@ -1,5 +1,6 @@
 from instanceMonitor import Monitor
 from wisp_monitor import WispMonitor
+from time import strftime, localtime
 import json
 import psutil
 
@@ -44,15 +45,14 @@ class Function :
         print("validation required : " + str(self.validationRequired))
 
     # this function send response to sentinel
-    def ResponseFunctionCall (self, result, uId):
+    def ResponseFunctionCall (self, result, uId, instanceMonitor, executionTime):
         print("uid :" + uId)
         print("function result :" + str(result))
         #send Result
         #Result have to contain the system resource info
-
         #send instance monitor info
-        self.instanceMonitor.GetSystemState()
-        self.instanceMonitor.DetailState()
+        instanceMonitor.GetSystemState()
+        instanceMonitor.DetailState()
 
         print('[[ resource state ]] ')
         print('--stuck--')
@@ -63,13 +63,13 @@ class Function :
 
         print('--sleeping--')
         print(self.instanceMonitor.sleeping)
-
         
-        #put the data
+        #put the result data
         requestObject = RuneRequest()
         requestObject.insertRequest(result)
         req = RuneRequestSender(requestObject)
         ret = req.sendPOST("http://127.0.0.1:8000/test_post")
+
         if(ret) :
             print("GET REQUEST", ret.content)
             print("data sent successfully")
@@ -80,14 +80,21 @@ class Function :
 
     #send function request to wisp 
     def SendFunctionRequest(self):
-        jsondata = json.dumps({"user":self.userName,"project":self.projectName,"function":self.functionPath, "prams":self.parameters})
-        print("send "+jsondata)
+        timestamp = strftime("%Y/%H/%M/%S",localtime())
 
+        functionObj = json.dumps({"function_path":"~/wisp.py", "timestamp":timestamp,"validation_required":"t"})
+
+        jsondata = json.dumps({"user":self.userName,"project":self.projectName,"function":functionObj, "prams":self.parameters})
+       
+        print("send "+jsondata)
+       
         #crawl function source        
 
+        
+         
 
         #call the function
-        self.wisp_monitor.call(jsondata,  self.uFid , self.ResponseFunctionCall)
+        self.wisp_monitor.call(jsondata, self.uFid, self.ResponseFunctionCall)
 
         return True
 
