@@ -21,7 +21,7 @@ class RuneRequest:
 
     def insertRequest(self, requestData):
         if not isinstance(requestData, dict):
-            print(sys._getframe().f_code.co_name , "mismatch type - ", type(requestData), type(list))
+            print(sys._getframe().f_code.co_name , "mismatch type - ", type(requestData), type(dict))
             return False
 
         self.queries = requestData

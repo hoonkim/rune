@@ -27,10 +27,7 @@ for data in test:
 
 print(firstObject)
 
-
-
 # process distribute test
-
 
 # request generate test
 
@@ -44,6 +41,7 @@ req = RuneRequestSender()
 ret = req.sendGET("http://127.0.0.1:8000/test_get")
 
 print("GET REQUEST", ret.content)
+
 
 req = RuneRequestSender(requestObject)
 ret = req.sendPOST("http://127.0.0.1:8000/test_post")
