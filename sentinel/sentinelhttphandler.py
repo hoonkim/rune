@@ -16,7 +16,6 @@ from handler import *
 class SentinelHttpHandler(RuneHttpHandler):
     __reqList = None
     __jobDistributer = None
-    __requestSender = None
 
     def __initHandler(self):
         if self.__reqList is None:
@@ -26,10 +25,6 @@ class SentinelHttpHandler(RuneHttpHandler):
         if self.__jobDistributer is None:
             self.__jobDistributer = SentinelJobDistributer()
             self.__initJobDistributer()
-
-        if self.__requestSender is None:
-            self.__requestSender = RuneRequestSender()
-
 
     def __initReceiver(self):
         #add request function
@@ -81,10 +76,8 @@ class SentinelHttpHandler(RuneHttpHandler):
 
             #json decode
             self.wfile.write(bytes("RECEIVED: ","utf-8"))
-            print("request info: " , type(post_data), str(post_data))
+            #print("request info: " , type(post_data), str(post_data))
             #reqData = json.loads(str(post_data).encode("utf-8"))
-
-
 
             self.wfile.write(str(reqResult(post_data)).encode("utf-8"))
 
@@ -103,7 +96,9 @@ class SentinelHttpHandler(RuneHttpHandler):
 
         requestData = json.loads(data)
 
-        requestObject = runeRequest()
-        requestObject.insertRequest(data)
+        requestObject = RuneRequest()
+        requestObject.insertRequest(requestData)
 
-        __requestSender.sendPost("http://127.0.0.1:8000")
+        requestSender = RuneRequestSender(requestObject)
+
+        requestSender.sendPOST("http://127.0.0.1:8000")

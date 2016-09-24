@@ -4,7 +4,7 @@ import psutil
 import uuid
 import socket
 
-sys.path.append("../runeHTTP/")
+sys.path.append("../runeconnect/")
 
 from request import RuneRequestSender
 from request import RuneRequest

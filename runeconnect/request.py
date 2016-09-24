@@ -2,6 +2,7 @@ from urllib.parse import urlparse, parse_qs
 from  http.client import HTTPConnection
 import requests
 import sys
+import json
 
 class RuneRequest:
     name = None
@@ -56,6 +57,9 @@ class RuneRequest:
 
         return ret
 
+    def getQueryJson(self):
+        return json.dumps(self.queries)
+
 
 
 class RuneRequestSender:
@@ -82,7 +86,7 @@ class RuneRequestSender:
             print("no request object")
             return False
 
-        r = requests.post(requestAddr, self._requestObject.queries)
+        r = requests.post(requestAddr, self._requestObject.getQueryJson())
     
         return r
 
