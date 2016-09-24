@@ -48,6 +48,24 @@ class Function :
         print("uid :" + uId)
         print("function result :" + str(result))
         #send Result
+        #Result have to contain the system resource info
+
+        #send instance monitor info
+        self.instanceMonitor.GetSystemState()
+        self.instanceMonitor.DetailState()
+
+        print('[[ resource state ]] ')
+        print('--stuck--')
+        print(self.instanceMonitor.stuck)
+
+        print('--running--')
+        print(self.instanceMonitor.running)
+
+        print('--sleeping--')
+        print(self.instanceMonitor.sleeping)
+
+        
+        #put the data
         requestObject = RuneRequest()
         requestObject.insertRequest(result)
         req = RuneRequestSender(requestObject)
@@ -64,6 +82,11 @@ class Function :
     def SendFunctionRequest(self):
         jsondata = json.dumps({"user":self.userName,"project":self.projectName,"function":self.functionPath, "prams":self.parameters})
         print("send "+jsondata)
+
+        #crawl function source        
+
+
+        #call the function
         self.wisp_monitor.call(jsondata,  self.uFid , self.ResponseFunctionCall)
 
         return True
@@ -147,22 +170,6 @@ class InstanceManager :
         
         #call function
         f.SendFunctionRequest()
-
-
-        #send instance monitor info
-        self.instanceMonitor.GetSystemState()
-        self.instanceMonitor.DetailState()
-
-
-        print('[[ resource state ]] ')       
-        print('--stuck--')
-        print(self.instanceMonitor.stuck)  
-
-        print('--running--')
-        print(self.instanceMonitor.running)
-        
-        print('--sleeping--')
-        print(self.instanceMonitor.sleeping)
 
 
  

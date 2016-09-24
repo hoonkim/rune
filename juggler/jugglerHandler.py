@@ -38,8 +38,6 @@ class RuneHttpHandler(BaseHTTPRequestHandler):
         self.instManager = InstanceManager()
         self.instManager.RunManager()
         self.instManager.ReceiveRequest(json.dumps(post_data))
-       
-
  
         # reponse
         self.send_response(200)
