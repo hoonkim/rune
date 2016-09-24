@@ -2,7 +2,7 @@
 import sys, os, socket
 from socketserver import ThreadingMixIn
 from http.server import SimpleHTTPRequestHandler, HTTPServer
-from SentinelHTTPHandler import *
+from sentinelhttphandler import *
 
 HOST = socket.gethostname()
 

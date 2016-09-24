@@ -1,5 +1,7 @@
 import json
 
+'''
+#test data
 
 data = '{ \
  "core" : 4, \
@@ -44,10 +46,14 @@ print(inst1)
 print(inst2)
 print(inst3)
 
+'''
 
 class SentinelJobDistributer():
     __instanceList = None
     __currentMachineCount = 0
+
+    def __init__(self):
+        self.__instanceList = []
 
     def addInstance(self, instance):
         return self.__addInstance(instance)
@@ -94,7 +100,7 @@ class SentinelJobDistributer():
         return self.__findRoundRobinInstance()
 
     def __findRoundRobinInstance(self):
-        self.__currentMachineCount++;
+        self.__currentMachineCount = self.__currentMachineCount+1
 
         if self.__currentMachineCount <= len(self.__instanceList):
             self.__currentMachineCount = 0
@@ -110,6 +116,7 @@ class SentinelJobDistributer():
 
 
 class SentinelInstance():
+    __address = None
     __uuid = None
     __core = None
     __coreUsage = None
@@ -118,7 +125,12 @@ class SentinelInstance():
     __networkSend = None
     __networkRecv = None
 
-    def __init__(self, data):
+    def __init__(self, address, data):
+        if address is None:
+            raise ValueError("no address information")
+        else:
+            self.__address = address
+
         if "uuid" in list(data.keys()):
             self.__uuid = data["uuid"]
         else:
@@ -163,7 +175,11 @@ class SentinelInstance():
             print("no network send information - default setting: 1")
             self.__networkSend = 0
 
-    def updateData(self, data):
+    def updateData(self, address, data):
+
+        if not(address is None):
+            self.__address = address
+
         if "uuid" in list(data.keys()):
             self.__uuid = data["uuid"]
 

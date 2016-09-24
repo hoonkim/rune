@@ -3,14 +3,14 @@ class RuneRequestList:
 
     def addRequest(self, requestName, requestFunction):
         if self.__requestList is None:
-            __requestList = {}
+            self.__requestList = {}
 
-        requestList[requestName] = requestFunction
+        self.__requestList[requestName] = requestFunction
 
         return True
 
     def findRequest(self, requestName):
-        if requestName in list(self.__requstList.keys()):
+        if requestName in list(self.__requestList.keys()):
             return self.__requestList[requestName]
 
         return None
