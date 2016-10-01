@@ -27,10 +27,7 @@ for data in test:
 
 print(firstObject)
 
-
-
 # process distribute test
-
 
 # request generate test
 
@@ -40,17 +37,18 @@ data = json.loads(data)
 
 requestObject.insertRequest(data)
 
-req = RuneRequestSender()
-ret = req.sendGET("http://127.0.0.1:8000/test_get")
+#req = RuneRequestSender()
+#ret = req.sendGET("http://127.0.0.1:8000/test_get")
 
-print("GET REQUEST", ret.content)
+#print("GET REQUEST", ret.content)
+
 
 req = RuneRequestSender(requestObject)
 ret = req.sendPOST("http://127.0.0.1:8000/test_post")
 
 print("POST REQUEST", ret.content)
 
-req = RuneRequestSender(requestObject)
-ret = req.sendPOST("http://127.0.0.1:8000/test_post/test_again")
+#req = RuneRequestSender(requestObject)
+#ret = req.sendPOST("http://127.0.0.1:8000/test_post/test_again")
 
-print("POST REQUEST", ret.content)
+#print("POST REQUEST", ret.content)

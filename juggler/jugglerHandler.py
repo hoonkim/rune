@@ -32,6 +32,8 @@ class RuneHttpHandler(BaseHTTPRequestHandler):
         length = int(self.headers['Content-Length'])
         post_data = urllib.parse.parse_qs(self.rfile.read(length).decode('utf-8'))
 
+        print(post_data)
+
         print("RECV POST DATA:", post_data)
 
         #run instance manager

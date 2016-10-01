@@ -4,6 +4,7 @@ from urllib.parse import urlparse
 from request import RuneRequest
 import threading
 import urllib
+import json
 
 
 class RuneHttpHandler(BaseHTTPRequestHandler):
@@ -18,6 +19,14 @@ class RuneHttpHandler(BaseHTTPRequestHandler):
         self.send_header("Content-type", "text/html")
         self.end_headers()
 
+        #TODO: Make your procedure for response
+
+    def decodeDictRequest(self, requestString):
+        return urllib.parse.parse_qs(requestString)
+
+    def decodeJsonRequest(self, requestString):
+        return json.loads(requestString)
+
     def do_POST(self):
         print('POST REQUEST', self)
 
@@ -25,7 +34,11 @@ class RuneHttpHandler(BaseHTTPRequestHandler):
         self.printClientInformation(info)
 
         length = int(self.headers['Content-Length'])
-        post_data = urllib.parse.parse_qs(self.rfile.read(length).decode('utf-8'))
+
+        if self.headers['Content-Type'] == 'application/json':
+            post_data = self.decodeJsonRequest(self.rfile.read(length).decode('utf-8'))
+        else:
+            post_data = self.decodeDictRequest(self.rfile.read(length).decode('utf-8'))
 
         print("POST DATA:", post_data)
 
@@ -33,7 +46,9 @@ class RuneHttpHandler(BaseHTTPRequestHandler):
         self.send_header("Content-type", "text/html")
         self.end_headers()
 
-
+        #TODO: Make your procedure for response
+        
+        # EXAMPLE
         self.wfile.write(bytes("RECEIVED: ","utf-8"))
         self.wfile.write(str(post_data).encode("utf-8"))
         
