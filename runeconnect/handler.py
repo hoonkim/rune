@@ -71,6 +71,5 @@ class RuneHttpHandler(BaseHTTPRequestHandler):
 
         return firstObject
 
-
 class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
     """Handle requests in a separate thread."""
