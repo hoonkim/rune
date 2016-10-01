@@ -5,11 +5,7 @@ import pymysql
 #conn = pymysql.connect(host = "175.126.112.130", user="rune", password="fjsld89", db="rune_dev", charset="utf8mb4")
 
 
-RuneConn = RuneMySQLConnector(serverHost="175.126.112.130", userId="rune", userPw="fjsld89", userDb="rune_dev")
-RuneConn.sendRawQueryInsert("INSERT INTO test VALUES(0, 'HELLO_WORLD')";
-
-
-class  RuneMySQLConnector:
+class RuneMySQLConnector:
     __conn = None
 
     __host = None
@@ -19,13 +15,13 @@ class  RuneMySQLConnector:
     __userDb = None
 
     def __init__(self, serverHost=None, serverPort=None, userId=None, userPw=None, userDb = None, userCharset = None):
-        if host != None:
-            self.__host = host
+        if serverHost != None:
+            self.__host = serverHost
         else:
             self.__host = "127.0.0.1"
 
-        if port != None:
-            self.__port = None
+        if serverPort != None:
+            self.__port = serverPort
         else:
             self.__port = "3306"
 
@@ -50,29 +46,35 @@ class  RuneMySQLConnector:
 
 
     def sendRawQuerySelect(self, queryString, count=0):
+        ret = None
+
         try:
             with self.__conn.cursor() as cursor:
-                sql =queryString
+                sql = queryString
                 cursor.execute(sql)
                 if count == 0:
-                    self.__conn.fetchall()
+                    ret = cursor.fetchall()
                 else:
-                    self.__conn.fetchmany(count)
+                    ret = cursor.fetchmany(count)
+
         finally:
-            self.__conn.close()
+            #self.__conn.close()
+            return ret
+
+        return ret
 
     def sendRawQueryInsert(self, queryString):
         try:
             with self.__conn.cursor() as cursor:
-                sql =queryString
+                sql = queryString
                 cursor.execute(sql)
-                cursor.commit()
 
-                sql = "SELECT last_insert_id()"
-                cursor.execute(sql)
-                ret = cursor.fetchone()[0]
+                #sql = "SELECT last_insert_id()"
+                #cursor.execute(sql)
+                ret = cursor.rowcount
         finally:
-            self.__conn.close()
+            self.__conn.commit()
+            #self.__conn.close()
 
         return ret
 
@@ -81,7 +83,17 @@ class  RuneMySQLConnector:
             with self.__conn.cursor() as cursor:
                 sql =queryString
                 cursor.execute(sql)
-                cursor.commit()
 
         finally:
-            self.__conn.close()
+            self.__conn.commit()
+            #self.__conn.close()
+
+
+
+RuneConn = RuneMySQLConnector(serverHost="175.126.112.130", userId="rune", userPw="fjsld89", userDb="rune_dev")
+#ret = RuneConn.sendRawQueryInsert("INSERT INTO test VALUES(0, 'HELLO_WORLD')")
+
+#ret = RuneConn.sendRawQuerySelect("SELECT* FROM test")
+
+#print("result", ret)
+

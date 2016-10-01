@@ -60,7 +60,11 @@ class SentinelHttpHandler(RuneHttpHandler):
         self.printClientInformation(info)
 
         length = int(self.headers['Content-Length'])
-        post_data = urllib.parse.parse_qs(self.rfile.read(length).decode('utf-8'))
+
+        if self.headers['Content-Type'] == 'application/json':
+            post_data = self.decodeJsonRequest(self.rfile.read(length).decode('utf-8'))
+        else:
+            post_data = self.decodeDictRequest(self.rfile.read(length).decode('utf-8'))
 
         print("POST DATA:", post_data)
 
