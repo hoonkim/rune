@@ -116,6 +116,10 @@ class Monitor:
                 if 'stuck' in pinfo['status']:
                     self.stuck[pid] = pinfo
 
+    def __str__(self):
+        return self.MakeJSON()
+
+
 if __name__ == "__main__":
     m = Monitor()
     m.GetSystemState()
