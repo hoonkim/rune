@@ -16,7 +16,6 @@ from handler import *
 class SentinelHttpHandler(RuneHttpHandler):
     __reqList = None
     __jobDistributer = None
-    __requestSender = None
 
     def __initHandler(self):
         if self.__reqList is None:
@@ -26,10 +25,6 @@ class SentinelHttpHandler(RuneHttpHandler):
         if self.__jobDistributer is None:
             self.__jobDistributer = SentinelJobDistributer()
             self.__initJobDistributer()
-
-        if self.__requestSender is None:
-            self.__requestSender = RuneRequestSender()
-
 
     def __initReceiver(self):
         #add request function
@@ -60,7 +55,11 @@ class SentinelHttpHandler(RuneHttpHandler):
         self.printClientInformation(info)
 
         length = int(self.headers['Content-Length'])
-        post_data = urllib.parse.parse_qs(self.rfile.read(length).decode('utf-8'))
+
+        if self.headers['Content-Type'] == 'application/json':
+            post_data = self.decodeJsonRequest(self.rfile.read(length).decode('utf-8'))
+        else:
+            post_data = self.decodeDictRequest(self.rfile.read(length).decode('utf-8'))
 
         print("POST DATA:", post_data)
 
@@ -81,10 +80,8 @@ class SentinelHttpHandler(RuneHttpHandler):
 
             #json decode
             self.wfile.write(bytes("RECEIVED: ","utf-8"))
-            print("request info: " , type(post_data), str(post_data))
+            #print("request info: " , type(post_data), str(post_data))
             #reqData = json.loads(str(post_data).encode("utf-8"))
-
-
 
             self.wfile.write(str(reqResult(post_data)).encode("utf-8"))
 
@@ -98,12 +95,19 @@ class SentinelHttpHandler(RuneHttpHandler):
 
         #temporary data for test
         functionObject = '{ "uFid" : 1, "function_path" : "/foo/bar/", "revision_seq" : 1, "validation_required" : true}'
-        data = '{ "user" : "kim", "project" : "rune", "function" : '+functionObject+', "params" : [ "seoul", "kr", "nano" ] }'
+        data = '{ "user" : "kim", "project" : "rune", "function_object" : '+functionObject+', "params" : [ "seoul", "kr", "nano" ] }'
 
 
         requestData = json.loads(data)
 
-        requestObject = runeRequest()
-        requestObject.insertRequest(data)
+        requestObject = RuneRequest()
+        requestObject.insertRequest(requestData)
 
-        __requestSender.sendPost("http://127.0.0.1:8000")
+        requestSender = RuneRequestSender(requestObject)
+
+        ret = requestSender.sendPOST("http://127.0.0.1:8000/test_post")
+        
+        print(ret.json())
+        return ret
+
+
