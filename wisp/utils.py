@@ -27,12 +27,10 @@ def message_to_function(raw_message):
     except json.JSONDecodeError:
         return None
 
-    print(raw_message)
-    path = wisp["path"]
-    params = wisp["params"]
+    function_object = wisp["function_object"]
+    path = wisp["function_path"]
+    params = function_object["params"]
 
-
-    print(path)
     loader = importlib.machinery.SourceFileLoader('name', path)
 
     mod = None
