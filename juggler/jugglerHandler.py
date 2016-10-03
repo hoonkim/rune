@@ -44,7 +44,6 @@ class JugglerHttpHandler(RuneHttpHandler):
             #print("json_data", self.rfile.read(length))
             post_data = self.decodeJsonRequest(self.rfile.read(length).decode('utf-8'))
         else:
-            print("dic data")
             post_data = self.decodeDictRequest(self.rfile.read(length).decode('utf-8'))
 
         print("POST DATA:", post_data)
@@ -52,17 +51,14 @@ class JugglerHttpHandler(RuneHttpHandler):
         #run instance manager
         self.instManager = InstanceManager()
         self.instManager.RunManager()
-        self.instManager.ReceiveRequest(json.dumps(post_data))
+        self.instManager.ReceiveRequest(json.dumps(post_data),self)
  
         # reponse
-        self.send_response(200)
+        '''
+        self.send_response(404)
         self.send_header("Content-type", "text/html")
         self.end_headers()
-
-
-        self.wfile.write(bytes("RECEIVED : ","utf-8"))
-        self.wfile.write(str(post_data).encode("utf-8"))
-
+        '''
         return str(post_data)        
 
     def printClientInformation(self, info):
