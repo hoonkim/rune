@@ -5,3 +5,8 @@
     Rune makes server developers happy when they start making services with Rune environment.
     
     Enjoy flexable server environment!
+    
+
+* Rune provides easy way for making server
+    
+    
