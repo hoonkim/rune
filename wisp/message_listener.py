@@ -32,10 +32,17 @@ class MessageListener:
 
         string_body = str(body, 'utf-8')
         mod = message_to_function(string_body)
+        uuid = str(properties.correlation_id)
 
         if mod is not None:
             # Module loaded successfully.
             result = mod.run()
+
+            body = {
+                "result": result,
+                "uuid": uuid
+            }
+
             print("fuck : " + result)
             # Sending back result to MQ.
             channel.basic_publish(exchange='',
@@ -43,7 +50,7 @@ class MessageListener:
                                   properties=pika.BasicProperties(
                                       correlation_id=properties.correlation_id
                                   ),
-                                  body=str(result)
+                                  body=body
                                   )
 
         else:
