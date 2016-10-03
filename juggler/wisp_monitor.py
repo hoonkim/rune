@@ -25,11 +25,11 @@ class WispMonitor:
         result = self._receive_channel.queue_declare(exclusive=True)
         self._receive_queue_name = result.method.queue
 
-        self._consuming_thread = threading.Thread(target=self.start_consuming,
-                                                  args=(self._receive_channel,
-                                                        self._receive_queue_name,
-                                                        self.on_response))
-        self._consuming_thread.start()
+        # self._consuming_thread = threading.Thread(target=self.start_consuming,
+        #                                           args=(self._receive_channel,
+        #                                                 self._receive_queue_name,
+        #                                                 self.on_response))
+        # self._consuming_thread.start()
 
     @staticmethod
     def start_consuming(channel, receive_queue_name, on_response):
@@ -55,7 +55,7 @@ class WispMonitor:
             value = bytes_or_str
         return value
 
-    def call(self, body, unique_id, callback):
+    def call(self, body, unique_id):
         """
         Pass json formatted request to wisp, format is discussed at
         "https://github.com/hoonkim/rune/issues/10".
@@ -88,7 +88,8 @@ class WispMonitor:
                                             ), body=body)
 
         # Save callback in dictionary.
-        self._callbacks[self._corr_id] = callback
 
-        return True
+        body = self._receive_channel.consume(queue=self._receive_queue_name, no_ack=True)
+
+        return self.to_str(body)
 
