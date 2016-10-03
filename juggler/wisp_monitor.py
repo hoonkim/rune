@@ -76,7 +76,7 @@ class WispMonitor:
         else:
             self._corr_id = str(unique_id)
 
-        if unique_id in self._callbacks.keys():
+        if self._corr_id in self._callbacks.keys():
             return False
 
         # Publish to MQ from here.
@@ -88,7 +88,7 @@ class WispMonitor:
                                             ), body=body)
 
         # Save callback in dictionary.
-        self._callbacks[unique_id] = callback
+        self._callbacks[self._corr_id] = callback
 
         return True
 
