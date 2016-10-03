@@ -1,6 +1,7 @@
 import json
 import uuid
 import pika
+import threading
 
 
 class WispMonitor:
@@ -11,29 +12,46 @@ class WispMonitor:
     _corr_id = None
 
     _callbacks = dict()
+    _consuming_thread = None
 
     def __init__(self, call_queue_name="wisp"):
         self._call_queue_name = call_queue_name
-        self._connection = pika.BlockingConnection(pika.ConnectionParameters(
-            host='localhost'))
+        self._connection = pika.BlockingConnection(pika.ConnectionParameters(host='localhost'))
+        self._publish_channel = self._connection.channel()
 
-        self._channel = self._connection.channel()
+        self._publish_channel.queue_declare(queue=self._call_queue_name)
+        self._receive_channel = self._connection.channel()
 
-        # make exclusive queue.
-        result = self._channel.queue_declare(exclusive=True)
+        result = self._receive_channel.queue_declare(exclusive=True)
         self._receive_queue_name = result.method.queue
 
-        self._channel.basic_consume(self.on_response, no_ack=True,
-                                    queue=self._receive_queue_name)
+        self._consuming_thread = threading.Thread(target=self.start_consuming,
+                                                  args=(self._receive_channel,
+                                                        self._receive_queue_name,
+                                                        self.on_response))
+        self._consuming_thread.start()
+
+    @staticmethod
+    def start_consuming(channel, receive_queue_name, on_response):
+        channel.basic_consume(on_response, no_ack=True, queue=receive_queue_name)
+        channel.start_consuming()
 
     def on_response(self, channel, method, properties, body):
         """
         Callback for request to wisp.
         """
-        parsed_body = json.loads(body)
+        parsed_body = json.loads(self.to_str(body))
         result = parsed_body['result']
         unique_id = parsed_body['uuid']
         self._callbacks[unique_id](result, unique_id)
+
+    @staticmethod
+    def to_str(bytes_or_str):
+        if isinstance(bytes_or_str, bytes):
+            value = bytes_or_str.decode('utf-8')
+        else:
+            value = bytes_or_str
+        return value
 
     def call(self, body, unique_id, callback):
         """
@@ -60,12 +78,12 @@ class WispMonitor:
             return False
 
         # Publish to MQ from here.
-        self._channel.basic_publish(exchange='',
-                                    routing_key=self._call_queue_name,
-                                    properties=pika.BasicProperties(
-                                       reply_to=self._receive_queue_name,
-                                       correlation_id=self._corr_id,
-                                    ), body=body)
+        self._publish_channel.basic_publish(exchange='',
+                                            routing_key=self._call_queue_name,
+                                            properties=pika.BasicProperties(
+                                                reply_to=self._receive_queue_name,
+                                                correlation_id=self._corr_id,
+                                            ), body=body)
 
         # Save callback in dictionary.
         self._callbacks[unique_id] = callback
