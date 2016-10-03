@@ -5,7 +5,7 @@ import pika
 
 class WispMonitor:
     """
-    WispMontior provides functions to controll wisp.
+    WispMontior provides functions to control wisp.
     """
 
     _corr_id = None

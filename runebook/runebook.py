@@ -237,6 +237,7 @@ class RuneBookConnect:
         
         result = self.__runeMysql.sendRawQuerySelect(query, count)
 
+
         return result
 
     def setFunction(self, function):
