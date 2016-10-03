@@ -2,8 +2,12 @@ from instanceMonitor import Monitor
 from wisp_monitor import WispMonitor
 from time import strftime, localtime
 
+import sys
 import json
 import psutil
+
+sys.path.insert(0, '../runeconnect')
+from request import *
 
 class Function :
     userNmae = ""
@@ -21,64 +25,54 @@ class Function :
     receive_queue_name="detonate"
 
 
-    def __init__(self):
-        print("\n\n[[[ Function Object created ]]]")
-
-    def __init__(self, userName, projectName, functionData, parameters) :
+    def __init__(self, userName=None, projectName=None, functionData=None, parameters=None) :
         print("\n\n[[[  Function Object Created ]]]")
-        self.wisp_monitor = WispMonitor()
-
+        self.wisp_monitor = WispMonitor(self.call_queue_name)
+        
         print("functionData", functionData)
-        self.uFid = functionData["uFid"]
-        self.functionPath = functionData["function_path"]
-        self.revisionSeq = functionData["revision_seq"]
-        self.validationRequired = functionData["validation_required"]
-        self.userName = userName
-        self.projectName = projectName
-        self.parameters = parameters
+       
+        if(userName is not None):
+            self.uFid = functionData["uFid"]
+            self.functionPath = functionData["function_path"]
+            self.revisionSeq = functionData["revision_seq"]
+            self.validationRequired = functionData["validation_required"]
+            self.userName = userName
+            self.projectName = projectName
+            self.parameters = parameters
 
+            print("[[ function call log ]]")
+            print("function uid : " + str(self.uFid))
+            print("function path : " + str(self.functionPath))
+            print("revision sequence : " + str(self.revisionSeq))
+            print("validation required : " + str(self.validationRequired))
 
-        print("[[ function call log ]]")
-        print("function uid : " + str(self.uFid))
-        print("function path : " + str(self.functionPath))
-        print("revision sequence : " + str(self.revisionSeq))
-        print("validation required : " + str(self.validationRequired))
 
     # this function send response to sentinel
-    def ResponseFunctionCall (self, result, uId, instanceMonitor, executionTime):
-        print("callback")
+    # THE CALLBACK
+    def ResponseFunctionCall (self, result, uId):
+        print("_CALLBACK FUNCTION_")
         print(result)
-        print("uid :" + uId)
+        print("uid :" + str(uId))
         print("function result :" + str(result))
         #send Result
         #Result have to contain the system resource info
         #send instance monitor info
+        instanceMonitor = Monitor()
         instanceMonitor.GetSystemState()
-        instanceMonitor.DetailState()
+       
+        #default resource data
+        # 1. CPU usage
+        # 2. Memory usage
+        # 3. I/O Status
 
-        print('[[ resource state ]] ')
-        print('--stuck--')
-        print(self.instanceMonitor.stuck)
+        print(instanceMonitor)
+        resultJson = json.dumps({"functionResult": result, "instanceState":str(instanceMonitor)})
 
-        print('--running--')
-        print(self.instanceMonitor.running)
-
-        print('--sleeping--')
-        print(self.instanceMonitor.sleeping)
+        resultJson = json.loads(resultJson)
+        print(type(resultJson))
+        print(resultJson)
         
-        #put the result data
-        requestObject = RuneRequest()
-        requestObject.insertRequest(result)
-        req = RuneRequestSender(requestObject)
-        ret = req.sendPOST("http://127.0.0.1:8000/test_post")
-
-        if(ret) :
-            print("GET REQUEST", ret.content)
-            print("data sent successfully")
-            return True
-        else :
-            print("request fail")
-            return False
+        return resultJson
 
     #send function request to wisp 
     def SendFunctionRequest(self):
@@ -92,12 +86,19 @@ class Function :
        
         #crawl function source        
 
-         
-
+       
+        callResult = None
         #call the function
         ret = self.wisp_monitor.call(jsondata, self.uFid, self.ResponseFunctionCall)
         
-        print("wisp_monitor called successfully")       
+        print(ret)
+        
+        if(ret) :
+            print("wisp_monitor called successfully")       
+        else:
+            print("fail to call wisp_monitor")
+
+
         return True
 
     def FunctionSourceCrawler(self):
@@ -156,7 +157,7 @@ class InstanceManager :
     def ReceiveResponse(self, jsonResponse):
         return True
 
-    def ReceiveRequest(self, jsonRequest) :
+    def ReceiveRequest(self, jsonRequest, handler) :
         
         #get data from Sentinel
         self.jsonRequest = json.loads(jsonRequest)
@@ -176,12 +177,17 @@ class InstanceManager :
         print(type(functionObject))
         # call functions based on receved data from sentinel
         f = Function(user, project, functionObject, params)
-        
+       
         #call function
         f.SendFunctionRequest()
+       
 
+        handler.send_response(200)
+        handler.send_header("Content-type", "application/json")
+        handler.end_headers()
+        
+        handler.wfile.write(jsonresult)
 
- 
         return True
 
 if __name__ == "__main__":

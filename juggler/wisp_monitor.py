@@ -8,11 +8,12 @@ class WispMonitor:
     """
     WispMontior provides functions to controll wisp.
     """
-
     _corr_id = None
 
     _callbacks = dict()
     _consuming_thread = None
+   
+    _callReuslt = None
 
     def __init__(self, call_queue_name="wisp"):
         self._call_queue_name = call_queue_name
@@ -45,8 +46,11 @@ class WispMonitor:
         unique_id = parsed_body['uuid']
 
         callback = self._callbacks.pop(unique_id)
-        callback(result, unique_id)
+        callbackResult = callback(result, unique_id)
+        print("__callback result__")
+        print(callbackResult)
 
+        _callResult = callbackResult
     @staticmethod
     def to_str(bytes_or_str):
         if isinstance(bytes_or_str, bytes):
@@ -90,5 +94,8 @@ class WispMonitor:
         # Save callback in dictionary.
         self._callbacks[self._corr_id] = callback
 
-        return True
+        while self._callResult is None:
+            print("wait")
+        
+        return _callResult
 
