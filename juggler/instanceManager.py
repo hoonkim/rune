@@ -68,7 +68,6 @@ class Function :
         print(instanceMonitor)
         resultJson = json.dumps({"functionResult": result, "instanceState":str(instanceMonitor)})
 
-        resultJson = json.loads(resultJson)
         print(type(resultJson))
         print(resultJson)
         
@@ -78,7 +77,7 @@ class Function :
     def SendFunctionRequest(self):
         timestamp = strftime("%Y/%H/%M/%S",localtime())
 
-        functionObj = {"function_path":"/home/stack/juggler/rune/juggler/helloWorld.py", "timestamp":timestamp,"validation_required":"t"}
+        functionObj = {"function_path":"/home/stack/juggler/rune/juggler/helloWorld.py", "timestamp":timestamp,"validation_required":self.validationRequired}
 
         jsondata = json.dumps({"user":self.userName,"project":self.projectName,"function_object":functionObj, "params":self.parameters})
        
@@ -89,7 +88,9 @@ class Function :
        
         callResult = None
         #call the function
-        ret = self.wisp_monitor.call(jsondata, self.uFid, self.ResponseFunctionCall)
+        ret = self.wisp_monitor.call(jsondata, self.uFid)
+
+        ret = self.ResponseFunctionCall(ret, self.uFid)
         
         print(ret)
         
@@ -99,7 +100,7 @@ class Function :
             print("fail to call wisp_monitor")
 
 
-        return True
+        return ret
 
     def FunctionSourceCrawler(self):
         codePath = ""
@@ -179,14 +180,14 @@ class InstanceManager :
         f = Function(user, project, functionObject, params)
        
         #call function
-        f.SendFunctionRequest()
+        jsonresult = f.SendFunctionRequest()
        
 
         handler.send_response(200)
         handler.send_header("Content-type", "application/json")
         handler.end_headers()
         
-        handler.wfile.write(jsonresult)
+        handler.wfile.write(jsonresult.encode("utf-8"))
 
         return True
 
