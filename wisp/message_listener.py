@@ -50,7 +50,7 @@ class MessageListener:
                                   properties=pika.BasicProperties(
                                       correlation_id=properties.correlation_id
                                   ),
-                                  body=body
+                                  body=json.dumps(body)
                                   )
 
         else:

@@ -28,7 +28,7 @@ def message_to_function(raw_message):
         return None
 
     print(raw_message)
-    path = wisp["function_object"]["function_path"]
+    path = wisp["path"]
     params = wisp["params"]
 
 
