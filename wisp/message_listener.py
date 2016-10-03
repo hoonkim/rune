@@ -36,7 +36,7 @@ class MessageListener:
         if mod is not None:
             # Module loaded successfully.
             result = mod.run()
-
+            print("fuck : " + result)
             # Sending back result to MQ.
             channel.basic_publish(exchange='',
                                   routing_key=properties.reply_to,

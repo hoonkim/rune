@@ -1,15 +1,24 @@
-from http.server import HTTPServer, BaseHTTPRequestHandler
-from socketserver import ThreadingMixIn
-from urllib.parse import urlparse
+#from http.server import HTTPServer, BaseHTTPRequestHandler
+#from socketserver import ThreadingMixIn
+#from urllib.parse import urlparse
+
+import sys
+
 from jugglerRequest import RuneRequest
 from instanceManager import *
+
+sys.path.insert(0, '../runeconnect')
+
+from request import *
+from handler import *
+
 
 import json
 import threading
 import urllib
 
 
-class RuneHttpHandler(BaseHTTPRequestHandler):
+class JugglerHttpHandler(RuneHttpHandler):
     instManager = None
 
     def do_GET(self):
@@ -30,11 +39,15 @@ class RuneHttpHandler(BaseHTTPRequestHandler):
         self.printClientInformation(info)
 
         length = int(self.headers['Content-Length'])
-        post_data = urllib.parse.parse_qs(self.rfile.read(length).decode('utf-8'))
 
-        print(post_data)
+        if self.headers['Content-Type'] == 'application/json':
+            #print("json_data", self.rfile.read(length))
+            post_data = self.decodeJsonRequest(self.rfile.read(length).decode('utf-8'))
+        else:
+            print("dic data")
+            post_data = self.decodeDictRequest(self.rfile.read(length).decode('utf-8'))
 
-        print("RECV POST DATA:", post_data)
+        print("POST DATA:", post_data)
 
         #run instance manager
         self.instManager = InstanceManager()
@@ -67,7 +80,9 @@ class RuneHttpHandler(BaseHTTPRequestHandler):
         oldObject = None
         firstObject = None
 
+        print("--- split result ---")
         print(splitResult)
+        print("--- split result end ---")
 
         for data in splitResult:
             if data == '':
@@ -88,7 +103,7 @@ class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
 if __name__ == "__main__":
     #create server
     PORT = 8000
-    server = ThreadedHTTPServer(('127.0.0.1', PORT), RuneHttpHandler)
+    server = ThreadedHTTPServer(('127.0.0.1', PORT), JugglerHttpHandler)
     print('Starting server, use <Ctrl-C> to stop')
     print('Waiting API call')
     server.serve_forever()

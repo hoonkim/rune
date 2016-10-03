@@ -30,6 +30,8 @@ class WispMonitor:
         """
         Callback for request to wisp.
         """
+
+        print("on Response")
         parsed_body = json.loads(body)
         result = parsed_body['result']
         unique_id = parsed_body['uuid']
@@ -54,7 +56,7 @@ class WispMonitor:
         if unique_id is None:
             self._corr_id = str(uuid.uuid4())
         else:
-            self._corr_id = unique_id
+            self._corr_id = str(unique_id)
 
         if unique_id in self._callbacks.keys():
             return False
