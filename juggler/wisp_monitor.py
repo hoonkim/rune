@@ -1,12 +1,11 @@
 import json
 import uuid
 import pika
-import threading
 
 
 class WispMonitor:
     """
-    WispMontior provides functions to control wisp.
+    WispMontior provides functions to controll wisp.
     """
 
     _corr_id = None
@@ -72,7 +71,7 @@ class WispMonitor:
         if unique_id is None:
             self._corr_id = str(uuid.uuid4())
         else:
-            self._corr_id = unique_id
+            self._corr_id = str(unique_id)
 
         if unique_id in self._callbacks.keys():
             return False

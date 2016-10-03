@@ -1,6 +1,7 @@
 from instanceMonitor import Monitor
 from wisp_monitor import WispMonitor
 from time import strftime, localtime
+
 import json
 import psutil
 
@@ -21,14 +22,13 @@ class Function :
 
 
     def __init__(self):
-        print("Function Object created")
+        print("\n\n[[[ Function Object created ]]]")
 
     def __init__(self, userName, projectName, functionData, parameters) :
-        print("\n\nFunction Object Created")
+        print("\n\n[[[  Function Object Created ]]]")
         self.wisp_monitor = WispMonitor()
 
-        functionData = json.loads(functionData)
-
+        print("functionData", functionData)
         self.uFid = functionData["uFid"]
         self.functionPath = functionData["function_path"]
         self.revisionSeq = functionData["revision_seq"]
@@ -46,6 +46,8 @@ class Function :
 
     # this function send response to sentinel
     def ResponseFunctionCall (self, result, uId, instanceMonitor, executionTime):
+        print("callback")
+        print(result)
         print("uid :" + uId)
         print("function result :" + str(result))
         #send Result
@@ -82,20 +84,20 @@ class Function :
     def SendFunctionRequest(self):
         timestamp = strftime("%Y/%H/%M/%S",localtime())
 
-        functionObj = json.dumps({"function_path":"~/wisp.py", "timestamp":timestamp,"validation_required":"t"})
+        functionObj = {"function_path":"/home/stack/juggler/rune/juggler/helloWorld.py", "timestamp":timestamp,"validation_required":"t"}
 
-        jsondata = json.dumps({"user":self.userName,"project":self.projectName,"function":functionObj, "prams":self.parameters})
+        jsondata = json.dumps({"user":self.userName,"project":self.projectName,"function_object":functionObj, "params":self.parameters})
        
         print("send "+jsondata)
        
         #crawl function source        
 
-        
          
 
         #call the function
-        self.wisp_monitor.call(jsondata, self.uFid, self.ResponseFunctionCall)
-
+        ret = self.wisp_monitor.call(jsondata, self.uFid, self.ResponseFunctionCall)
+        
+        print("wisp_monitor called successfully")       
         return True
 
     def FunctionSourceCrawler(self):
@@ -123,10 +125,10 @@ class InstanceManager :
 
 
     def __init__(self) :
-        print("instanceManager created")
+        print("\n\n[[[ instanceManager created ]]]")
         self.instanceMonitor = Monitor()
     def RunManager(self):
-        print("Instance Manage is activated")
+        print("\n\n[[[ Instance Manage is activated ]]]")
         
         #run monitor 
 
@@ -160,11 +162,11 @@ class InstanceManager :
         self.jsonRequest = json.loads(jsonRequest)
         print(self.jsonRequest)
 
-        user = self.jsonRequest["user"][0]
-        project = self.jsonRequest["project"][0]
-        functionObject = self.jsonRequest["function_object"][0]
+        user = self.jsonRequest["user"]
+        project = self.jsonRequest["project"]
+        functionObject = self.jsonRequest["function_object"]
 
-        params = self.jsonRequest["params"][0]
+        params = self.jsonRequest["params"]
         
 
         print("\n[recv data ] \n user : " + str(user) + '\n projcet :  ' + str(project) + '\n func obj :  ' + str(functionObject) + '\n params :  ' + str(params))
