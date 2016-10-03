@@ -25,11 +25,11 @@ class WispMonitor:
         result = self._receive_channel.queue_declare(exclusive=True)
         self._receive_queue_name = result.method.queue
 
-        # self._consuming_thread = threading.Thread(target=self.start_consuming,
-        #                                           args=(self._receive_channel,
-        #                                                 self._receive_queue_name,
-        #                                                 self.on_response))
-        # self._consuming_thread.start()
+        self._consuming_thread = threading.Thread(target=self.start_consuming,
+                                                  args=(self._receive_channel,
+                                                        self._receive_queue_name,
+                                                        self.on_response))
+        self._consuming_thread.start()
 
     @staticmethod
     def start_consuming(channel, receive_queue_name, on_response):
@@ -44,8 +44,10 @@ class WispMonitor:
         result = parsed_body['result']
         unique_id = parsed_body['uuid']
 
-        callback = self._callbacks.pop(unique_id)
-        callback(result, unique_id)
+        # callback = self._callbacks.pop(unique_id)
+        # callback(result, unique_id)
+
+        self._callbacks[unique_id] = result
 
     @staticmethod
     def to_str(bytes_or_str):
@@ -89,7 +91,10 @@ class WispMonitor:
 
         # Save callback in dictionary.
 
-        body = self._receive_channel.consume(queue=self._receive_queue_name, no_ack=True)
+        self._callbacks[self._corr_id] = None
 
-        return self.to_str(body)
+        while self._callbacks[self._corr_id] is None:
+            pass
+
+        return self._callbacks.pop(self._corr_id)
 
