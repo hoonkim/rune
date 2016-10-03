@@ -186,8 +186,11 @@ class InstanceManager :
         handler.send_response(200)
         handler.send_header("Content-type", "application/json")
         handler.end_headers()
-        
+       
+        print(type(jsonresult))
+        print(jsonresult)
         handler.wfile.write(jsonresult.encode("utf-8"))
+
 
         return True
 

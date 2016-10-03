@@ -59,7 +59,7 @@ class JugglerHttpHandler(RuneHttpHandler):
         self.send_header("Content-type", "text/html")
         self.end_headers()
         '''
-        return str(post_data)        
+        return True
 
     def printClientInformation(self, info):
         print("client addr - ", info.client_address)

@@ -105,4 +105,9 @@ class SentinelHttpHandler(RuneHttpHandler):
 
         requestSender = RuneRequestSender(requestObject)
 
-        requestSender.sendPOST("http://127.0.0.1:8000/test_post")
+        ret = requestSender.sendPOST("http://127.0.0.1:8000/test_post")
+        
+        print(ret.json())
+        return ret
+
+
