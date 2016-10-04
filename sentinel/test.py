@@ -10,5 +10,5 @@ data = json.dumps(b)
 
 print(data)
 
-requests.post("http://127.0.0.1:8000/invoke", data)
-requests.post("http://127.0.0.1:8000/invoke", b)
+#requests.post("http://127.0.0.1:8080/invoke", data)
+requests.post("http://127.0.0.1:9000/invoke", b)

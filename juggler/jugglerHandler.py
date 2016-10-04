@@ -1,13 +1,26 @@
-from http.server import HTTPServer, BaseHTTPRequestHandler
-from socketserver import ThreadingMixIn
-from urllib.parse import urlparse
-from request import RuneRequest
+#from http.server import HTTPServer, BaseHTTPRequestHandler
+#from socketserver import ThreadingMixIn
+#from urllib.parse import urlparse
+
+import sys
+
+from jugglerRequest import RuneRequest
+from instanceManager import *
+
+sys.path.insert(0, '../runeconnect')
+
+from request import *
+from handler import *
+
+
+import json
 import threading
 import urllib
-import json
 
 
-class RuneHttpHandler(BaseHTTPRequestHandler):
+class JugglerHttpHandler(RuneHttpHandler):
+    instManager = None
+
     def do_GET(self):
         print('GET REQUEST', self)
 
@@ -19,14 +32,6 @@ class RuneHttpHandler(BaseHTTPRequestHandler):
         self.send_header("Content-type", "text/html")
         self.end_headers()
 
-        #TODO: Make your procedure for response
-
-    def decodeDictRequest(self, requestString):
-        return urllib.parse.parse_qs(requestString)
-
-    def decodeJsonRequest(self, requestString):
-        return json.loads(requestString)
-
     def do_POST(self):
         print('POST REQUEST', self)
 
@@ -36,22 +41,25 @@ class RuneHttpHandler(BaseHTTPRequestHandler):
         length = int(self.headers['Content-Length'])
 
         if self.headers['Content-Type'] == 'application/json':
+            #print("json_data", self.rfile.read(length))
             post_data = self.decodeJsonRequest(self.rfile.read(length).decode('utf-8'))
         else:
             post_data = self.decodeDictRequest(self.rfile.read(length).decode('utf-8'))
 
         print("POST DATA:", post_data)
 
-        self.send_response(200)
+        #run instance manager
+        self.instManager = InstanceManager()
+        self.instManager.RunManager()
+        self.instManager.ReceiveRequest(json.dumps(post_data),self)
+ 
+        # reponse
+        '''
+        self.send_response(404)
         self.send_header("Content-type", "text/html")
         self.end_headers()
-
-        #TODO: Make your procedure for response
-        
-        # EXAMPLE
-        self.wfile.write(bytes("RECEIVED: ","utf-8"))
-        self.wfile.write(str(post_data).encode("utf-8"))
-        
+        '''
+        return True
 
     def printClientInformation(self, info):
         print("client addr - ", info.client_address)
@@ -68,7 +76,9 @@ class RuneHttpHandler(BaseHTTPRequestHandler):
         oldObject = None
         firstObject = None
 
+        print("--- split result ---")
         print(splitResult)
+        print("--- split result end ---")
 
         for data in splitResult:
             if data == '':
@@ -84,3 +94,14 @@ class RuneHttpHandler(BaseHTTPRequestHandler):
 
 class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
     """Handle requests in a separate thread."""
+
+
+if __name__ == "__main__":
+    #create server
+    PORT = 8000
+    server = ThreadedHTTPServer(('127.0.0.1', PORT), JugglerHttpHandler)
+    print('Starting server, use <Ctrl-C> to stop')
+    print('Waiting API call')
+    server.serve_forever()
+
+

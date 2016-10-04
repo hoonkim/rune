@@ -1,6 +1,6 @@
 from urllib.parse import urlparse, parse_qs
-from request import RuneRequest
-from request import RuneRequestSender
+from jugglerRequest import RuneRequest
+from jugglerRequest import RuneRequestSender
 import json
 
 # Http parse test
@@ -27,12 +27,24 @@ for data in test:
 
 print(firstObject)
 
+
+
 # process distribute test
+
 
 # request generate test
 
+#**
 requestObject = RuneRequest()
-data = '{"test": "go", "index": 3, "arr": [1,2,3,4,5,6] , "arr2": [{"a":1}, {"b":"2"}]}'
+
+
+functionObject = {"uFid" : "uid", "function_path": "./", "revision_seq": 3, "validation_required": "T"}
+
+data = json.dumps({"user" :"armin" , 'project' :'rune' , 'function_object': '{"uFid" : "uid", "function_path": "./", "revision_seq": 3, "validation_required": "T"}' , 'params' : '[ "seoul", "kr", "nano" ]' })
+#data = json.dumps("{'user' :'armin'}")
+
+
+print("json data :  " + data)
 data = json.loads(data)
 
 requestObject.insertRequest(data)
@@ -41,7 +53,6 @@ requestObject.insertRequest(data)
 #ret = req.sendGET("http://127.0.0.1:8000/test_get")
 
 #print("GET REQUEST", ret.content)
-
 
 req = RuneRequestSender(requestObject)
 ret = req.sendPOST("http://127.0.0.1:8000/test_post")
@@ -52,3 +63,4 @@ print("POST REQUEST", ret.content)
 #ret = req.sendPOST("http://127.0.0.1:8000/test_post/test_again")
 
 #print("POST REQUEST", ret.content)
+

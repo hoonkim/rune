@@ -2,7 +2,6 @@ from urllib.parse import urlparse, parse_qs
 from  http.client import HTTPConnection
 import requests
 import sys
-import json
 
 class RuneRequest:
     name = None
@@ -22,7 +21,7 @@ class RuneRequest:
 
     def insertRequest(self, requestData):
         if not isinstance(requestData, dict):
-            print(sys._getframe().f_code.co_name , "mismatch type - ", type(requestData), type(dict))
+            print(sys._getframe().f_code.co_name , "mismatch type - ", type(requestData), type(list))
             return False
 
         self.queries = requestData
@@ -57,9 +56,6 @@ class RuneRequest:
 
         return ret
 
-    def getQueryJson(self):
-        return json.dumps(self.queries)
-
 
 
 class RuneRequestSender:
@@ -86,9 +82,7 @@ class RuneRequestSender:
             print("no request object")
             return False
 
-        #r = requests.post(requestAddr, self._requestObject.getQueryJson())
-#        r = requests.post(requestAddr, self._requestObject.queries)
-        r = requests.post(requestAddr, json=self._requestObject.queries)
+        r = requests.post(requestAddr, self._requestObject.queries)
     
         return r
 

@@ -27,8 +27,9 @@ def message_to_function(raw_message):
     except json.JSONDecodeError:
         return None
 
-    path = wisp["path"]
-    params = wisp["params"]
+    function_object = wisp["function_object"]
+    path = wisp["function_path"]
+    params = function_object["params"]
 
     loader = importlib.machinery.SourceFileLoader('name', path)
 
