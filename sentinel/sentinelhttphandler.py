@@ -38,6 +38,15 @@ class SentinelHttpHandler(RuneHttpHandler):
         #function call
         self.__reqList.addRequest("/invoke", self.__receiveFunctionCall)
 
+        #db connect
+        self.__reqList.addRequest("/getAuth", self.__loginProc)
+        self.__reqList.addRequest("/getProjectList", self.__getProjectList)
+        self.__reqList.addRequest("/addProject", self.__addProject)
+        self.__reqList.addRequest("/getFunction", self.__getFunction)
+        self.__reqList.addRequest("/getFunctionList", self.__getFunctionList)
+        self.__reqList.addRequest("/addFunction", self.__addFunction)
+        self.__reqList.addRequest("/updateFunction", self.__setFunction)
+
         #runebook connect
 
     def __initJobDistributer(self):
@@ -114,8 +123,6 @@ class SentinelHttpHandler(RuneHttpHandler):
 
         if userInfo is () or userInfo is None:
             return None
-
-        #request.session["userinfo"] = userInfo
 
         return json.dumps(userInfo)
 
