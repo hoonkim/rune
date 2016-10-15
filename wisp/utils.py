@@ -28,8 +28,8 @@ def message_to_function(raw_message):
         return None
 
     function_object = wisp["function_object"]
-    path = wisp["function_path"]
-    params = function_object["params"]
+    path = function_object["function_path"]
+    params = wisp["params"]
 
     loader = importlib.machinery.SourceFileLoader('name', path)
 

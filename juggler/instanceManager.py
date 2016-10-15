@@ -77,15 +77,13 @@ class Function :
     def SendFunctionRequest(self):
         timestamp = strftime("%Y/%H/%M/%S",localtime())
 
-        functionObj = {"function_path":"/home/stack/juggler/rune/juggler/helloWorld.py", "timestamp":timestamp,"validation_required":self.validationRequired}
+        functionObj = {"function_path":"/home/stack/juggler/rune/juggler/ServerTime.py", "timestamp":timestamp,"validation_required":self.validationRequired}
 
         jsondata = json.dumps({"user":self.userName,"project":self.projectName,"function_object":functionObj, "params":self.parameters})
        
         print("send "+jsondata)
-       
-        #crawl function source        
 
-       
+        #crawl function source        
         callResult = None
         #call the function
         ret = self.wisp_monitor.call(jsondata, self.uFid)
@@ -177,10 +175,10 @@ class InstanceManager :
         print("[[ func obj ]]")
         print(type(functionObject))
         # call functions based on receved data from sentinel
-        f = Function(user, project, functionObject, params)
+        newFunction = Function(user, project, functionObject, params)
        
         #call function
-        jsonresult = f.SendFunctionRequest()
+        jsonresult = newFunction.SendFunctionRequest()
        
 
         handler.send_response(200)

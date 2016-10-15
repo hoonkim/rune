@@ -61,6 +61,7 @@ class JugglerHttpHandler(RuneHttpHandler):
         '''
         return True
 
+
     def printClientInformation(self, info):
         print("client addr - ", info.client_address)
         print("command - ", info.command)

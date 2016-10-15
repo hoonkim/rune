@@ -64,7 +64,11 @@ class RuneCode:
     __code = None
     __lastUpdateTime = None
 
+<<<<<<< HEAD
     def __init__(self, projectId, name, code, lastUpdateTime=None, id=None):
+=======
+    def __init__(self, projectId, code, lastUpdateTime=None, id=None):
+>>>>>>> SentinelJuggler
         if id != None:
             self.__id = id
 

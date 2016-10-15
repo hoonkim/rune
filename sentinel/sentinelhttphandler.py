@@ -191,6 +191,10 @@ class SentinelHttpHandler(RuneHttpHandler):
 
 
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> SentinelJuggler
     def __receiveFunctionCall(self, requestData):
         '''
         for key in requestData.keys():
@@ -201,7 +205,7 @@ class SentinelHttpHandler(RuneHttpHandler):
 
         #temporary data for test
         functionObject = '{ "uFid" : 1, "function_path" : "/foo/bar/", "revision_seq" : 1, "validation_required" : true}'
-        data = '{ "user" : "kim", "project" : "rune", "function_object" : '+functionObject+', "params" : [ "seoul", "kr", "nano" ] }'
+        data = '{ "user" : "kim", "project" : "rune", "function_object" : '+functionObject+', "params" : [ "www.google.com" ] }'
 
 
         requestData = json.loads(data)
@@ -213,5 +217,21 @@ class SentinelHttpHandler(RuneHttpHandler):
 
         ret = requestSender.sendPOST("http://127.0.0.1:8000/test_post")
         
+<<<<<<< HEAD
         print(ret.json())
         return ret
+=======
+        #get json result 
+        jsonResult = ret.json()
+
+        instanceState = jsonResult["instanceState"]
+        functionResult = jsonResult["functionResult"]
+
+        print("[[ instance State ]]")
+        print(instanceState)
+        print("[[ function Reseult ]]")
+        print(functionResult)
+
+        return functionResult
+
+>>>>>>> SentinelJuggler
