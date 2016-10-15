@@ -5,6 +5,7 @@ from time import strftime, localtime
 import sys
 import json
 import psutil
+import datetime
 
 sys.path.insert(0, '../runeconnect')
 from request import *
@@ -45,18 +46,23 @@ class Function :
             print("function path : " + str(self.functionPath))
             print("revision sequence : " + str(self.revisionSeq))
             print("validation required : " + str(self.validationRequired))
-
-
+    
     # this function send response to sentinel
     # THE CALLBACK
-    def ResponseFunctionCall (self, result, uId):
+    def ResponseByFunctionCall (self, functionResult, uId, functionStartTime):
         print("_CALLBACK FUNCTION_")
         print(result)
         print("uid :" + str(uId))
         print("function result :" + str(result))
+        
         #send Result
         #Result have to contain the system resource info
         #send instance monitor info
+        
+        functionEndTime = localtime() 
+        
+        elapsedTime = functionEndTime - functionStartTime
+
         instanceMonitor = Monitor()
         instanceMonitor.GetSystemState()
        
@@ -66,39 +72,33 @@ class Function :
         # 3. I/O Status
 
         print(instanceMonitor)
-        resultJson = json.dumps({"functionResult": result, "instanceState":str(instanceMonitor)})
+        resultJson = json.dumps({"functionResult": result, "instanceState":str(instanceMonitor),"elapsedtime": strftime("%Y/%H/%M/%S",elapsedTime)})
 
-        print(type(resultJson))
-        print(resultJson)
-        
         return resultJson
 
     #send function request to wisp 
     def SendFunctionRequest(self):
-        timestamp = strftime("%Y/%H/%M/%S",localtime())
-
-        functionObj = {"function_path":"/home/stack/juggler/rune/juggler/ServerTime.py", "timestamp":timestamp,"validation_required":self.validationRequired}
+        functionStartTime = localtime()
+        
+        #functionObj = {"function_path":"/home/stack/juggler/rune/juggler/ServerTime.py", "timestamp":timestamp,"validation_required":self.validationRequired}
+        functionObject = {"function_path":self.functionPath,"timestamp":strftime("%Y/%H/%M/%S",functionStartTime),"validation_required":self.validationRequired}
 
         jsondata = json.dumps({"user":self.userName,"project":self.projectName,"function_object":functionObj, "params":self.parameters})
        
-        print("send "+jsondata)
+        print("send "+ jsondata)
 
         #crawl function source        
         callResult = None
+        
         #call the function
-        ret = self.wisp_monitor.call(jsondata, self.uFid)
+        functionResult = self.wisp_monitor.call(jsondata, self.uFid)
 
-        ret = self.ResponseFunctionCall(ret, self.uFid)
+        responseOfFunctionCall = self.ResponseByFunctionCall(functionResult, self.uFid, functionStartTime)
         
-        print(ret)
-        
-        if(ret) :
-            print("wisp_monitor called successfully")       
-        else:
-            print("fail to call wisp_monitor")
+        print(responseOfFunctionCall)
 
 
-        return ret
+        return responseOfFunctionCall
 
     def FunctionSourceCrawler(self):
         codePath = ""
@@ -168,9 +168,7 @@ class InstanceManager :
 
         params = self.jsonRequest["params"]
         
-
         print("\n[recv data ] \n user : " + str(user) + '\n projcet :  ' + str(project) + '\n func obj :  ' + str(functionObject) + '\n params :  ' + str(params))
-
 
         print("[[ func obj ]]")
         print(type(functionObject))
@@ -179,7 +177,6 @@ class InstanceManager :
        
         #call function
         jsonresult = newFunction.SendFunctionRequest()
-       
 
         handler.send_response(200)
         handler.send_header("Content-type", "application/json")
