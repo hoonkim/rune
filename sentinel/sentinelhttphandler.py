@@ -38,6 +38,15 @@ class SentinelHttpHandler(RuneHttpHandler):
         #function call
         self.__reqList.addRequest("/invoke", self.__receiveFunctionCall)
 
+        #db connect
+        self.__reqList.addRequest("/getAuth", self.__loginProc)
+        self.__reqList.addRequest("/getProjectList", self.__getProjectList)
+        self.__reqList.addRequest("/addProject", self.__addProject)
+        self.__reqList.addRequest("/getFunction", self.__getFunction)
+        self.__reqList.addRequest("/getFunctionList", self.__getFunctionList)
+        self.__reqList.addRequest("/addFunction", self.__addFunction)
+        self.__reqList.addRequest("/updateFunction", self.__setFunction)
+
         #runebook connect
 
     def __initJobDistributer(self):
@@ -97,25 +106,42 @@ class SentinelHttpHandler(RuneHttpHandler):
 
 
     def __getUser(self,requestData):
-        cond = requestData["cond"]
+        cond = {"useremail": requestData["email"], "userpw": requestData["password"]}
 
         ret = self.__runebookConnect.getUser(cond)
         return ret
 
+    def __loginProc(self, requestData):
+        cond = {"useremail": requestData["email"], "userpw": requestData["password"]}
+
+        result = self.__runebookConnect.getUser(cond)
+
+        if result is None or result is ():
+        return None
+
+        userInfo = result[0]
+
+        if userInfo is () or userInfo is None:
+            return None
+
+        return json.dumps(userInfo)
+
     def __getUserList(self,requestData):
+        #not fixed
         start = requestData["start"] 
         count = requestData["count"]
         cond = requestData["cond"]
 
         ret = self.__runebookConnect.getUserList(start, cound, cond)
-        return ret
+        return json.dumps(ret)
 
     def __addUser(self, requestData):
+        #not fixed
         user = requestData["user"]
         runeUser = RuneUser(user["userEmail"], user["userPassword"])
 
         ret = self.__runebookConnect.setUser(runeUser)
-        return ret
+        return json.dumps(ret)
 
     def __setUser(self, requestData):
         '''
@@ -128,25 +154,30 @@ class SentinelHttpHandler(RuneHttpHandler):
         '''
 
     def __getProject(self,requestData):
+        #not fixed
         cond = requestData["cond"]
 
         ret = self.__runebookConnect.getProject(cond)
-        return ret
+        return json.dumps(ret)
 
     def __getProjectList(self,requestData):
-        start = requestData["start"] 
-        count = requestData["count"]
-        cond = requestData["cond"]
+        userId = requestData["user_id"]
 
-        ret = self.__runebookConnect.getProjectList(start, cound, cond)
-        return ret
+        ret = self.__runebookConnect.getProjectList(None, None, "userid": userId})
+        return json.dumps(ret)
 
     def __addProject(self, requestData):
-        project = requestData["project"]
-        runeProject = RuneProject(user["userId"], user["projectName"])
+        userId = requestData["user_id"]
 
-        ret = self.__runebookConnect.setProject(runeProject)
-        return ret
+        projectName = requestData["project_name"]
+
+        if str(projectName).strip() == "":
+            return None
+
+        project = RuneProject(userId, projectName)
+
+        ret = self.__runebookConnect.setProject(project)
+        return json.dumps(ret)
 
     def __setProject(self, requestData):
         '''
@@ -159,30 +190,40 @@ class SentinelHttpHandler(RuneHttpHandler):
         '''
 
     def __getFunction(self,requestData):
-        cond = requestData["cond"]
+        cond = {"id": requestData["code_id"]}
 
         ret = self.__runebookConnect.getFunction(cond)
-        return ret
+        return json.dumps(ret)
 
     def __getFunctionList(self,requestData):
-        start = requestData["start"] 
-        count = requestData["count"]
-        cond = requestData["cond"]
+        projectId = requestData["project_id"]
+        cond = {"projectid": projectId}
 
-        ret = self.__runebookConnect.getFunctionList(start, cound, cond)
-        return ret
+        ret = self.__runebookConnect.getFunctionList(None, None, cond)
+        return json.dumps(ret)
 
     def __addFunction(self, requestData):
-        code = requestData["function"]
-        runeCode = RuneCode(code["projectId"], code["code"])
+        projectId = requestData["project_id"]
+        name = requestData["code_name"]
+        code = requestData["code_area"]
+
+        runeCode = RuneCode(projectId, name, code, None, None)
 
         ret = self.__runebookConnect.setFunction(runeCode)
-        return ret
+
+        return json.dumps(ret)
 
     def __setFunction(self, requestData):
-        '''
-        TBD
-        '''
+        codeId = requestData["code_id"]
+        porjectId = requestData["project_id"]
+        name = requestData["code_name"]
+        code = requestData["code_area"]
+
+        runeCode = RuneCode(projectId, name, code, None, codeId)
+
+        ret = conn.updateFunction({"id":codeId}, runeCode)
+        
+        return json.dumps(ret)
 
     def __removeFunction(self, requestData):
         '''
