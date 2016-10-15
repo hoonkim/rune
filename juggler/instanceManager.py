@@ -77,7 +77,7 @@ class Function :
     def SendFunctionRequest(self):
         timestamp = strftime("%Y/%H/%M/%S",localtime())
 
-        functionObj = {"function_path":"/home/stack/juggler/rune/juggler/helloWorld.py", "timestamp":timestamp,"validation_required":self.validationRequired}
+        functionObj = {"function_path":"/home/stack/juggler/rune/juggler/ServerTime.py", "timestamp":timestamp,"validation_required":self.validationRequired}
 
         jsondata = json.dumps({"user":self.userName,"project":self.projectName,"function_object":functionObj, "params":self.parameters})
        

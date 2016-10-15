@@ -1,7 +1,7 @@
 import requests
 import json
 
-HOST = "127.0.0.1:9000/invoke"
+HOST = "http://127.0.0.1:9000/invoke"
 
 data = dict()
 
@@ -12,4 +12,4 @@ jsonData = json.dumps(data)
 
 ret = requests.post(HOST, json=jsonData)
 
-print(ret)
+print(ret.text)
