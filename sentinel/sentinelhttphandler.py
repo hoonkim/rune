@@ -190,11 +190,6 @@ class SentinelHttpHandler(RuneHttpHandler):
         '''
 
 
-
-<<<<<<< HEAD
-=======
-
->>>>>>> SentinelJuggler
     def __receiveFunctionCall(self, requestData):
         '''
         for key in requestData.keys():
@@ -216,11 +211,8 @@ class SentinelHttpHandler(RuneHttpHandler):
         requestSender = RuneRequestSender(requestObject)
 
         ret = requestSender.sendPOST("http://127.0.0.1:8000/test_post")
+
         
-<<<<<<< HEAD
-        print(ret.json())
-        return ret
-=======
         #get json result 
         jsonResult = ret.json()
 
@@ -233,5 +225,3 @@ class SentinelHttpHandler(RuneHttpHandler):
         print(functionResult)
 
         return functionResult
-
->>>>>>> SentinelJuggler
