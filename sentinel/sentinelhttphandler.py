@@ -2,6 +2,7 @@ import sys
 import json
 
 sys.path.insert(0, '../runeconnect')
+sys.path.insert(0, '../runebook')
 
 #sentinel
 from sentinelrequesthandler import *
@@ -13,11 +14,16 @@ from sentineljob import *
 from request import *
 from handler import *
 
+from runebook import *
+
 class SentinelHttpHandler(RuneHttpHandler):
     __reqList = None
     __jobDistributer = None
+    __runebookConnect = None
 
     def __initHandler(self):
+        if self.__runebookConnect is None:
+            self.__runebookConnect = RuneBookConnect()
         if self.__reqList is None:
             self.__reqList = SentinelRequestList()
             self.__initReceiver()
@@ -28,7 +34,11 @@ class SentinelHttpHandler(RuneHttpHandler):
 
     def __initReceiver(self):
         #add request function
+
+        #function call
         self.__reqList.addRequest("/invoke", self.__receiveFunctionCall)
+
+        #runebook connect
 
     def __initJobDistributer(self):
         #add Job distributer init
@@ -85,6 +95,102 @@ class SentinelHttpHandler(RuneHttpHandler):
 
             self.wfile.write(str(reqResult(post_data)).encode("utf-8"))
 
+
+    def __getUser(self,requestData):
+        cond = requestData["cond"]
+
+        ret = self.__runebookConnect.getUser(cond)
+        return ret
+
+    def __getUserList(self,requestData):
+        start = requestData["start"] 
+        count = requestData["count"]
+        cond = requestData["cond"]
+
+        ret = self.__runebookConnect.getUserList(start, cound, cond)
+        return ret
+
+    def __addUser(self, requestData):
+        user = requestData["user"]
+        runeUser = RuneUser(user["userEmail"], user["userPassword"])
+
+        ret = self.__runebookConnect.setUser(runeUser)
+        return ret
+
+    def __setUser(self, requestData):
+        '''
+        TBD
+        '''
+
+    def __removeUser(self, requestData):
+        '''
+        TBD
+        '''
+
+    def __getProject(self,requestData):
+        cond = requestData["cond"]
+
+        ret = self.__runebookConnect.getProject(cond)
+        return ret
+
+    def __getProjectList(self,requestData):
+        start = requestData["start"] 
+        count = requestData["count"]
+        cond = requestData["cond"]
+
+        ret = self.__runebookConnect.getProjectList(start, cound, cond)
+        return ret
+
+    def __addProject(self, requestData):
+        project = requestData["project"]
+        runeProject = RuneProject(user["userId"], user["projectName"])
+
+        ret = self.__runebookConnect.setProject(runeProject)
+        return ret
+
+    def __setProject(self, requestData):
+        '''
+        TBD
+        '''
+
+    def __removeProject(self, requestData):
+        '''
+        TBD
+        '''
+
+    def __getFunction(self,requestData):
+        cond = requestData["cond"]
+
+        ret = self.__runebookConnect.getFunction(cond)
+        return ret
+
+    def __getFunctionList(self,requestData):
+        start = requestData["start"] 
+        count = requestData["count"]
+        cond = requestData["cond"]
+
+        ret = self.__runebookConnect.getFunctionList(start, cound, cond)
+        return ret
+
+    def __addFunction(self, requestData):
+        code = requestData["function"]
+        runeCode = RuneCode(code["projectId"], code["code"])
+
+        ret = self.__runebookConnect.setFunction(runeCode)
+        return ret
+
+    def __setFunction(self, requestData):
+        '''
+        TBD
+        '''
+
+    def __removeFunction(self, requestData):
+        '''
+        TBD
+        '''
+
+
+
     def __receiveFunctionCall(self, requestData):
         '''
         for key in requestData.keys():
@@ -109,5 +215,3 @@ class SentinelHttpHandler(RuneHttpHandler):
         
         print(ret.json())
         return ret
-
-

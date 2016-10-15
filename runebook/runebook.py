@@ -30,7 +30,7 @@ class RuneUser:
     def getPassword(self):
         return self.__userPassword
 
-class RuneProejct:
+class RuneProject:
     __id = None
     __userId = None
     __projectName = None
@@ -60,22 +60,29 @@ class RuneProejct:
 class RuneCode:
     __id = None
     __projectId = None
+    __name = None
     __code = None
     __lastUpdateTime = None
 
-    def __init__(self, projectId, code, lastUpdateTime, id=None):
+    def __init__(self, projectId, name, code, lastUpdateTime=None, id=None):
         if id != None:
             self.__id = id
 
+        self.__name = name
         self.__projectId = projectId
         self.__code = code
-        self.__lastUpdateTime = lastUpdateTime
+        
+        if lastUpdateTime != None:
+            self.__lastUpdateTime = lastUpdateTime
 
     def setId(self, id):
         self.__id = id
 
     def getId(self):
         return self.__id
+
+    def getName(self):
+        return self.__name
 
     def getProjectId(self):
         return self.__projectId
@@ -100,11 +107,19 @@ class RuneBookConnect:
     def __generateCondition(self, cond):
         conditionString = ""
 
-        for k,v in cond:
+        for k,v in cond.items():
+            if v is None:
+                continue
             if conditionString == "":
-                conditionString = k + "= \"" + v +"\""
+                if k == "userpw":
+                    conditionString = " WHERE " + k + "= password(\"" + str(v) +"\")"
+                else:
+                    conditionString = " WHERE " + k + "= \"" + str(v) +"\""
             else:
-                conditionString += "AND " + k + "= \"" + v +"\""
+                if k == "userpw":
+                    conditionString += " AND " + k + "= password(\"" + str(v) +"\")"
+                else:
+                    conditionString += " AND " + k + "= \"" + str(v) +"\""
 
         return conditionString
 
@@ -116,6 +131,8 @@ class RuneBookConnect:
             conditionString = self.__generateCondition(cond)
         
         query = query + conditionString
+
+        print(query)
 
         result = self.__runeMysql.sendRawQuerySelect(query, 1)
 
@@ -132,6 +149,8 @@ class RuneBookConnect:
             conditionString = self.__generateCondition(cond)
 
         query = query + conditionString
+
+        print(query)
 
         if start != None:
             query += " OFFSET = " + start
@@ -171,15 +190,20 @@ class RuneBookConnect:
         query  = "SELECT * FROM project ";
 
         conditionString = ""
+        print("condition: ", cond)
         if cond != None:
             conditionString = self.__generateCondition(cond)
         
         query = query + conditionString
 
-        result = self.__runeMysql.sendRawQuerySelect(query, 1)
+        print(query)
+
+        ret = self.__runeMysql.sendRawQuerySelect(query, 1)
+
+        return ret
 
     def getProjectList(self, start=None, count=None, cond=None):
-        query  = "SELECT * FROM user ";
+        query  = "SELECT * FROM project ";
         
         conditionString = ""
         if cond != None:
@@ -189,11 +213,20 @@ class RuneBookConnect:
 
         if start != None:
             query += " OFFSET = " + start
+
+        if count is None:
+            count = 0
+
+        print(query)
         
-        result = self.__runeMysql.sendRawQuerySelect(query, count)
+        ret = self.__runeMysql.sendRawQuerySelect(query, count)
+
+        return ret
 
     def setProject(self, project):
-        query = "INSERT INTO project(userid, name) VALUES(\""+user.getUserId()+"\",\""+user.getProjectName()+"\")"
+        query = "INSERT INTO project(userid, name) VALUES(\""+str(project.getUserId())+"\",\""+project.getProjectName()+"\")"
+
+        print(query)
 
         ret = self.__runeMysql.sendRawQueryInsert(query)
 
@@ -211,7 +244,7 @@ class RuneBookConnect:
 
 
     def getFunction(self, cond=None):
-        query  = "SELECT * FROM function ";
+        query  = "SELECT * FROM code ";
 
         conditionString = ""
         if cond != None:
@@ -219,12 +252,14 @@ class RuneBookConnect:
         
         query = query + conditionString
 
-        result = self.__runeMysql.sendRawQuerySelect(query, 1)
+        print(query)
 
-        return result
+        ret = self.__runeMysql.sendRawQuerySelect(query, 1)
+
+        return ret
 
     def getFunctionList(self, start=None, count=None, cond=None):
-        query  = "SELECT * FROM function ";
+        query  = "SELECT * FROM code ";
         
         conditionString = ""
         if cond != None:
@@ -234,28 +269,46 @@ class RuneBookConnect:
 
         if start != None:
             query += " OFFSET = " + start
+
+        if count is None:
+            count = 0
+
+        print(query)
         
-        result = self.__runeMysql.sendRawQuerySelect(query, count)
-
-
-        return result
+        ret = self.__runeMysql.sendRawQuerySelect(query, count)
+        return ret
 
     def setFunction(self, function):
-        query = "INSERT INTO function(projectid, code, last_update) VALUES(\""+function.getProjectId()+"\",\""+function.getCode()+"\",\""+function.getLastUpdateTime()+"\")"
+        query = "INSERT INTO code(projectid, name, code, last_update) VALUES(\""+str(function.getProjectId())+"\",\""+function.getName()+"\",\""+function.getCode()+"\", CURRENT_TIMESTAMP)"
+
+        print(query)
 
         ret = self.__runeMysql.sendRawQueryInsert(query)
 
         return ret
 
-    def updateFunction(self, cond=None, Function=None):
+    def updateFunction(self, cond=None, function=None):
+        query= "UPDATE code SET name=\""+function.getName()+"\" , code=\""+function.getCode()+"\" ";
+
+        conditionString = ""
+        if cond != None:
+            conditionString = self.__generateCondition(cond)
+
+        query = query + conditionString
+
+        print(query)
+
+        ret = self.__runeMysql.sendRawQueryUpdate(query)
+        return ret
+
         '''
-        #query = "UPDATE function SET * WHERE="
+        #query = "UPDATE code SET * WHERE= "
         #TBD
         '''
 
-    def deleteFunction(self, cond=None, Function=None):
+    def deleteFunction(self, cond=None, function=None):
         '''
-        #query = "DELETE user FROM function WHERE="
+        #query = "DELETE user FROM code WHERE= "
         #TBD
         '''
 
