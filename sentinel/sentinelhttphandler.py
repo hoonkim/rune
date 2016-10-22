@@ -117,7 +117,7 @@ class SentinelHttpHandler(RuneHttpHandler):
         result = self.__runebookConnect.getUser(cond)
 
         if result is None or result is ():
-        return None
+            return None
 
         userInfo = result[0]
 
@@ -163,7 +163,7 @@ class SentinelHttpHandler(RuneHttpHandler):
     def __getProjectList(self,requestData):
         userId = requestData["user_id"]
 
-        ret = self.__runebookConnect.getProjectList(None, None, "userid": userId})
+        ret = self.__runebookConnect.getProjectList(None, None, {"userid": userId})
         return json.dumps(ret)
 
     def __addProject(self, requestData):
