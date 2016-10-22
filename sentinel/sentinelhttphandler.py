@@ -23,7 +23,7 @@ class SentinelHttpHandler(RuneHttpHandler):
 
     def __initHandler(self):
         if self.__runebookConnect is None:
-            self.__runebookConnect = RuneBookConnect()
+            self.__runebookConnect = RuneBookConnect(serverHost="175.126.112.130", userId="rune", userPw="fjsld89", userDb="rune_dev")
         if self.__reqList is None:
             self.__reqList = SentinelRequestList()
             self.__initReceiver()
@@ -47,7 +47,7 @@ class SentinelHttpHandler(RuneHttpHandler):
         self.__reqList.addRequest("/addFunction", self.__addFunction)
         self.__reqList.addRequest("/updateFunction", self.__setFunction)
 
-        #runebook connect
+        #runebook connect        
 
     def __initJobDistributer(self):
         #add Job distributer init
@@ -117,7 +117,7 @@ class SentinelHttpHandler(RuneHttpHandler):
         result = self.__runebookConnect.getUser(cond)
 
         if result is None or result is ():
-        return None
+            return None
 
         userInfo = result[0]
 
@@ -163,7 +163,7 @@ class SentinelHttpHandler(RuneHttpHandler):
     def __getProjectList(self,requestData):
         userId = requestData["user_id"]
 
-        ret = self.__runebookConnect.getProjectList(None, None, "userid": userId})
+        ret = self.__runebookConnect.getProjectList(None, None, {"userid": userId})
         return json.dumps(ret)
 
     def __addProject(self, requestData):
