@@ -23,7 +23,6 @@ class JugglerHttpHandler(RuneHttpHandler):
 
     def do_GET(self):
         print('GET REQUEST', self)
-
         info = self
         self.printClientInformation(info)
         self.pathParser(self.path)
@@ -61,7 +60,6 @@ class JugglerHttpHandler(RuneHttpHandler):
         '''
         return True
 
-
     def printClientInformation(self, info):
         print("client addr - ", info.client_address)
         print("command - ", info.command)
@@ -95,7 +93,6 @@ class JugglerHttpHandler(RuneHttpHandler):
 
 class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
     """Handle requests in a separate thread."""
-
 
 if __name__ == "__main__":
     #create server
