@@ -244,7 +244,7 @@ class RuneBookConnect:
 
 
     def getFunction(self, cond=None):
-        query  = "SELECT * FROM code ";
+        query  = "SELECT id, projectId, name, code, UNIX_TIMESTAMP(last_update) FROM code ";
 
         conditionString = ""
         if cond != None:
@@ -259,7 +259,7 @@ class RuneBookConnect:
         return ret
 
     def getFunctionList(self, start=None, count=None, cond=None):
-        query  = "SELECT * FROM code ";
+        query  = "SELECT id, projectId, name, code, UNIX_TIMESTAMP(last_update) FROM code ";
         
         conditionString = ""
         if cond != None:
