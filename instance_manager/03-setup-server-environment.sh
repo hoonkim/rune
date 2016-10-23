@@ -4,15 +4,15 @@ source /etc/admin-openrc
 # Init host address
 grep -r "controller" /etc/hosts
 
+if [ $? -ne 0 ]; then
+  echo '127.0.0.1 controller' >> /etc/hosts
+fi
+
 # Init web server
 echo "ServerName controller" >> /etc/apache2/apache2.conf
 cp wsgi-keystone.conf /etc/apache2/sites-available
 ln -s /etc/apache2/sites-available/wsgi-keystone.conf /etc/apache2/sites-enabled
 service apache2 restart
-
-if [ $? -ne 0 ]; then
-  echo '127.0.0.1 controller' >> /etc/hosts
-fi
 
 # Init time server
 grep -r "^server" /etc/chrony/chrony.conf
