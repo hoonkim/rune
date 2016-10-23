@@ -5,6 +5,7 @@ apt-get -y install \
   git\
   glance\
   keystone\
+  kvm\
   libapache2-mod-wsgi\
   libvirt-bin\
   mariadb-server\
@@ -28,5 +29,6 @@ apt-get -y install \
   python-openstackclient\
   python-pymongo\
   python-pymysql\
+  qemu\
   rabbitmq-server\
   vim
