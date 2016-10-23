@@ -1,52 +1,7 @@
 import json
+import requests
 
-'''
-#test data
-
-data = '{ \
- "core" : 4, \
- "core_usage": [10, 20, 30, 40], \
- "memory_usage": 48, \
- "storage_usage": 70, \
- "network_send": 1087488, \
- "network_recv": 508123, \
- "uuid": "DF6328Q9326F" \
-}'
-
-data2 = '{ \
- "core" : 4, \
- "core_usage": [40, 20, 70, 40], \
- "memory_usage": 82, \
- "storage_usage": 95, \
- "network_send": 1087488, \
- "network_recv": 1508123, \
- "uuid": "DF6328Q9326E" \
-}'
-
-data3 = '{ \
- "core" : 4, \
- "core_usage": [90, 90, 90, 90], \
- "memory_usage": 100, \
- "storage_usage": 20, \
- "network_send": 3087488, \
- "network_recv": 4508123, \
- "uuid": "DF6328Q9326D" \
-}'
-
-
-a = json.loads(data);
-b = json.loads(data2);
-c = json.loads(data3);
-
-inst1 = SentinelInstance(a)
-inst2 = SentinelInstance(b)
-inst3 = SentinelInstance(c)
-
-print(inst1)
-print(inst2)
-print(inst3)
-
-'''
+novaAddr = "127.0.0.1:9999/"
 
 class SentinelJobDistributer():
     __instanceList = None
@@ -58,15 +13,23 @@ class SentinelJobDistributer():
     def addInstance(self, instance):
         return self.__addInstance(instance)
 
-    def __addInstance(self, instance):
-        if not isinstance(instance, SentinelInstance):
-            return False
+    def __addInstance(self, instance, flavor="m1.tiny"):
+        #if not isinstance(instance, SentinelInstance):
+        #    return False
 
         if self.__instnaceList == None:
             self.__instanceList = list()
 
+        #create vm
+        cond = {"flavor": flavor}
+        ret = requests.post(novaAddr+"instance", cond)
+        retJson = ret.json()
+        newInstance = SentinelInstance(retJson["address"], retJson)
+
+        #add to vm list
         self.__instanceList.append(instance)
-        return True
+
+        return newInstance
 
     def findInstance(self, uuid):
         return self.__findInstance(uuid)
@@ -83,8 +46,9 @@ class SentinelJobDistributer():
 
     def __removeInstance(self, uuid):
         targetInstance = self.findInstance(uuid)
+        result = requests.delete(novaAddr+"delete/"+uuid)
         __instnaceList.remove(targetInstance)
-        return targetInstance
+        return result
 
     def updateInstance(self, uuid, instanceData):
         targetInstance = self.findInstance(uuid)
@@ -114,13 +78,29 @@ class SentinelJobDistributer():
         ret = None
         return ret    
 
+class SentinelFlavor:
+    idx = None
+    name = None
+    vcpu = None
+    memory = None
+    disk = None
+
+    def __init__(self, idx, name, vcpu, memory, disk):
+        self.id = idx
+        self.name = name
+        self.vcpu = vcpu
+        self.memory = memory
+        self.disk = disk
+
 
 class SentinelInstance():
-    __address = None
     __uuid = None
+    __address = None
     __core = None
     __coreUsage = None
+    __memoryTotal = None
     __memoryUsage = None
+    __storageTotal = None
     __storageUsage = None
     __networkSend = None
     __networkRecv = None
@@ -151,14 +131,26 @@ class SentinelInstance():
                 coreUsage[i] = 0
             self.__coreUsage = coreUsage
 
+        if "memory" in list(data.keys()):
+            self.__memoryUsage = data["memory_total"]
+        else:
+            print("no memory total information - default setting: 1")
+            self.__memoryTotal = 0
+
         if "memory_usage" in list(data.keys()):
             self.__memoryUsage = data["memory_usage"]
         else:
             print("no memory usage information - default setting: 1")
             self.__memoryUsage = 0
 
+        if "storage" in list(data.keys()):
+            self.__storageTotal = data["storage_total"]
+        else:
+            print("no storage total information - default setting: 1")
+            self.__storageTotal = 0
+
         if "storage_usage" in list(data.keys()):
-            self.__memoryUsage = data["storage_usage"]
+            self.__storageUsage = data["storage_usage"]
         else:
             print("no storage usage information - default setting: 1")
             self.__storageUsage = 0
@@ -182,9 +174,6 @@ class SentinelInstance():
 
         if "uuid" in list(data.keys()):
             self.__uuid = data["uuid"]
-
-        if "core" in list(data.keys()):
-            self.__core = data["core"]
 
         if "core_usage" in list(data.keys()):
             self.__coreUsage = data["core_usage"]

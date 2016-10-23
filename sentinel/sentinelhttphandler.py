@@ -35,6 +35,9 @@ class SentinelHttpHandler(RuneHttpHandler):
     def __initReceiver(self):
         #add request function
 
+        #state manage
+        self.__reqList.addRequest("/updateServerState", self.__updateServerState)
+
         #function call
         self.__reqList.addRequest("/invoke", self.__receiveFunctionCall)
 
@@ -230,6 +233,11 @@ class SentinelHttpHandler(RuneHttpHandler):
         TBD
         '''
 
+    def __updateServerState(self, uuid, requestData):
+        targetInstance = req.__jobDistributer.findInstance(uuid)
+        reqAddr = targetInstance.getAddress() + "GetStatus"
+
+        requests.get(reqAddr)
 
     def __receiveFunctionCall(self, requestData):
         '''
@@ -259,6 +267,8 @@ class SentinelHttpHandler(RuneHttpHandler):
 
         instanceState = jsonResult["instanceState"]
         functionResult = jsonResult["functionResult"]
+
+        targetInstance.updateData(functionResult)
 
         print("[[ instance State ]]")
         print(instanceState)
