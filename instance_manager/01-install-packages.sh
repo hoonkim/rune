@@ -10,6 +10,11 @@ apt-get -y install \
   memcached\
   mongodb-clients\
   mongodb-server\
+  neutron-dhcp-agent\
+  neutron-linuxbridge-agent\
+  neutron-metadata-agent\
+  neutron-plugin-ml2\
+  neutron-server\
   nova-api\
   nova-conductor\
   nova-consoleauth\
