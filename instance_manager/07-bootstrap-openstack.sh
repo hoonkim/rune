@@ -1,4 +1,6 @@
 #!/bin/bash
+source /etc/admin-openrc
+
 openstack service create --name keystone --description "OpenStack Identity" identity
 openstack endpoint create --region RegionOne identity public http://controller:5000/v3
 openstack endpoint create --region RegionOne identity internal http://controller:5000/v3

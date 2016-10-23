@@ -1,4 +1,5 @@
 #!/bin/bash
+source /etc/admin-openrc
 
 # Init keystone database
 echo "DROP DATABASE IF EXISTS keystone" | mysql

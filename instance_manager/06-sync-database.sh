@@ -1,4 +1,5 @@
 #!/bin/bash
+/etc/admin-openrc
 
 # Sync keystone
 keystone-manage db_sync
