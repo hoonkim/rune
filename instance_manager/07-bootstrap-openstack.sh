@@ -1,7 +1,5 @@
 #!/bin/bash
 source /etc/admin-openrc
-unset OS_TOKEN
-openstack token issue
 
 openstack service create --name keystone --description "OpenStack Identity" identity
 openstack endpoint create --region RegionOne identity public http://controller:5000/v3
@@ -38,6 +36,9 @@ openstack service create --name neutron --description "OpenStack Networking" net
 openstack endpoint create --region RegionOne network public http://controller:9696
 openstack endpoint create --region RegionOne network internal http://controller:9696
 openstack endpoint create --region RegionOne network admin http://controller:9696
+
+unset OS_TOKEN
+openstack token issue
 
 openstack flavor create --id 0 --vcpus 1 --ram 64 --disk 1 m1.nano
 ssh-keygen -q -N ""
