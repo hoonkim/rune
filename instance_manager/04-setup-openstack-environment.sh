@@ -6,8 +6,6 @@ echo "manual" > /etc/init/keystone.override
 sed -i -- "s/^#admin_token.*$/admin_token = $ADMIN_PASS/g" /etc/keystone/keystone.conf
 sed -i -- "s/^connection =.*$/connection = mysql+pymysql:\/\/keystone:$KEYSTONE_DBPASS@controller\/keystone/g" /etc/keystone/keystone.conf
 sed -i -- 's/^#provider.*$/provider = fernet/g' /etc/keystone/keystone.conf
-echo "ServerName controller" >> /etc/apache2/apache2.conf
-ln -s /etc/apache2/sites-available/wsgi-keystone.conf /etc/apache2/sites-enabled
 
 # Setup glance-api.conf
 

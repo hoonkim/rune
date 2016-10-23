@@ -6,6 +6,7 @@ apt-get -y install \
   glance\
   keystone\
   libapache2-mod-wsgi\
+  libvirt-bin\
   mariadb-server\
   memcached\
   mongodb-clients\
