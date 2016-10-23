@@ -6,7 +6,8 @@ grep -r "controller" /etc/hosts
 
 # Init web server
 echo "ServerName controller" >> /etc/apache2/apache2.conf
-ln -s wsgi-keystone.conf /etc/apache2/sites-enabled
+cp wsgi-keystone.conf /etc/apache2/sites-available
+ln -s /etc/apache2/sites-available/wsgi-keystone.conf /etc/apache2/sites-enabled
 service apache2 restart
 
 if [ $? -ne 0 ]; then
