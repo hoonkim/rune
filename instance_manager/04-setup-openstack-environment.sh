@@ -84,6 +84,7 @@ api_servers = http://controller:9292
 lock_path = /var/lib/nova/tmp" >> /etc/nova/nova.conf
 sed -i -- 's/^ec2.*//g' /etc/nova/nova.conf
 sed -i -- 's/ec2,//g' /etc/nova/nova.conf
+sed -i -- 's/^virt_type.*/virt_type=qemu/g' /etc/nova/nova-compute.conf
 
 METADATA_SECRET=0000
 
