@@ -15,6 +15,9 @@ if [ $? -ne 0 ]; then
   echo server kr.pool.ntp.org iburst >> /etc/chrony/chrony.conf
 fi
 
+# Init database
+sed -i -- 's/utf8mb4/utf8/g' /etc/mysql/mariadb.conf.d/*
+
 # Init message queue server
 rabbitmqctl add_user openstack $RABBIT_PASS
 rabbitmqctl set_permissions openstack ".*" ".*" ".*"

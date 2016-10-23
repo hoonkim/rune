@@ -126,4 +126,4 @@ sed -i -- "s/\[securitygroup\]/[securitygroup]\n\nenable_security_group = True\n
 
 sed -i -- "s/\[DEFAULT\]/[DEFAULT]\n\ninterface_driver = neutron.agent.linux.interface.BridgeInterfaceDriver\nexternal_network_bridge =\n/g" /etc/neutron/l3_agent.ini
 sed -i -- "s/\[DEFAULT\]/[DEFAULT]\n\ninterface_driver = neutron.agent.linux.interface.BridgeInterfaceDriver\ndhcp_driver = neutron.agent.linux.dhcp.Dnsmasq\nenable_isolated_metadata = True\n/g" /etc/neutron/dhcp_agent.ini
-sed -i -- "s/^\/.*//g" /etc/neutron/dhcp_agent.init
+sed -i -- "s/^\/.*//g" /etc/neutron/dhcp_agent.ini
