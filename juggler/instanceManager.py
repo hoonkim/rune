@@ -6,7 +6,7 @@ import sys
 import json
 import psutil
 import datetime
-
+import urllib
 sys.path.insert(0, '../runeconnect')
 from request import *
 
@@ -99,37 +99,50 @@ class Function :
         
         print(responseOfFunctionCall)
 
-
         return responseOfFunctionCall
 
     def FunctionSourceCrawler(self):
         sourcePath = ""
         # address of code storage
         
-        sourcePath = str("~/source/"+self.uFid+".py")
+        sourcePath = "./"+str(self.uFid)+".py"
         #write file 
-        if(self.validationRequired == 'T'):
+        if(self.validationRequired is True):
+            print("NOTIE ] This function should be reloaded")
             #get function code from storage to this instance 
-            argument = json.dumps({"code_id":self.uFid})
-            headers = {'Content-type': 'application/json'}
+            #argument = json.dumps({"code_id":self.uFid})
+            argument = json.dumps({"code_id":6})
+            headers = {'Content-Type': 'application/json'}
            
-            functionObject = requests.post("http://127.0.0.1:8000/getFunction", json=argument, headers=headers)
-            
+            #functionObject = requests.post("http://127.0.0.1:9000/getFunction", json=argument, headers=headers)
+            functionObject = requests.post("http://127.0.0.1:9000/getFunction", argument, headers=headers)
+            #print(functionObject.status_code)
+            #print(functionObject.text)
+
             functionJson = functionObject.json()
-
+            print(">> Get Function Result")
             print(functionJson)
-            functionCode = functionJson["code"]
+            print(">>>>>>>>>>>>>>>>>>>>>>>")
+            
+            functionCode = self.CodeUnquoter(functionJson[0][3])
 
+            #print(urllib.parse.unquote(functionCode))
+            #print("code conversion :" , functionCode , type(functionCode))
+            
             self.CodeFileWriter(functionCode, sourcePath)
         else :
             #no write
             print("request a function directly")
-            
+           
+
         return sourcePath
 
+    def CodeUnquoter(self, escapedCode):
+        return urllib.parse.unquote(escapedCode)
+        
     def CodeFileWriter(self, code, sourcePath):
         #write file
-        sourceFile = open(sourcePath,"wr")
+        sourceFile = open(sourcePath,"w")
         sourceFile.write(code)
         sourceFile.close()
         print("request a function after function file is created")
@@ -199,7 +212,8 @@ class InstanceManager :
         newFunction = Function(user, project, functionObject, params)
       
         #crawl function
-        # newFunction.FunctionSourceCrawler()
+        newFunction.FunctionSourceCrawler()
+
 
         #call function
         jsonresult = newFunction.SendFunctionRequest()
@@ -218,7 +232,6 @@ class InstanceManager :
 if __name__ == "__main__":
     i = InstanceManager()
     i.RunManager()
-
 
 
 

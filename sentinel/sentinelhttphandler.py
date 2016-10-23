@@ -78,12 +78,14 @@ class SentinelHttpHandler(RuneHttpHandler):
 
         length = int(self.headers['Content-Length'])
 
+        print("Content-header", self.headers['Content-type'])
+
         if self.headers['Content-Type'] == 'application/json':
             post_data = self.decodeJsonRequest(self.rfile.read(length).decode('utf-8'))
         else:
             post_data = self.decodeDictRequest(self.rfile.read(length).decode('utf-8'))
 
-        print("POST DATA:", post_data)
+        print("POST DATA:", post_data, type(post_data))
 
         self.__initHandler()
 
@@ -101,9 +103,12 @@ class SentinelHttpHandler(RuneHttpHandler):
             self.end_headers()
 
             #json decode
-            self.wfile.write(bytes("RECEIVED: ","utf-8"))
+            #self.wfile.write(bytes("RECEIVED: ","utf-8"))
             #print("request info: " , type(post_data), str(post_data))
             #reqData = json.loads(str(post_data).encode("utf-8"))
+
+            result = reqResult(post_data)
+            print("result", str(result), type(result))
 
             self.wfile.write(str(reqResult(post_data)).encode("utf-8"))
 
@@ -193,6 +198,7 @@ class SentinelHttpHandler(RuneHttpHandler):
         '''
 
     def __getFunction(self,requestData):
+        print("requestData", str(requestData), type(requestData))
         cond = {"id": requestData["code_id"]}
 
         ret = self.__runebookConnect.getFunction(cond)
