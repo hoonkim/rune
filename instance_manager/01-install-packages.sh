@@ -12,6 +12,7 @@ apt-get -y install \
   mongodb-clients\
   mongodb-server\
   neutron-dhcp-agent\
+  neutron-l3-agent\
   neutron-linuxbridge-agent\
   neutron-metadata-agent\
   neutron-plugin-ml2\
