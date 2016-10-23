@@ -251,23 +251,45 @@ class SentinelHttpHandler(RuneHttpHandler):
             for key2 in requestData[key]:
                 print(key + ": " + key2)
         '''
+        
         targetInstance = self.__jobDistributer.findUsableInstance()
 
-        #temporary data for test
+
+        '''
+        # temporary data for test
         functionObject = '{ "uFid" : 1, "function_path" : "/foo/bar/", "revision_seq" : 1, "validation_required" : true}'
         data = '{ "user" : "kim", "project" : "rune", "function_object" : '+functionObject+', "params" : [ "www.google.com" ] }'
-
-
         requestData = json.loads(data)
+        '''
+
+        #generate argument for pass to Juggler
+        codeId = requestData["code_id"]
+        codeRow = self.__runebookConnect.getFunction(cond)
+
+        functionObject = {
+            "uFid": codeRow[0],
+            "validation_required": requestData["validation_required"]
+            #deprecated arguments
+            "function_path": "/foo/bar", 
+            "revision_seq": 1,
+
+        }
+
+        data = {
+            "user": requestData["user_id"],
+            "project": requestData["project_id"],
+            "function_object": functionObject,
+            param: requestData["params"]
+        };
+        
 
         requestObject = RuneRequest()
-        requestObject.insertRequest(requestData)
+        requestObject.insertRequest(data)
 
         requestSender = RuneRequestSender(requestObject)
 
         ret = requestSender.sendPOST("http://127.0.0.1:8000/test_post")
 
-        
         #get json result 
         jsonResult = ret.json()
 
