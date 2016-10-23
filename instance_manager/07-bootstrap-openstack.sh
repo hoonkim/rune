@@ -30,7 +30,7 @@ openstack endpoint create --region RegionOne compute public http://controller:87
 openstack endpoint create --region RegionOne compute internal http://controller:8774/v2.1/%\(tenant_id\)s
 openstack endpoint create --region RegionOne compute admin http://controller:8774/v2.1/%\(tenant_id\)s
 
-openstack user create --domain default --password $ADMIN_PASS neutron
+openstack user create --domain default --password $NEUTRON_PASS neutron
 openstack role add --project service --user neutron admin
 openstack service create --name neutron --description "OpenStack Networking" network
 openstack endpoint create --region RegionOne network public http://controller:9696
