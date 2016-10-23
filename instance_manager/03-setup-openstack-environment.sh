@@ -1,4 +1,5 @@
 #!/bin/bash
+source /etc/admin-openrc
 
 # keystone
 echo "manual" > /etc/init/keystone.override

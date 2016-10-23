@@ -1,6 +1,5 @@
 #!/bin/bash
 source /etc/admin-openrc
-openstack token issue
 
 # Init host address
 grep -r "controller" /etc/hosts
