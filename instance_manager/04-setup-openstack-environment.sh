@@ -82,6 +82,8 @@ api_servers = http://controller:9292
 
 [oslo_concurrency]
 lock_path = /var/lib/nova/tmp" >> /etc/nova/nova.conf
+sed -i -- 's/^ec2.*//g' /etc/nova/nova.conf
+sed -i -- 's/ec2,//g' /etc/nova/nova.conf
 
 METADATA_SECRET=0000
 
@@ -103,7 +105,7 @@ password = $NEUTRON_PASS
 service_metadata_proxy = True
 metadata_proxy_shared_secret = $METADATA_SECRET" >> /etc/nova/nova.conf
 
-sed -i -- "s/^\[DEFAULT\]/[DEFAULT]\n\nallow_overlapping_ips = True\nauth_strategy = keystone\ncore_plugin = ml2\nrpc_backend = rabbit\nservice_plugins =\nnotify_nova_on_port_status_changes = True\nnotify_nova_on_port_data_changes = True\n/g" /etc/neutron/neutron.conf
+sed -i -- "s/^\[DEFAULT\]/[DEFAULT]\n\nallow_overlapping_ips = True\nauth_strategy = keystone\ncore_plugin = ml2\nrpc_backend = rabbit\nservice_plugins = router\nnotify_nova_on_port_status_changes = True\nnotify_nova_on_port_data_changes = True\n/g" /etc/neutron/neutron.conf
 sed -i -- "s/^connection =.*/connection = mysql+pymysql:\/\/neutron:$NEUTRON_DBPASS@controller\/neutron\n/g" /etc/neutron/neutron.conf
 sed -i -- "s/^\[oslo_messaging_rabbit\]/[oslo_messaging_rabbit]\n\nrabbit_host = controller\nrabbit_userid = openstack\nrabbit_password = $RABBIT_PASS\n/g" /etc/neutron/neutron.conf
 sed -i -- "s/^\[keystone_authtoken\]/[keystone_authtoken]\n\nauth_uri = http:\/\/controller:5000\nauth_url = http:\/\/controller:35357\nmemcached_servers = controller:11211\nauth_type = password\nproject_domain_name = default\nuser_domain_name = default\nproject_name = service\nusername = neutron\npassword = $NEUTRON_PASS/g" /etc/neutron/neutron.conf
@@ -112,7 +114,8 @@ sed -i -- "s/^\[nova\]/[nova]\n\nauth_url = http:\/\/controller:35357\nauth_type
 # /etc/neutron/plugins/ml2/ml2_conf.ini
 echo 2
 sed -i -- "s/\[ml2\]/[ml2]\n\ntype_drivers = flat,vlan,vxlan\ntenant_network_types = vxlan\nmechanism_drivers = linuxbridge,l2population\nextension_drivers = port_security\n/g" /etc/neutron/plugins/ml2/ml2_conf.ini
-sed -i -- "s/\[ml2_type_flat\]/[ml2_type_flat]\n\nflat_networks = provider\nvni_ranges = 1:1000\nenable_ipset = True\n/g" /etc/neutron/plugins/ml2/ml2_conf.ini
+sed -i -- "s/\[ml2_type_flat\]/[ml2_type_flat]\n\nflat_networks = provider\n/g" /etc/neutron/plugins/ml2/ml2_conf.ini
+sed -i -- "s/\[ml2_type_vxlan\]/[ml2_type_vxlan]\nvni_ranges = 1:1000\n/g" /etc/neutron/plugins/ml2/ml2_conf.ini
 sed -i -- "s/\[securitygroup\]/[securitygroup]\n\nenable_ipset = True\n/g" /etc/neutron/plugins/ml2/ml2_conf.ini
 
 PROVIDER_INTERFACE_NAME=`route -n | head -n 3 | tail -n 1 | awk '{ print $8 }'`
