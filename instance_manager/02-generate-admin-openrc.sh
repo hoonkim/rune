@@ -23,6 +23,8 @@ echo "export NOVA_PASS=`openssl rand -hex 10`" >> $ADMIN_RC_PATH
 echo "export RABBIT_PASS=`openssl rand -hex 10`" >> $ADMIN_RC_PATH
 echo "export SWIFT_PASS=`openssl rand -hex 10`" >> $ADMIN_RC_PATH
 
+source $ADMIN_RC_PATH
+
 echo "
 export OS_PROJECT_DOMAIN_NAME=default
 export OS_USER_DOMAIN_NAME=default
