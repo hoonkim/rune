@@ -17,6 +17,7 @@ apt-get -y install \
   neutron-plugin-ml2\
   neutron-server\
   nova-api\
+  nova-compute\
   nova-conductor\
   nova-consoleauth\
   nova-novncproxy\
