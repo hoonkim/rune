@@ -1,6 +1,6 @@
 from instanceMonitor import Monitor
 from wisp_monitor import WispMonitor
-from time import strftime, localtime
+from time import strftime, localtime, mktime
 
 import sys
 import json
@@ -51,16 +51,18 @@ class Function :
     # THE CALLBACK
     def ResponseByFunctionCall (self, functionResult, uId, functionStartTime):
         print("_CALLBACK FUNCTION_")
-        print(result)
         print("uid :" + str(uId))
-        print("function result :" + str(result))
+        print("function result :" + str(functionResult))
         
         #send Result
         #Result have to contain the system resource info
         #send instance monitor info
         
         functionEndTime = localtime() 
-        
+
+        functionStartTime = mktime(functionStartTime)
+        functionEndTime = mktime(functionEndTime)
+
         elapsedTime = functionEndTime - functionStartTime
 
         instanceMonitor = Monitor()
@@ -72,7 +74,7 @@ class Function :
         # 3. I/O Status
 
         print(instanceMonitor)
-        resultJson = json.dumps({"functionResult": result, "instanceState":str(instanceMonitor),"elapsedtime": strftime("%Y/%H/%M/%S",elapsedTime)})
+        resultJson = json.dumps({"functionResult": functionResult, "instanceState":str(instanceMonitor),"elapsedtime" : elapsedTime})
 
         return resultJson
 
@@ -80,10 +82,10 @@ class Function :
     def SendFunctionRequest(self):
         functionStartTime = localtime()
         
-        #functionObj = {"function_path":"/home/stack/juggler/rune/juggler/ServerTime.py", "timestamp":timestamp,"validation_required":self.validationRequired}
-        functionObject = {"function_path":self.functionPath,"timestamp":strftime("%Y/%H/%M/%S",functionStartTime),"validation_required":self.validationRequired}
+        functionObject = {"function_path":"/home/stack/rune/juggler/ServerTime.py", "timestamp": strftime("%Y/%H/%M/%S",functionStartTime),"validation_required":self.validationRequired}
+        #functionObject = {"function_path":self.functionPath,"timestamp":strftime("%Y/%H/%M/%S",functionStartTime),"validation_required":self.validationRequired}
 
-        jsondata = json.dumps({"user":self.userName,"project":self.projectName,"function_object":functionObj, "params":self.parameters})
+        jsondata = json.dumps({"user":self.userName,"project":self.projectName,"function_object":functionObject, "params":self.parameters})
        
         print("send "+ jsondata)
 
@@ -101,20 +103,37 @@ class Function :
         return responseOfFunctionCall
 
     def FunctionSourceCrawler(self):
-        codePath = ""
+        sourcePath = ""
         # address of code storage
-        codeStorageLocation = ""
         
-        #get function code from storage to this instance 
+        sourcePath = str("~/source/"+self.uFid+".py")
+        #write file 
+        if(self.validationRequired == 'T'):
+            #get function code from storage to this instance 
+            argument = json.dumps({"code_id":self.uFid})
+            headers = {'Content-type': 'application/json'}
+           
+            functionObject = requests.post("http://127.0.0.1:8000/getFunction", json=argument, headers=headers)
+            
+            functionJson = functionObject.json()
 
-        #open functionFile from code Storage
+            print(functionJson)
+            functionCode = functionJson["code"]
 
-        #write function File on code storage
-        data = ""
+            self.CodeFileWriter(functionCode, sourcePath)
+        else :
+            #no write
+            print("request a function directly")
+            
+        return sourcePath
 
+    def CodeFileWriter(self, code, sourcePath):
+        #write file
+        sourceFile = open(sourcePath,"wr")
+        sourceFile.write(code)
+        sourceFile.close()
+        print("request a function after function file is created")
 
-        functionFile = open(uFid, 'w')
-        print(str(uFid) + " function file created")
 
 
 # main class of Juggler
@@ -147,7 +166,6 @@ class InstanceManager :
         else :
             print("request fail")
             return False
-
         return True
 
     def SendResponse(self):
@@ -158,7 +176,8 @@ class InstanceManager :
 
     def ReceiveRequest(self, jsonRequest, handler) :
         
-        #get data from Sentinel
+        #get function call from Sentinel
+
         self.jsonRequest = json.loads(jsonRequest)
         print(self.jsonRequest)
 
@@ -172,9 +191,16 @@ class InstanceManager :
 
         print("[[ func obj ]]")
         print(type(functionObject))
-        # call functions based on receved data from sentinel
+
+
+
+
+        #call functions based on receved data from sentinel
         newFunction = Function(user, project, functionObject, params)
-       
+      
+        #crawl function
+        # newFunction.FunctionSourceCrawler()
+
         #call function
         jsonresult = newFunction.SendFunctionRequest()
 
