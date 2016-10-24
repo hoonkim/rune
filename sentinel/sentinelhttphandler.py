@@ -107,11 +107,9 @@ class SentinelHttpHandler(RuneHttpHandler):
             #print("request info: " , type(post_data), str(post_data))
             #reqData = json.loads(str(post_data).encode("utf-8"))
 
-            result = reqResult(post_data)
-            print("result", str(result), type(result))
-
-            self.wfile.write(str(reqResult(post_data)).encode("utf-8"))
-
+            result = str(reqResult(post_data)).encode("utf-8")
+            print(result)
+            self.wfile.write(result)
 
     def __getUser(self,requestData):
         cond = {"useremail": requestData["email"], "userpw": requestData["password"]}
@@ -131,6 +129,7 @@ class SentinelHttpHandler(RuneHttpHandler):
 
         if userInfo is () or userInfo is None:
             return None
+        print("raw", str(userInfo), "dump", json.dumps(userInfo))
 
         return json.dumps(userInfo)
 
@@ -224,13 +223,13 @@ class SentinelHttpHandler(RuneHttpHandler):
 
     def __setFunction(self, requestData):
         codeId = requestData["code_id"]
-        porjectId = requestData["project_id"]
+        projectId = requestData["project_id"]
         name = requestData["code_name"]
         code = requestData["code_area"]
 
         runeCode = RuneCode(projectId, name, code, None, codeId)
 
-        ret = conn.updateFunction({"id":codeId}, runeCode)
+        ret = self.__runebookConnect.updateFunction({"id":codeId}, runeCode)
         
         return json.dumps(ret)
 
@@ -268,11 +267,10 @@ class SentinelHttpHandler(RuneHttpHandler):
 
         functionObject = {
             "uFid": codeRow[0],
-            "validation_required": requestData["validation_required"]
+            "validation_required": requestData["validation_required"],
             #deprecated arguments
             "function_path": "/foo/bar", 
             "revision_seq": 1,
-
         }
 
         data = {
@@ -280,7 +278,7 @@ class SentinelHttpHandler(RuneHttpHandler):
             "project": requestData["project_id"],
             "function_object": functionObject,
             param: requestData["params"]
-        };
+        }
         
 
         requestObject = RuneRequest()
