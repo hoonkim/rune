@@ -8,8 +8,6 @@ sys.path.insert(0, '../runebook')
 
 from runebook import *
 
-conn = RuneBookConnect(serverHost="175.126.112.130", userId="rune", userPw="fjsld89", userDb="rune_dev")
-
 def index(request):
     return render(request, 'login.html', {})
     #return HttpResponse("Hello, world. You're at the polls index.")
@@ -44,14 +42,13 @@ def addProjectProc(request):
         return redirect('index')
 
     projectName = request.POST["project_name"]
+    cond = {"user_id": userInfo[0], "project_name": projectName}
 
     if str(projectName).strip() == "":
         return redirect('project_list')
 
-    project = RuneProject(userInfo[0], projectName)
-
-    ret = conn.setProject(project)
-
+    ret = requests.post("http://175.126.112.130:8888/addProject", json=cond)
+    
     return redirect('project_list')
 
 
@@ -70,20 +67,16 @@ def codeList(request):
 
 def setCode(request):
     userInfo = request.session["userinfo"]
-    #project = conn.getProject({"id": request.GET["project_id"]})[0]
 
     codeData = None
-
     if "code_id" in  request.GET.keys():
-        codeData = conn.getFunction({"id" : request.GET["code_id"]})[0]
+        cond = {"code_id": request.GET["code_id"]}
+        codeData = requests.post("http://175.126.112.130:8888/getFunction", json=cond)
 
-    print("code_data", codeData)
-
-    return render(request, 'code_form.html', {"code_data" : codeData, "project_id": request.GET["project_id"]})
+    return render(request, 'code_form.html', {"code_data" : codeData.json(), "project_id": request.GET["project_id"]})
 
 def setCodeProc(request):
     userInfo = request.session["userinfo"]
-    #project = conn.getProject({"id": request.GET["project_id"]})[0]
 
     codeName = request.POST["code_name"]
     codeArea = str(request.POST["code_area"])
