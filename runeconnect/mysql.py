@@ -18,7 +18,7 @@ class RuneMySQLConnector:
         if serverHost != None:
             self.__host = serverHost
         else:
-            self.__host = "175.126.112.130"
+            self.__host = "127.0.0.1"
 
         if serverPort != None:
             self.__port = serverPort

@@ -9,8 +9,7 @@ data["project_id"] = 1
 data["code_id"] = 1
 
 jsonData = json.dumps(data)
-headers = {'Content-Type': 'application/json'}
 
-ret = requests.post(HOST,jsonData, headers= headers)
+ret = requests.post(HOST, json=jsonData)
 
 print(ret.text)

@@ -53,27 +53,11 @@ class JugglerHttpHandler(RuneHttpHandler):
 
         print("POST DATA:", post_data)
 
-        requestName = self.path
-        print(requestName)
-
-        if self.requestList is None :
-            self.requestList = JugglerRequestList()
-            self.__initReceiver()
-
-        reqResult = self.requestList.findRequest(requestName)
-
-
-        if reqResult is None:
-            self.send_response(404)
-            self.send_header("Content-type", "text/html")
-            self.end_headers()
-        else :
-            self.send_response(200)
-            self.send_header("Content-type", "text/html")
-            self.send_headers()
-            executionResult = reqResult(post_data)
-            print(str(executionResult))
-
+        #run instance manager
+        self.instManager = InstanceManager()
+        self.instManager.RunManager()
+        self.instManager.ReceiveRequest(json.dumps(post_data),self)
+ 
         # reponse
         '''
         self.send_response(404)
@@ -112,7 +96,6 @@ class JugglerHttpHandler(RuneHttpHandler):
             oldObject = parseResult
 
         return firstObject
-
 
     def GetSysState(self, json):
         instanceMonitor = Monitor()
