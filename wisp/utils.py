@@ -35,15 +35,12 @@ def message_to_function(raw_message):
 
     mod = None
 
-    try :
+    try:
         mod = loader.load_module()
     except FileNotFoundError:
         print("Module not found")
-    except Exception:
-        print("Unknown Excpetion")
-    finally :
-        if mod is not None :
+    finally:
+        if mod is not None:
             wisp_module = Module(mod, params)
             return wisp_module
         return mod
-
