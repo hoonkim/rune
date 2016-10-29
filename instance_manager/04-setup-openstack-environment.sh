@@ -91,10 +91,6 @@ METADATA_SECRET=0000
 sed -i -- "s/^#nova_metadata_ip =.*/nova_metadata_ip = controller/g" /etc/neutron/metadata_agent.ini
 sed -i -- "s/^#metadata_proxy_shared_secret =.*/metadata_proxy_shared_secret = $METADATA_SECRET/g" /etc/neutron/metadata_agent.ini
 
-
-#!/bin/bash
-source /etc/admin-openrc
-
 # /etc/nova/nova.conf
 
 echo "
@@ -108,7 +104,10 @@ project_name = service
 region_name = RegionOne
 url = http://controller:9696
 user_domain_name = default
-username = neutron" >> /etc/nova/nova.conf
+username = neutron
+
+service_metadata_proxy = True
+metadata_proxy_shared_secret = $METADATA_SECRET" >> /etc/nova/nova.conf
 
 # /etc/neutron/plugins/ml2/linuxbridge_agent.ini
 
@@ -136,7 +135,7 @@ sed -i -- "s/^\[oslo_messaging_rabbit\]$/[oslo_messaging_rabbit]\nrabbit_host = 
 
 ## [keystone_authtoken]
 
-sed -i -- "s/^\[keystone_authtoken\]$/[keystone_authtoken]\nauth_type = password\nnauth_uri = http:\/\/controller:5000\nauth_url = http:\/\/controller:35357\nmemcached_servers = controller:11211\npassword = $NEUTRON_PASS\nproject_domain_name = default\nproject_name = service\nuser_domain_name = default\nusername = neutron\n/g" /etc/neutron/neutron.conf
+sed -i -- "s/^\[keystone_authtoken\]$/[keystone_authtoken]\nauth_type = password\nauth_uri = http:\/\/controller:5000\nauth_url = http:\/\/controller:35357\nmemcached_servers = controller:11211\npassword = $NEUTRON_PASS\nproject_domain_name = default\nproject_name = service\nuser_domain_name = default\nusername = neutron\n/g" /etc/neutron/neutron.conf
 
 ## [nova]
 
