@@ -206,8 +206,6 @@ class InstanceManager :
         print(type(functionObject))
 
 
-
-
         #call functions based on receved data from sentinel
         newFunction = Function(user, project, functionObject, params)
       
@@ -225,7 +223,6 @@ class InstanceManager :
         print(type(jsonresult))
         print(jsonresult)
         handler.wfile.write(jsonresult.encode("utf-8"))
-
 
         return True
 

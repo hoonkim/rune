@@ -24,9 +24,8 @@ class JugglerHttpHandler(RuneHttpHandler):
 
 
     def __initReceiver(self):
-        self.requestList.addRequest("/callRequest", self.CallFunction)
+        self.requestList.addRequest("/callFunction", self.CallFunction)
         self.requestList.addRequest("/getSysState", self.GetSysState)
-        
 
     def do_GET(self):
         print('GET REQUEST', self)
@@ -116,12 +115,21 @@ class JugglerHttpHandler(RuneHttpHandler):
 
 
     def GetSysState(self, json):
+        instanceMonitor = Monitor()
+        instanceMonitor.GetSystemState()
+
+        jsonResult = json.dumps({"instanceState" : str(instanceMonitor)})
+
+        #response to sentinel
+        self.wfile.write(jsonResult.encode("utf-8"))
 
         return True
 
     def CallFunction(self, json):
         #run instance manager
-        self.instManager = InstanceManager()
+        if self.instManager is None:
+            self.instManager = InstanceManager()
+   
         self.instManager.RunManager()
         self.instManager.ReceiveRequest(json.dumps(post_data),self)
         
