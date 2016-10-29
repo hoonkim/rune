@@ -43,7 +43,7 @@ class MessageListener:
                 "uuid": uuid
             }
 
-            print("fuck : " + result)
+
             # Sending back result to MQ.
             channel.basic_publish(exchange='',
                                   routing_key=properties.reply_to,
