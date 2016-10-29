@@ -115,7 +115,7 @@ PROVIDER_INTERFACE_NAME=`route -n | head -n 3 | tail -n 1 | awk '{ print $8 }'`
 OVERLAY_INTERFACE_IP_ADDRESS=`ifconfig $PROVIDER_INTERFACE_NAME | head -n 2 | tail -n 1 | grep -Eo '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}' | head -n 1`
 
 sed -i -- "s/^#physical_interface_mappings.*/physical_interface_mappings = provider:$PROVIDER_INTERFACE_NAME/g" /etc/neutron/plugins/ml2/linuxbridge_agent.ini
-sed -i -- "s/^#enable_vxlan.*/enable_vxlan = False/g" /etc/neutron/plugins/ml2/linuxbridge_agent.ini
+sed -i -- "s/^#enable_vxlan.*/enable_vxlan = True/g" /etc/neutron/plugins/ml2/linuxbridge_agent.ini
 sed -i -- "s/^#enable_security_group.*/enable_security_group = True/g" /etc/neutron/plugins/ml2/linuxbridge_agent.ini
 sed -i -- "s/^#firewall_driver.*/firewall_driver = neutron.agent.linux.iptables_firewall.IptablesFirewallDriver/g" /etc/neutron/plugins/ml2/linuxbridge_agent.ini
 
@@ -145,11 +145,15 @@ sed -i -- "s/^\[nova\]$/[nova]\nauth_type = password\nauth_url = http:\/\/contro
 
 ## [ml2]
 
-sed -i -- "s/^\[ml2\]/[ml2]\nextension_drivers = port_security\nmechanism_drivers = linuxbridge\ntenant_network_types =\ntype_drivers = flat,vlan\n/g" /etc/neutron/plugins/ml2/ml2_conf.ini
+sed -i -- "s/^\[ml2\]/[ml2]\nextension_drivers = port_security\nmechanism_drivers = linuxbridge\ntenant_network_types =\ntype_drivers = flat,vlan,vxlan,local\n/g" /etc/neutron/plugins/ml2/ml2_conf.ini
 
 ## [ml2_type_flat]
 
 sed -i -- "s/^#flat_networks.*/flat_networks = provider/g" /etc/neutron/plugins/ml2/ml2_conf.ini
+
+## [ml2_type_vxlan]
+
+sed -i -- "s/^#vni_ranges.*/vni_ranges = 1:1000/g" /etc/neutron/plugins/ml2/ml2_conf.ini
 
 ## [securitygroup]
 
@@ -163,7 +167,7 @@ sed -i -- "s/^#physical_interface_mappings.*/physical_interface_mappings = provi
 
 ## [vxlan]
 
-sed -i -- "s/^#enable_vxlan.*/enable_vxlan = False/g" /etc/neutron/plugins/ml2/linuxbridge_agent.ini
+sed -i -- "s/^#enable_vxlan.*/enable_vxlan = True/g" /etc/neutron/plugins/ml2/linuxbridge_agent.ini
 
 ## [securitygroup]
 

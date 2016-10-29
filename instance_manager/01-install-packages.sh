@@ -31,4 +31,5 @@ apt-get -y install \
   python-pymysql\
   qemu\
   rabbitmq-server\
-  vim
+  vim\
+  openvswitch-switch
