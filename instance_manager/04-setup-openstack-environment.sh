@@ -91,41 +91,90 @@ METADATA_SECRET=0000
 sed -i -- "s/^#nova_metadata_ip =.*/nova_metadata_ip = controller/g" /etc/neutron/metadata_agent.ini
 sed -i -- "s/^#metadata_proxy_shared_secret =.*/metadata_proxy_shared_secret = $METADATA_SECRET/g" /etc/neutron/metadata_agent.ini
 
+
+#!/bin/bash
+source /etc/admin-openrc
+
+# /etc/nova/nova.conf
+
 echo "
 [neutron]
-url = http://controller:9696
-auth_url = http://controller:35357
+
 auth_type = password
-project_domain_name = default
-user_domain_name = default
-region_name = RegionOne
-project_name = service
-username = neutron
+auth_url = http://controller:35357
 password = $NEUTRON_PASS
+project_domain_name = default
+project_name = service
+region_name = RegionOne
+url = http://controller:9696
+user_domain_name = default
+username = neutron" >> /etc/nova/nova.conf
 
-service_metadata_proxy = True
-metadata_proxy_shared_secret = $METADATA_SECRET" >> /etc/nova/nova.conf
-
-sed -i -- "s/^\[DEFAULT\]/[DEFAULT]\n\nallow_overlapping_ips = True\nauth_strategy = keystone\ncore_plugin = ml2\nrpc_backend = rabbit\nservice_plugins = router\nnotify_nova_on_port_status_changes = True\nnotify_nova_on_port_data_changes = True\n/g" /etc/neutron/neutron.conf
-sed -i -- "s/^connection =.*/connection = mysql+pymysql:\/\/neutron:$NEUTRON_DBPASS@controller\/neutron\n/g" /etc/neutron/neutron.conf
-sed -i -- "s/^\[oslo_messaging_rabbit\]/[oslo_messaging_rabbit]\n\nrabbit_host = controller\nrabbit_userid = openstack\nrabbit_password = $RABBIT_PASS\n/g" /etc/neutron/neutron.conf
-sed -i -- "s/^\[keystone_authtoken\]/[keystone_authtoken]\n\nauth_uri = http:\/\/controller:5000\nauth_url = http:\/\/controller:35357\nmemcached_servers = controller:11211\nauth_type = password\nproject_domain_name = default\nuser_domain_name = default\nproject_name = service\nusername = neutron\npassword = $NEUTRON_PASS/g" /etc/neutron/neutron.conf
-sed -i -- "s/^\[nova\]/[nova]\n\nauth_url = http:\/\/controller:35357\nauth_type = password\nproject_domain_name = default\nuser_domain_name = default\nregion_name = RegionOne\nproject_name = service\nusername = nova\npassword = $NOVA_PASS\n/g" /etc/neutron/neutron.conf
-
-# /etc/neutron/plugins/ml2/ml2_conf.ini
-echo 2
-sed -i -- "s/\[ml2\]/[ml2]\n\ntype_drivers = flat,vlan,vxlan\ntenant_network_types = vxlan\nmechanism_drivers = linuxbridge,l2population\nextension_drivers = port_security\n/g" /etc/neutron/plugins/ml2/ml2_conf.ini
-sed -i -- "s/\[ml2_type_flat\]/[ml2_type_flat]\n\nflat_networks = provider\n/g" /etc/neutron/plugins/ml2/ml2_conf.ini
-sed -i -- "s/\[ml2_type_vxlan\]/[ml2_type_vxlan]\nvni_ranges = 1:1000\n/g" /etc/neutron/plugins/ml2/ml2_conf.ini
-sed -i -- "s/\[securitygroup\]/[securitygroup]\n\nenable_ipset = True\n/g" /etc/neutron/plugins/ml2/ml2_conf.ini
+# /etc/neutron/plugins/ml2/linuxbridge_agent.ini
 
 PROVIDER_INTERFACE_NAME=`route -n | head -n 3 | tail -n 1 | awk '{ print $8 }'`
 OVERLAY_INTERFACE_IP_ADDRESS=`ifconfig $PROVIDER_INTERFACE_NAME | head -n 2 | tail -n 1 | grep -Eo '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}' | head -n 1`
 
-sed -i -- "s/\[linux_bridge\]/[linux_bridge]\n\nphysical_interface_mappings = provider:$PROVIDER_INTERFACE_NAME\n/g" /etc/neutron/plugins/ml2/linuxbridge_agent.ini
-sed -i -- "s/\[vxlan\]/[vxlan]\n\nenable_vxlan = True\nlocal_ip = $OVERLAY_INTERFACE_IP_ADDRESS\nl2_population = True\n/g" /etc/neutron/plugins/ml2/linuxbridge_agent.ini
-sed -i -- "s/\[securitygroup\]/[securitygroup]\n\nenable_security_group = True\nfirewall_driver = neutron.agent.linux.iptables_firewall.IptablesFirewallDriver\n/g" /etc/neutron/plugins/ml2/linuxbridge_agent.ini
+sed -i -- "s/^#physical_interface_mappings.*/physical_interface_mappings = provider:$PROVIDER_INTERFACE_NAME/g" /etc/neutron/plugins/ml2/linuxbridge_agent.ini
+sed -i -- "s/^#enable_vxlan.*/enable_vxlan = False/g" /etc/neutron/plugins/ml2/linuxbridge_agent.ini
+sed -i -- "s/^#enable_security_group.*/enable_security_group = True/g" /etc/neutron/plugins/ml2/linuxbridge_agent.ini
+sed -i -- "s/^#firewall_driver.*/firewall_driver = neutron.agent.linux.iptables_firewall.IptablesFirewallDriver/g" /etc/neutron/plugins/ml2/linuxbridge_agent.ini
 
-sed -i -- "s/\[DEFAULT\]/[DEFAULT]\n\ninterface_driver = neutron.agent.linux.interface.BridgeInterfaceDriver\nexternal_network_bridge =\n/g" /etc/neutron/l3_agent.ini
-sed -i -- "s/\[DEFAULT\]/[DEFAULT]\n\ninterface_driver = neutron.agent.linux.interface.BridgeInterfaceDriver\ndhcp_driver = neutron.agent.linux.dhcp.Dnsmasq\nenable_isolated_metadata = True\n/g" /etc/neutron/dhcp_agent.ini
-sed -i -- "s/^\/.*//g" /etc/neutron/dhcp_agent.ini
+# /etc/neutron/neutron.conf 
+
+## [database]
+
+sed -i -- "s/^connection.*/connection = mysql+pymysql:\/\/neutron:$NEUTRON_DBPASS@controller\/neutron/g" /etc/neutron/neutron.conf
+
+## [DEFAULT]
+
+sed -i -- "s/^\[DEFAULT\]$/[DEFAULT]\nauth_strategy = keystone\nnotify_nova_on_port_data_changes = True\nnotify_nova_on_port_status_changes = True\nrpc_backend = rabbit\nservice_plugins =\n/g" /etc/neutron/neutron.conf
+
+## [oslo_messaging_rabbit]
+
+sed -i -- "s/^\[oslo_messaging_rabbit\]$/[oslo_messaging_rabbit]\nrabbit_host = controller\nrabbit_userid = openstack\nrabbit_password = $RABBIT_PASS\n/g" /etc/neutron/neutron.conf
+
+## [keystone_authtoken]
+
+sed -i -- "s/^\[keystone_authtoken\]$/[keystone_authtoken]\nauth_type = password\nnauth_uri = http:\/\/controller:5000\nauth_url = http:\/\/controller:35357\nmemcached_servers = controller:11211\npassword = $NEUTRON_PASS\nproject_domain_name = default\nproject_name = service\nuser_domain_name = default\nusername = neutron\n/g" /etc/neutron/neutron.conf
+
+## [nova]
+
+sed -i -- "s/^\[nova\]$/[nova]\nauth_type = password\nauth_url = http:\/\/controller:35357\npassword = $NOVA_PASS\nproject_domain_name = default\nproject_name = service\nregion_name = RegionOne\nuser_domain_name = default\nusername = nova\n/g" /etc/neutron/neutron.conf
+
+# /etc/neutron/plugins/ml2/ml2_conf.ini
+
+## [ml2]
+
+sed -i -- "s/^\[ml2\]/[ml2]\nextension_drivers = port_security\nmechanism_drivers = linuxbridge\ntenant_network_types =\ntype_drivers = flat,vlan\n/g" /etc/neutron/plugins/ml2/ml2_conf.ini
+
+## [ml2_type_flat]
+
+sed -i -- "s/^#flat_networks.*/flat_networks = provider/g" /etc/neutron/plugins/ml2/ml2_conf.ini
+
+## [securitygroup]
+
+sed -i -- "s/^#enable_ipset.*/enable_ipset = True/g" /etc/neutron/plugins/ml2/ml2_conf.ini
+
+# /etc/neutron/plugins/ml2/linuxbridge_agent.ini
+
+## [linux_bridge]
+
+sed -i -- "s/^#physical_interface_mappings.*/physical_interface_mappings = provider:$PROVIDER_INTERFACE_NAME/g" /etc/neutron/plugins/ml2/linuxbridge_agent.ini
+
+## [vxlan]
+
+sed -i -- "s/^#enable_vxlan.*/enable_vxlan = False/g" /etc/neutron/plugins/ml2/linuxbridge_agent.ini
+
+## [securitygroup]
+
+sed -i -- "s/^#enable_security_group.*/enable_security_group = True/g" /etc/neutron/plugins/ml2/linuxbridge_agent.ini
+sed -i -- "s/^#firewall_driver.*/firewall_driver = neutron.agent.linux.iptables_firewall.IptablesFirewallDriver/g" /etc/neutron/plugins/ml2/linuxbridge_agent.ini
+
+# /etc/neutron/dhcp_agent.ini
+
+## [DEFAULT]
+
+sed -i -- "s/^#dhcp_driver.*/dhcp_driver = neutron.agent.linux.dhcp.Dnsmasq/g" /etc/neutron/dhcp_agent.ini
+sed -i -- "s/^#enable_isolated_metadata.*/enable_isolated_metadata = True/g" /etc/neutron/dhcp_agent.ini
+sed -i -- "s/^#interface_driver.*/interface_driver = neutron.agent.linux.interface.BridgeInterfaceDriver/g" /etc/neutron/dhcp_agent.ini
