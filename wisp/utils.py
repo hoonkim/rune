@@ -33,17 +33,16 @@ def message_to_function(raw_message):
     force_update = function_object["validate"]
     params = wisp["params"]
 
-    name = wisp["uFid"]
+    name = str(wisp["uFid"])
 
     loader = importlib.machinery.SourceFileLoader(name, path)
 
-    # if force update is enabled, and module exists.
-    if force_update and sys.modules[name]:
-        del sys.modules[name]
-    # if force update is not enabled and module exists.
-    elif sys.modules[name]:
-        return sys.modules[name]
-    # Whether force update or module does not exists.
+    # if modules exists on the memory.
+    if name in sys.modules.keys():
+        if force_update:
+            del sys.modules[name]
+        else:
+            return sys.modules[name]
 
     mod = None
     try:
