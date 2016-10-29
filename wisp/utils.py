@@ -30,7 +30,7 @@ def message_to_function(raw_message):
 
     function_object = wisp["function_object"]
     path = function_object["function_path"]
-    force_update = function_object["validate"]
+    force_update = function_object["validation_required"]
 
     params = wisp["params"]
     name = str(wisp["uFid"])
