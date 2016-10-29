@@ -31,6 +31,17 @@ class SentinelJobDistributer():
 
         return newInstance
 
+    def addExistInstance(self, instance):
+        return self.__addExistInstance(instance)
+
+    def __addExistInstance(self, instance):
+        if self.__instanceList == None:
+            self.__instanceList = list()
+
+        self.__instanceList.append(instance)
+
+        return instance
+
     def findInstance(self, uuid):
         return self.__findInstance(uuid)
 
@@ -69,8 +80,8 @@ class SentinelJobDistributer():
         if self.__currentMachineCount <= len(self.__instanceList):
             self.__currentMachineCount = 0
 
-        ret = self.__currentMachineCount
-        return ret
+        self.__currentMachineCount
+        return self.__instanceList[self.__currentMachineCount]
 
 
     def __findLeastCpuUsageInstance(self):

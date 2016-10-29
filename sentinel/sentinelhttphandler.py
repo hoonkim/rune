@@ -62,7 +62,7 @@ class SentinelHttpHandler(RuneHttpHandler):
         testInstanceData["uuid"] = "kingston"
         testInstance = SentinelInstance("127.0.0.1", testInstanceData)
 
-        self.__jobDistributer.addInstance(testInstance)
+        self.__jobDistributer.addExistInstance(testInstance)
 
     def do_GET(self):
         info = self
@@ -259,6 +259,8 @@ class SentinelHttpHandler(RuneHttpHandler):
         
         targetInstance = self.__jobDistributer.findUsableInstance()
 
+        print("targetInstance", str(targetInstance))
+
         '''
         # temporary data for test
         functionObject = '{ "uFid" : 1, "function_path" : "/foo/bar/", "revision_seq" : 1, "validation_required" : true}'
@@ -296,7 +298,7 @@ class SentinelHttpHandler(RuneHttpHandler):
 
         requestSender = RuneRequestSender(requestObject)
 
-        print(str(targetInstance))
+        print(str(targetInstance), "http://" + targetInstance.getAddress() + ":8000/callFunction")
 
         ret = requestSender.sendPOST("http://" + targetInstance.getAddress() + ":8000/callFunction")
 
