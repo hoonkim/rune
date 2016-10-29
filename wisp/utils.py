@@ -37,8 +37,13 @@ def message_to_function(raw_message):
 
     loader = importlib.machinery.SourceFileLoader(name, path)
 
+    # if force update is enabled, and module exists.
     if force_update and sys.modules[name]:
         del sys.modules[name]
+    # if force update is not enabled and module exists.
+    elif sys.modules[name]:
+        return sys.modules[name]
+    # Whether force update or module does not exists.
 
     mod = None
     try:
