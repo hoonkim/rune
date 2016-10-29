@@ -42,13 +42,15 @@ def message_to_function(raw_message):
         if force_update:
             del sys.modules[name]
         else:
-            return sys.modules[name]
+            return Module(sys.modules[name], params)
 
     mod = None
     try:
         mod = loader.load_module()
     except FileNotFoundError:
         print("Module not found")
+    except Exception:
+        print("Unknown Exception")
     finally:
         if mod is not None:
             wisp_module = Module(mod, params)
