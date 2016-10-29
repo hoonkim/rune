@@ -239,6 +239,11 @@ class RuneBookConnect:
         '''
 
     def deleteProject(self, cond=None, Project=None):
+        query = "delete from project where userid= and name="
+
+        conditionString = ""
+        if cond != None:
+            conditionString = self.__generateCondition(cond)
         '''
         #TBD
         '''

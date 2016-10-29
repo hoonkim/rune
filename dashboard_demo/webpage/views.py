@@ -14,9 +14,9 @@ def index(request):
 
 def loginProc(request):
     cond = {"email": request.POST["email"], "password": request.POST["password"]}
+    result = requests.post("http://175.126.112.130:8888/getAuth", json=cond)
 
-    result = requests.post("http://175.126.112.130:8888/getAuth", json=cond) 
-    if result is None or result is ():
+    if result.text == 'None' or result is ():
         return redirect('index')
 
     userInfo = result.json()
@@ -28,6 +28,14 @@ def loginProc(request):
 
     request.session["userinfo"] = userInfo
     return redirect('project_list')
+
+def userSignup(request):
+    return render(request, 'user_signup.html', {})
+
+def addUser(request):
+    cond = {"email": request.POST["email"], "password": request.POST["password"]}
+    result = requests.post("http://175.126.112.130:8888/addUser", json=cond)
+    return redirect('index')
 
 def projectList(request):
     userInfo = request.session["userinfo"]
@@ -51,6 +59,10 @@ def addProjectProc(request):
     
     return redirect('project_list')
 
+def removeProjectProc(request):
+    userInfo = request.session["userinfo"]
+    if userInfo is () or userInfo is None:
+        return redirect('index')
 
 def codeList(request):
     projectId = request.GET["project_id"]
