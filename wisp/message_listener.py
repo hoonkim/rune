@@ -58,8 +58,6 @@ class MessageListener:
 
         channel.basic_ack(delivery_tag=method.delivery_tag)
 
-
-
     def listen(self):
         """
         Start Listening to MQ Server. Ctrl + C to Exit.
@@ -68,7 +66,3 @@ class MessageListener:
 
         self._channel.basic_consume(MessageListener.callback, queue=self._call_queue_name)
         self._channel.start_consuming()
-
-
-
-
