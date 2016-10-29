@@ -53,14 +53,14 @@
       {% endif %}
           <form method="POST" action="/set_code_proc" id="frmCodeAdd">
             <label>title</label>
-            <input type="text" name="code_name" id="textCodeName" value="{{code_data.2}}" /> <br />
+            <input type="text" name="code_name" id="textCodeName" value="{{code_data.0.2}}" /> <br />
             <hr />
             <label>code</label> <br />
-            <textarea name="code_area" id="textCodeArea" >{{code_data.3}}</textarea>
+            <textarea name="code_area" id="textCodeArea" >{{code_data.0.3}}</textarea>
             {% csrf_token %}
               <input type="hidden" name="project_id" value="{{project_id}}" />
             {% if code_data != None %}
-              <input type="hidden" name="id" value="{{code_data.0}}" />
+              <input type="hidden" name="id" value="{{code_data.0.0}}" />
             {% endif %}
           </form>
 

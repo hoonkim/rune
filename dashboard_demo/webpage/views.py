@@ -3,11 +3,10 @@ from django.http import HttpResponse
 # Create your views here.
 
 import sys
+import requests
 sys.path.insert(0, '../runebook')
 
 from runebook import *
-
-conn = RuneBookConnect(serverHost="175.126.112.130", userId="rune", userPw="fjsld89", userDb="rune_dev")
 
 def index(request):
     return render(request, 'login.html', {})
@@ -20,7 +19,7 @@ def loginProc(request):
     if result.text == 'None' or result is ():
         return redirect('index')
 
-    userInfo = result[0]
+    userInfo = result.json()
     
     print(userInfo)
 
@@ -29,7 +28,6 @@ def loginProc(request):
 
     request.session["userinfo"] = userInfo
     return redirect('project_list')
-    #return HttpResponse("asdfasdf", status=200)
 
 def userSignup(request):
     return render(request, 'user_signup.html', {})
@@ -41,9 +39,10 @@ def addUser(request):
 
 def projectList(request):
     userInfo = request.session["userinfo"]
-    ret = conn.getProjectList(None, None, {"userid": userInfo[0]})
-    
-    return render(request, 'project_list.html', {"list": ret, "user": userInfo})
+    cond = {"user_id": userInfo[0]}
+    ret = requests.post("http://175.126.112.130:8888/getProjectList", json=cond)
+    print(ret)
+    return render(request, 'project_list.html', {"list": ret.json(), "user": userInfo})
 
 def addProjectProc(request):
     userInfo = request.session["userinfo"]
@@ -51,14 +50,13 @@ def addProjectProc(request):
         return redirect('index')
 
     projectName = request.POST["project_name"]
+    cond = {"user_id": userInfo[0], "project_name": projectName}
 
     if str(projectName).strip() == "":
         return redirect('project_list')
 
-    project = RuneProject(userInfo[0], projectName)
-
-    ret = conn.setProject(project)
-
+    ret = requests.post("http://175.126.112.130:8888/addProject", json=cond)
+    
     return redirect('project_list')
 
 def removeProjectProc(request):
@@ -73,29 +71,27 @@ def codeList(request):
     if userInfo is () or userInfo is None:
         return redirect('index')
 
-    ret = conn.getFunctionList(None, None, {"projectid": projectId})
-
-    return render(request, 'code_list.html', {"list": ret, "user": request.session["userinfo"], "project_id": projectId})    
+    cond = {"project_id": projectId}
+    print(cond)
+    ret = requests.post("http://175.126.112.130:8888/getFunctionList", json=cond)
+    print(ret)
+    return render(request, 'code_list.html', {"list": ret.json(), "user": request.session["userinfo"], "project_id": projectId})    
 
 def setCode(request):
     userInfo = request.session["userinfo"]
-    #project = conn.getProject({"id": request.GET["project_id"]})[0]
 
     codeData = None
-
     if "code_id" in  request.GET.keys():
-        codeData = conn.getFunction({"id" : request.GET["code_id"]})[0]
+        cond = {"code_id": request.GET["code_id"]}
+        codeData = requests.post("http://175.126.112.130:8888/getFunction", json=cond)
 
-    print("code_data", codeData)
-
-    return render(request, 'code_form.html', {"code_data" : codeData, "project_id": request.GET["project_id"]})
+    return render(request, 'code_form.html', {"code_data" : codeData.json(), "project_id": request.GET["project_id"]})
 
 def setCodeProc(request):
     userInfo = request.session["userinfo"]
-    #project = conn.getProject({"id": request.GET["project_id"]})[0]
 
-    name = request.POST["code_name"]
-    code = str(request.POST["code_area"])
+    codeName = request.POST["code_name"]
+    codeArea = str(request.POST["code_area"])
     projectId = request.POST["project_id"]
 
     codeId = None
@@ -103,13 +99,17 @@ def setCodeProc(request):
     if "id" in request.POST.keys():
         codeId = request.POST["id"]
 
+    print(codeId)
     codeData = None
 
-    codeObject = RuneCode(projectId, name, code, None, codeId)
+    codeObject = RuneCode(projectId, codeName, codeArea, None, codeId)
+    #codeObject = RuneCode(projectId, codeArea, None, codeId)
 
     if codeId != None:
-        ret = conn.updateFunction({"id":codeId}, codeObject)
+        cond = {"code_id": codeId, "project_id": projectId, "code_name": codeName, "code_area": codeArea}
+        ret = requests.post("http://175.126.112.130:8888/updateFunction", json=cond)
     else:
-        ret = conn.setFunction(codeObject)
+        cond = {"project_id": projectId, "code_name": codeName, "code_area": codeArea}
+        ret = requests.post("http://175.126.112.130:8888/addFunction", json=cond)
 
     return render(request, 'code_form_proc.html', {"ret": ret})

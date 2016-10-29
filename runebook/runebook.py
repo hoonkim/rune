@@ -64,12 +64,13 @@ class RuneCode:
     __code = None
     __lastUpdateTime = None
 
-    def __init__(self, projectId, code, lastUpdateTime=None, id=None):
+    def __init__(self, projectId, name, code, lastUpdateTime=None, id=None):
 
         if id != None:
             self.__id = id
 
         self.__projectId = projectId
+        self.__name = name
         self.__code = code
         
         if lastUpdateTime != None:
