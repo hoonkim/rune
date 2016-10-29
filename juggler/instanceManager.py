@@ -4,8 +4,8 @@ from time import strftime, localtime, mktime
 
 import sys
 import json
+import time
 import psutil
-import hashlib
 import datetime
 
 sys.path.insert(0, '../runeconnect')
@@ -94,16 +94,12 @@ class Function :
         #call the function
         print("wisp call : " + jsondata)
         
-        time = mktime(localtime())
-        #TODO : call unique id need 
-        m = hashlib.md5()
-        print(time)
-         
-        m.digest()
 
-        print("function call uid : " + functionRequestUid)
 
-        functionResult = self.wisp_monitor.call(jsondata, functionRequestUid)
+
+        uid = int(time.time())
+        print("function uid : " , uid)
+        functionResult = self.wisp_monitor.call(jsondata, uid)
 
         responseOfFunctionCall = self.ResponseByFunctionCall(functionResult, self.uFid, functionStartTime)
         
