@@ -56,6 +56,12 @@ class SentinelHttpHandler(RuneHttpHandler):
         #add Job distributer init
         '''
         '''
+        #test machine - localhost(when finnish server implement, remove)
+        testInstanceData = {}
+        testInstanceData["uuid"] = "kingston"
+        testInstance = SentinelInstance("127.0.0.1", testInstanceData)
+
+        self.__jobDistributer.addInstance(testInstance)
 
     def do_GET(self):
         info = self
@@ -253,7 +259,6 @@ class SentinelHttpHandler(RuneHttpHandler):
         
         targetInstance = self.__jobDistributer.findUsableInstance()
 
-
         '''
         # temporary data for test
         functionObject = '{ "uFid" : 1, "function_path" : "/foo/bar/", "revision_seq" : 1, "validation_required" : true}'
@@ -265,21 +270,24 @@ class SentinelHttpHandler(RuneHttpHandler):
 
         #generate argument for pass to Juggler
         codeId = requestData["code_id"]
-        codeRow = self.__runebookConnect.getFunction(codeId)
+        cond = {"id": codeId}
+        codeRow = self.__runebookConnect.getFunction(cond)
 
         functionObject = {
             "uFid": codeRow[0],
-            "validation_required": requestData["validation_required"],
+            "validation_required": True,
             #deprecated arguments
             "function_path": "/foo/bar", 
             "revision_seq": 1,
         }
+        
+        print(str(requestData))
 
         data = {
             "user": requestData["user_id"],
             "project": requestData["project_id"],
             "function_object": functionObject,
-            param: requestData["params"]
+            "params": requestData["params"]
 
         }
 
@@ -288,7 +296,9 @@ class SentinelHttpHandler(RuneHttpHandler):
 
         requestSender = RuneRequestSender(requestObject)
 
-        ret = requestSender.sendPOST("http://" + targetInstance.getAddress() + ":8000/test_post")
+        print(str(targetInstance))
+
+        ret = requestSender.sendPOST("http://" + targetInstance.getAddress() + ":8000/callFunction")
 
         #get json result 
         jsonResult = ret.json()

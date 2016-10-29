@@ -10,9 +10,6 @@ class SentinelJobDistributer():
     def __init__(self):
         self.__instanceList = []
 
-    def instanceManageWorker(self):
-        
-
     def addInstance(self, instance):
         return self.__addInstance(instance)
 
@@ -20,7 +17,7 @@ class SentinelJobDistributer():
         #if not isinstance(instance, SentinelInstance):
         #    return False
 
-        if self.__instnaceList == None:
+        if self.__instanceList == None:
             self.__instanceList = list()
 
         #create vm
@@ -129,7 +126,7 @@ class SentinelInstance():
             self.__coreUsage = data["core_usage"]
         else:
             print("no core usage information - default setting: 0")
-            coreUsage = []
+            coreUsage = [self.__core]
             for i in range(0,self.__core):
                 coreUsage[i] = 0
             self.__coreUsage = coreUsage
