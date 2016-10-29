@@ -78,12 +78,14 @@ class SentinelHttpHandler(RuneHttpHandler):
 
         length = int(self.headers['Content-Length'])
 
+        print("Content-header", self.headers['Content-type'])
+
         if self.headers['Content-Type'] == 'application/json':
             post_data = self.decodeJsonRequest(self.rfile.read(length).decode('utf-8'))
         else:
             post_data = self.decodeDictRequest(self.rfile.read(length).decode('utf-8'))
 
-        print("POST DATA:", post_data)
+        print("POST DATA:", post_data, type(post_data))
 
         self.__initHandler()
 
@@ -101,12 +103,13 @@ class SentinelHttpHandler(RuneHttpHandler):
             self.end_headers()
 
             #json decode
-            self.wfile.write(bytes("RECEIVED: ","utf-8"))
+            #self.wfile.write(bytes("RECEIVED: ","utf-8"))
             #print("request info: " , type(post_data), str(post_data))
             #reqData = json.loads(str(post_data).encode("utf-8"))
 
-            self.wfile.write(str(reqResult(post_data)).encode("utf-8"))
-
+            result = str(reqResult(post_data)).encode("utf-8")
+            print(result)
+            self.wfile.write(result)
 
     def __getUser(self,requestData):
         cond = {"useremail": requestData["email"], "userpw": requestData["password"]}
@@ -126,6 +129,7 @@ class SentinelHttpHandler(RuneHttpHandler):
 
         if userInfo is () or userInfo is None:
             return None
+        print("raw", str(userInfo), "dump", json.dumps(userInfo))
 
         return json.dumps(userInfo)
 
@@ -193,6 +197,7 @@ class SentinelHttpHandler(RuneHttpHandler):
         '''
 
     def __getFunction(self,requestData):
+        print("requestData", str(requestData), type(requestData))
         cond = {"id": requestData["code_id"]}
 
         ret = self.__runebookConnect.getFunction(cond)
@@ -218,13 +223,13 @@ class SentinelHttpHandler(RuneHttpHandler):
 
     def __setFunction(self, requestData):
         codeId = requestData["code_id"]
-        porjectId = requestData["project_id"]
+        projectId = requestData["project_id"]
         name = requestData["code_name"]
         code = requestData["code_area"]
 
         runeCode = RuneCode(projectId, name, code, None, codeId)
 
-        ret = conn.updateFunction({"id":codeId}, runeCode)
+        ret = self.__runebookConnect.updateFunction({"id":codeId}, runeCode)
         
         return json.dumps(ret)
 
@@ -264,7 +269,7 @@ class SentinelHttpHandler(RuneHttpHandler):
 
         functionObject = {
             "uFid": codeRow[0],
-            "validation_required": requestData["validation_required"]
+            "validation_required": requestData["validation_required"],
             #deprecated arguments
             "function_path": "/foo/bar", 
             "revision_seq": 1,
@@ -275,7 +280,8 @@ class SentinelHttpHandler(RuneHttpHandler):
             "project": requestData["project_id"],
             "function_object": functionObject,
             param: requestData["params"]
-        };
+
+        }
 
         requestObject = RuneRequest()
         requestObject.insertRequest(data)
