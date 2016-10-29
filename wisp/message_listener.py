@@ -1,3 +1,5 @@
+from io import StringIO
+
 import pika
 from utils import *
 
@@ -8,6 +10,9 @@ class MessageListener:
     _channel = None
     _connection = None
     _call_queue_name = None
+
+    ORIGINAL_STDOUT = sys.stdout
+    ORIGINAL_STDERR = sys.stderr
 
     def __init__(self, server_ip, call_queue_name):
         """
@@ -22,12 +27,13 @@ class MessageListener:
         self._channel = _connection.channel()
         self._channel.queue_declare(queue=call_queue_name)
         self._call_queue_name = call_queue_name
+        self._stdout = StringIO()
+        self._stderr = StringIO()
 
     def __str__(self):
         return self._quene_name
 
-    @staticmethod
-    def callback(channel, method, properties, body):
+    def callback(self, channel, method, properties, body):
         # The callback for message Queue.
 
         string_body = str(body, 'utf-8')
@@ -36,11 +42,17 @@ class MessageListener:
 
         if mod is not None:
             # Module loaded successfully.
+
+            # Start capturing stdout and stderr.
+            self.out_capture_start()
             result = mod.run()
+            stdout, stderr = self.out_capture_end()
 
             body = {
                 "result": result,
-                "uuid": uuid
+                "uuid": uuid,
+                "stdout": stdout,
+                "stderr": stderr
             }
 
             # Sending back result to MQ.
@@ -65,3 +77,24 @@ class MessageListener:
 
         self._channel.basic_consume(MessageListener.callback, queue=self._call_queue_name)
         self._channel.start_consuming()
+
+    def out_capture_start(self):
+        """
+        Override stdout and stderr to StringIO so that we can now save any output stream from module.
+        Returns:
+
+        """
+        self._stdout.truncate(0)
+        self._stderr.truncate(0)
+
+        sys.stdout = self._stdout
+        sys.stderr = self._stderr
+
+    def out_capture_end(self):
+        out_string = self._stdout.getvalue()
+        err_string = self._stderr.getvalue()
+
+        sys.stdout = self.ORIGINAL_STDOUT
+        sys.stderr = self.ORIGINAL_STDERR
+
+        return out_string, err_string
