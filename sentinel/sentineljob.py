@@ -10,6 +10,9 @@ class SentinelJobDistributer():
     def __init__(self):
         self.__instanceList = []
 
+    def instanceManageWorker(self):
+        
+
     def addInstance(self, instance):
         return self.__addInstance(instance)
 
@@ -196,6 +199,9 @@ class SentinelInstance():
 
     def getUUID(self):
         return self.__uuid
+
+    def getAddress(self):
+        return self.__address
 
     def getCoreUsageTotal(self):
         sum = 0
