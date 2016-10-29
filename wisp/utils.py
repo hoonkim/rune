@@ -31,8 +31,8 @@ def message_to_function(raw_message):
     function_object = wisp["function_object"]
     path = function_object["function_path"]
     force_update = function_object["validate"]
-    params = wisp["params"]
 
+    params = wisp["params"]
     name = str(wisp["uFid"])
 
     loader = importlib.machinery.SourceFileLoader(name, path)
