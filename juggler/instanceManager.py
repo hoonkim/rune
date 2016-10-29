@@ -2,10 +2,12 @@ from instanceMonitor import Monitor
 from wisp_monitor import WispMonitor
 from time import strftime, localtime, mktime
 
+import os
 import sys
 import json
 import time
 import psutil
+import urllib
 import datetime
 
 sys.path.insert(0, '../runeconnect')
@@ -83,19 +85,19 @@ class Function :
     def SendFunctionRequest(self):
         functionStartTime = localtime()
         
-        functionObject = {"function_path":"/home/stack/rune/juggler/ServerTime.py", "timestamp": strftime("%Y/%H/%M/%S",functionStartTime),"validation_required":self.validationRequired}
-        #functionObject = {"function_path":self.functionPath,"timestamp":strftime("%Y/%H/%M/%S",functionStartTime),"validation_required":self.validationRequired}
+        #functionObject = {"function_path":"/home/stack/rune/juggler/ServerTime.py", "timestamp": strftime("%Y/%H/%M/%S",functionStartTime),"validation_required":self.validationRequired}
+        functionObject = {"function_path":self.functionPath,"timestamp":strftime("%Y/%H/%M/%S",functionStartTime),"validation_required":self.validationRequired}
 
         jsondata = json.dumps({"user":self.userName,"project":self.projectName,"uFid": self.uFid,"function_object":functionObject, "params":self.parameters})
        
         #crawl function source        
         callResult = None
-        
+
+
+
         #call the function
         print("wisp call : " + jsondata)
         
-
-
 
         uid = int(time.time())
         print("function uid : " , uid)
@@ -110,7 +112,7 @@ class Function :
 
     def FunctionSourceCrawler(self):
         # address of code storage
-        #sourcePath = "./sources/"+str(self.uFid)+".py"
+
         print(type(self.uFid))
         #write file 
         if(self.validationRequired is True):
@@ -119,19 +121,28 @@ class Function :
             argument = json.dumps({"code_id":self.uFid})
             headers = {'Content-type': 'application/json'}
            
-            functionObject = requests.post("http://127.0.0.1:8000/getFunction", json=argument, headers=headers)
+            functionObject = requests.post("http://127.0.0.1:9000/getFunction",argument, headers=headers)
             functionJson = functionObject.json()
-            functionCode = functionJson["code"]
+            
+            print(functionJson)
+           
+            functionCode = self.CodeUnquoter(functionJson[3])
+            #functionCode = functionJson["code"]
+            sourcePath = os.getcwd()+"/sources/"+str(self.uFid) +".py"
             self.CodeFileWriter(functionCode, sourcePath)
+            self.functionPath = sourcePath
         else :
             #no write
             print("request a function directly")
             
         return sourcePath
+    
+    def CodeUnquoter(self, escapedCode):
+        return urllib.parse.unquote(escapedCode)
 
     def CodeFileWriter(self, code, sourcePath):
         #write file
-        sourceFile = open(sourcePath,"wr")
+        sourceFile = open(sourcePath,"w")
         sourceFile.write(code)
         sourceFile.close()
         print("request a function after function file is created")
@@ -199,7 +210,7 @@ class InstanceManager :
         newFunction = Function(user, project, functionObject, params)
       
         #crawl function
-        #newFunction.FunctionSourceCrawler()
+        newFunction.FunctionSourceCrawler()
 
         #call function
         jsonresult = newFunction.SendFunctionRequest()
