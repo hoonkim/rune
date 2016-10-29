@@ -45,6 +45,8 @@ yes | ssh-keygen -q -N ""
 openstack keypair create --public-key ~/.ssh/id_rsa.pub mykey
 openstack keypair list
 
+exit 0
+
 neutron net-create net1
 neutron net-create net2 --provider:network-type local
 neutron subnet-create net1 192.168.2.0/24 --name subnet1
