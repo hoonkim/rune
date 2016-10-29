@@ -48,26 +48,16 @@
 </head>
 <body>
     <div class="container">
-
-      <form class="form-signin" id="frmSignin" action="/login_proc/" method="POST">
+      <form class="form-signin" id="frmSignin" action="/user_signup_proc/" method="POST">
         <h1> Rune dashboard </h1>
 
-        <h2 class="form-signin-heading">Sign in</h2>
+        <h2 class="form-signin-heading">Sign Up</h2>
         <label for="inputEmail" class="sr-only">Email</label>
         <input type="email" name="email" id="inputEmail" class="form-control" placeholder="Email address" required autofocus>
         <label for="inputPassword" class="sr-only">Password</label>
         <input type="password" name="password" id="inputPassword" class="form-control" placeholder="Password" required>
-        <div class="checkbox">
-          <label>
-            <input type="checkbox" value="remember-me"> Remember me
-          </label>
-        </div>
         <button class="btn btn-lg btn-primary btn-block" id="btnSignIn">Sign in</button>
         {% csrf_token %}
-        <br>
-        <button class="btn btn-lg btn-primary btn-block" id="btnSignUp" onclick="location.href='/user_signup';">
-        Sign Up
-        </button>
       </form>
     </div> <!-- /container -->
 </body>

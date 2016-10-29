@@ -20,10 +20,15 @@ import urllib
 
 class JugglerHttpHandler(RuneHttpHandler):
     instManager = None
+    requestList = None
+
+
+    def __initReceiver(self):
+        self.requestList.addRequest("/callFunction", self.CallFunction)
+        self.requestList.addRequest("/getSysState", self.GetSysState)
 
     def do_GET(self):
         print('GET REQUEST', self)
-
         info = self
         self.printClientInformation(info)
         self.pathParser(self.path)
@@ -61,7 +66,6 @@ class JugglerHttpHandler(RuneHttpHandler):
         '''
         return True
 
-
     def printClientInformation(self, info):
         print("client addr - ", info.client_address)
         print("command - ", info.command)
@@ -93,9 +97,29 @@ class JugglerHttpHandler(RuneHttpHandler):
 
         return firstObject
 
+    def GetSysState(self, json):
+        instanceMonitor = Monitor()
+        instanceMonitor.GetSystemState()
+
+        jsonResult = json.dumps({"instanceState" : str(instanceMonitor)})
+
+        #response to sentinel
+        self.wfile.write(jsonResult.encode("utf-8"))
+
+        return True
+
+    def CallFunction(self, json):
+        #run instance manager
+        if self.instManager is None:
+            self.instManager = InstanceManager()
+   
+        self.instManager.RunManager()
+        self.instManager.ReceiveRequest(json.dumps(post_data),self)
+        
+        return True;
+
 class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
     """Handle requests in a separate thread."""
-
 
 if __name__ == "__main__":
     #create server

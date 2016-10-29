@@ -64,12 +64,13 @@ class RuneCode:
     __code = None
     __lastUpdateTime = None
 
-    def __init__(self, projectId, code, lastUpdateTime=None, id=None):
+    def __init__(self, projectId, name, code, lastUpdateTime=None, id=None):
 
         if id != None:
             self.__id = id
 
         self.__projectId = projectId
+        self.__name = name
         self.__code = code
         
         if lastUpdateTime != None:
@@ -136,6 +137,9 @@ class RuneBookConnect:
 
         result = self.__runeMysql.sendRawQuerySelect(query, 1)
 
+        if len(ret) == 1:
+            ret = ret[0]
+
         return result
 
 
@@ -200,6 +204,9 @@ class RuneBookConnect:
 
         ret = self.__runeMysql.sendRawQuerySelect(query, 1)
 
+        if len(ret) == 1:
+            ret = ret[0]
+
         return ret
 
     def getProjectList(self, start=None, count=None, cond=None):
@@ -238,13 +245,18 @@ class RuneBookConnect:
         '''
 
     def deleteProject(self, cond=None, Project=None):
+        query = "delete from project where userid= and name="
+
+        conditionString = ""
+        if cond != None:
+            conditionString = self.__generateCondition(cond)
         '''
         #TBD
         '''
 
 
     def getFunction(self, cond=None):
-        query  = "SELECT * FROM code ";
+        query  = "SELECT id, projectId, name, code, UNIX_TIMESTAMP(last_update) FROM code ";
 
         conditionString = ""
         if cond != None:
@@ -256,10 +268,13 @@ class RuneBookConnect:
 
         ret = self.__runeMysql.sendRawQuerySelect(query, 1)
 
+        if len(ret) == 1:
+            ret = ret[0]
+
         return ret
 
     def getFunctionList(self, start=None, count=None, cond=None):
-        query  = "SELECT * FROM code ";
+        query  = "SELECT id, projectId, name, code, UNIX_TIMESTAMP(last_update) FROM code ";
         
         conditionString = ""
         if cond != None:
