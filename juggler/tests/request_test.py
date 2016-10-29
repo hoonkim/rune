@@ -9,7 +9,7 @@ data["project_id"] = 1
 data["code_id"] = 6
 data["user_id"] = 1
 
-param = {}
+param = ["www.google.com"]
 
 data["params"] = param
 
