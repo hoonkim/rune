@@ -283,7 +283,7 @@ class SentinelHttpHandler(RuneHttpHandler):
             "revision_seq": 1,
         }
         
-        print(str(requestData))
+        print("functionobject", str(functionObject))
 
         data = {
             "user": requestData["user_id"],
@@ -298,7 +298,7 @@ class SentinelHttpHandler(RuneHttpHandler):
 
         requestSender = RuneRequestSender(requestObject)
 
-        print(str(targetInstance), "http://" + targetInstance.getAddress() + ":8000/callFunction")
+        #print(str(targetInstance), "http://" + targetInstance.getAddress() + ":8000/callFunction")
 
         ret = requestSender.sendPOST("http://" + targetInstance.getAddress() + ":8000/callFunction")
 

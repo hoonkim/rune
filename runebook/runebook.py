@@ -137,6 +137,9 @@ class RuneBookConnect:
 
         result = self.__runeMysql.sendRawQuerySelect(query, 1)
 
+        if len(ret) == 1:
+            ret = ret[0]
+
         return result
 
 
@@ -201,6 +204,9 @@ class RuneBookConnect:
 
         ret = self.__runeMysql.sendRawQuerySelect(query, 1)
 
+        if len(ret) == 1:
+            ret = ret[0]
+
         return ret
 
     def getProjectList(self, start=None, count=None, cond=None):
@@ -261,6 +267,9 @@ class RuneBookConnect:
         print(query)
 
         ret = self.__runeMysql.sendRawQuerySelect(query, 1)
+
+        if len(ret) == 1:
+            ret = ret[0]
 
         return ret
 
