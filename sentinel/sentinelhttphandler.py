@@ -43,6 +43,7 @@ class SentinelHttpHandler(RuneHttpHandler):
 
         #db connect
         self.__reqList.addRequest("/getAuth", self.__loginProc)
+        self.__reqList.addRequest("/addUser", self.__addUser)
         self.__reqList.addRequest("/getProjectList", self.__getProjectList)
         self.__reqList.addRequest("/addProject", self.__addProject)
         self.__reqList.addRequest("/getFunction", self.__getFunction)
@@ -150,9 +151,8 @@ class SentinelHttpHandler(RuneHttpHandler):
 
     def __addUser(self, requestData):
         #not fixed
-        user = requestData["user"]
-        runeUser = RuneUser(user["userEmail"], user["userPassword"])
-
+        #user = requestData["user"]
+        runeUser = RuneUser(requestData["email"], requestData["password"])
         ret = self.__runebookConnect.setUser(runeUser)
         return json.dumps(ret)
 

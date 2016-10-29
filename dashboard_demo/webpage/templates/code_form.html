@@ -41,6 +41,11 @@
 </head>
 <body>
     <div class="container">
+      <div style="float:right">
+          <button class="btn btn-lg btn-primary" id="backButton" onclick="javascript:window.history.back();"> 
+              back 
+          </button>
+      </div>
       {% if code_data == None %}
       <h2 class="sub-header">add code</h2>
       {% else %}

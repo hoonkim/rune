@@ -34,6 +34,11 @@
 </head>
 <body>
     <div class="container">
+      <div style="float:right">
+          <button class="btn btn-lg btn-primary" id="backButton" onclick="javascript:window.history.back();"> 
+              back 
+          </button>
+      </div>
       <h2 class="sub-header">Code list</h2>
           <div class="table-responsive">
             <table class="table table-striped">
@@ -65,11 +70,11 @@
 <script   src="http://code.jquery.com/jquery-1.12.4.min.js"   integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ="   crossorigin="anonymous"></script>
 <script language="Javascript">
   $("#btnCodeAdd").on("click", function(evt){
-    window.open("/set_code?project_id="+{{project_id}})
+    location.href="/set_code?project_id="+{{project_id}}
   });
 
   function viewCodeWindow(id){
-    window.open("/set_code?code_id="+id+"&project_id="+{{project_id}})
+    location.href="/set_code?code_id="+id+"&project_id="+{{project_id}}
   }
 </script>
 </html>
