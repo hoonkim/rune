@@ -85,7 +85,7 @@ class Function :
         functionObject = {"function_path":"/home/stack/rune/juggler/ServerTime.py", "timestamp": strftime("%Y/%H/%M/%S",functionStartTime),"validation_required":self.validationRequired}
         #functionObject = {"function_path":self.functionPath,"timestamp":strftime("%Y/%H/%M/%S",functionStartTime),"validation_required":self.validationRequired}
 
-        jsondata = json.dumps({"user":self.userName,"project":self.projectName,"function_object":functionObject, "params":self.parameters})
+        jsondata = json.dumps({"user":self.userName,"project":self.projectName,"uFid": self.uFid,"function_object":functionObject, "params":self.parameters})
        
         print("send "+ jsondata)
 
@@ -93,7 +93,10 @@ class Function :
         callResult = None
         
         #call the function
-        functionResult = self.wisp_monitor.call(jsondata, self.uFid)
+        print("wisp call : " + jsondata)
+        requestUid = localtime()
+
+        functionResult = self.wisp_monitor.call(jsondata, requestUid)
 
         responseOfFunctionCall = self.ResponseByFunctionCall(functionResult, self.uFid, functionStartTime)
         
@@ -103,12 +106,12 @@ class Function :
         return responseOfFunctionCall
 
     def FunctionSourceCrawler(self):
-        sourcePath = ""
         # address of code storage
-        
-        sourcePath = str("~/source/"+self.uFid+".py")
+        #sourcePath = "./sources/"+str(self.uFid)+".py"
+        print(type(self.uFid))
         #write file 
-        if(self.validationRequired == 'T'):
+        if(self.validationRequired is True):
+            print("\n>>> Crawl Source\n")
             #get function code from storage to this instance 
             argument = json.dumps({"code_id":self.uFid})
             headers = {'Content-type': 'application/json'}
@@ -117,7 +120,6 @@ class Function :
             
             functionJson = functionObject.json()
 
-            print(functionJson)
             functionCode = functionJson["code"]
 
             self.CodeFileWriter(functionCode, sourcePath)
@@ -197,7 +199,7 @@ class InstanceManager :
         newFunction = Function(user, project, functionObject, params)
       
         #crawl function
-        # newFunction.FunctionSourceCrawler()
+        #newFunction.FunctionSourceCrawler()
 
         #call function
         jsonresult = newFunction.SendFunctionRequest()
