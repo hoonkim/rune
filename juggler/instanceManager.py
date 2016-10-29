@@ -5,6 +5,7 @@ from time import strftime, localtime, mktime
 import sys
 import json
 import psutil
+import hashlib
 import datetime
 
 sys.path.insert(0, '../runeconnect')
@@ -87,16 +88,22 @@ class Function :
 
         jsondata = json.dumps({"user":self.userName,"project":self.projectName,"uFid": self.uFid,"function_object":functionObject, "params":self.parameters})
        
-        print("send "+ jsondata)
-
         #crawl function source        
         callResult = None
         
         #call the function
         print("wisp call : " + jsondata)
-        requestUid = localtime()
+        
+        time = mktime(localtime())
+        #TODO : call unique id need 
+        m = hashlib.md5()
+        print(time)
+         
+        m.digest()
 
-        functionResult = self.wisp_monitor.call(jsondata, requestUid)
+        print("function call uid : " + functionRequestUid)
+
+        functionResult = self.wisp_monitor.call(jsondata, functionRequestUid)
 
         responseOfFunctionCall = self.ResponseByFunctionCall(functionResult, self.uFid, functionStartTime)
         
