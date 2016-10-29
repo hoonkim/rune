@@ -124,10 +124,11 @@ sed -i -- "s/^#firewall_driver.*/firewall_driver = neutron.agent.linux.iptables_
 ## [database]
 
 sed -i -- "s/^connection.*/connection = mysql+pymysql:\/\/neutron:$NEUTRON_DBPASS@controller\/neutron/g" /etc/neutron/neutron.conf
+sed -i -- "s/^#allow_overlapping_ips.*/allow_overlapping_ips = true/g" /etc/neutron/neutron.conf
 
 ## [DEFAULT]
 
-sed -i -- "s/^\[DEFAULT\]$/[DEFAULT]\nauth_strategy = keystone\nnotify_nova_on_port_data_changes = True\nnotify_nova_on_port_status_changes = True\nrpc_backend = rabbit\nservice_plugins =\n/g" /etc/neutron/neutron.conf
+sed -i -- "s/^\[DEFAULT\]$/[DEFAULT]\nauth_strategy = keystone\nnotify_nova_on_port_data_changes = True\nnotify_nova_on_port_status_changes = True\nrpc_backend = rabbit\nservice_plugins = router\n/g" /etc/neutron/neutron.conf
 
 ## [oslo_messaging_rabbit]
 
