@@ -43,7 +43,6 @@ class MessageListener:
                 "uuid": uuid
             }
 
-
             # Sending back result to MQ.
             channel.basic_publish(exchange='',
                                   routing_key=properties.reply_to,
