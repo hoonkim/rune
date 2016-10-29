@@ -1,16 +1,34 @@
-from http.server import HTTPServer
+import sys, os, socket
+from socketserver import ThreadingMixIn
+from http.server import SimpleHTTPRequestHandler, HTTPServer
 
-import server
+from server import *
 
-PORT = 8000
+HOST = socket.gethostname()
 
-if __name__ == '__main__':
-    server_class = HTTPServer
-    httpd = server_class(('127.0.0.1', 8080), server.InstanceManagerServer)
-    print("ctrl + c  to exit")
-    try:
-        httpd.serve_forever()
-    except KeyboardInterrupt:
-        pass
+class ThreadingSimpleServer(ThreadingMixIn, HTTPServer):
+    pass
 
-    httpd.server_close()
+if sys.argv[1:]:
+    PORT = int(sys.argv[1])
+else:
+    PORT = 8000
+
+
+'''
+This sets the working directory of the HTTPServer, defaults to directory where script is executed.
+'''
+if sys.argv[2:]:
+    os.chdir(sys.argv[2])
+    CWD = sys.argv[2]
+else:
+    CWD = os.getcwd()
+
+server = ThreadingSimpleServer(('0.0.0.0', PORT), InstanceManagerServer)
+print("Serving HTTP traffic from", CWD, "on", HOST, "using port", PORT)
+try:
+    while 1:
+        sys.stdout.flush()
+        server.handle_request()
+except KeyboardInterrupt:
+    print("\nShutting down server per users request.")
