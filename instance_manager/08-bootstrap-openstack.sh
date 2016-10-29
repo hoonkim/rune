@@ -45,7 +45,16 @@ ssh-keygen -q -N ""
 openstack keypair create --public-key ~/.ssh/id_rsa.pub mykey
 openstack keypair list
 
-neutron net-create selfservice
-neutron subnet-create --name selfservice --dns-nameserver 8.8.8.8 --gateway 10.0.0.1 selfservice 10.0.0.0/24
-openstack image create xenial --file xenial-server-cloudimg-amd64.img --container-format bare --public --disk-format qcow2
-openstack server create --flavor m1.small --image xenial --nic net-id=selfservice --security-group default --key-name mykey selfservice-instance
+neutron net-create net1
+neutron net-create net2 --provider:network-type local
+neutron subnet-create net1 192.168.2.0/24 --name subnet1
+neutron router-create router1
+
+ROUTER=router1
+NETWORK=net1
+
+neutron router-gateway-set $ROUTER $NETWORK
+neutron router-interface-add ROUTER SUBNET
+neutron port-create net1 --fixed-ip ip_address=192.168.2.40
+neutron port-create net1
+neutron port-list --fixed-ips ip_address=192.168.2.2 ip_address=192.168.2.40

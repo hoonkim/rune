@@ -5,5 +5,5 @@
 ./04-setup-openstack-environment.sh
 ./05-init-database.sh
 ./06-sync-database.sh
-./08-restart-service.sh
-./07-bootstrap-openstack.sh
+./07-restart-service.sh
+./08-bootstrap-openstack.sh
