@@ -10,6 +10,8 @@ data["code_id"] = 1
 
 jsonData = json.dumps(data)
 
-ret = requests.post(HOST, json=jsonData)
+headers = {"Content-type":"application/json"}
+
+ret = requests.post(HOST,jsonData, headers= headers)
 
 print(ret.text)
