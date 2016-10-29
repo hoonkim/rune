@@ -117,11 +117,8 @@ class Function :
             headers = {'Content-type': 'application/json'}
            
             functionObject = requests.post("http://127.0.0.1:8000/getFunction", json=argument, headers=headers)
-            
             functionJson = functionObject.json()
-
             functionCode = functionJson["code"]
-
             self.CodeFileWriter(functionCode, sourcePath)
         else :
             #no write
