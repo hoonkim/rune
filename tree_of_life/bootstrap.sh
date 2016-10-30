@@ -1,4 +1,9 @@
 #!/bin/bash
+PASS=`openssl rand -hex 10`
+echo "export OS_PROJECT_NAME=admin
+export OS_TENANT_NAME=admin
+export OS_USERNAME=admin
+export OS_PASSWORD=$PASS" > /opt/stack/admin-openrc
 apt-get -y install git vim sudo
 git clone http://github.com/openstack-dev/devstack /devstack
 /devstack/tools/create-stack-user.sh
@@ -10,9 +15,7 @@ usermod -a -G adm stack
 su -c "cd /opt/stack/devstack;./stack.sh" -- stack
 source /opt/stack/devstack/openrc
 source /opt/stack/devstack/stackrc
-export OS_USERNAME=admin
-export OS_PROJECT_NAME=admin
-export OS_TENANT_NAME=admin
+source /opt/stack/admin-openrc
 openstack token issue
 wget http://cloud-images.ubuntu.com/xenial/current/xenial-server-cloudimg-amd64-disk1.vmdk -O xenial.vmdk
 openstack image create xenial --file xenial.vmdk --container-format bare --disk-format vmdk --public
