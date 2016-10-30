@@ -8,7 +8,7 @@ export DATABASE_PASSWORD=$PASS
 export RABBIT_PASSWORD=$PASS
 export SERVICE_PASSWORD=$PASS
 export ADMIN_PASSWORD=$PASS
-apt-get -y install git vim sudo python3-pip
+yes | apt-get -y install git vim sudo python3-pip
 yes | pip3 install pymysql django
 git clone http://github.com/openstack-dev/devstack /devstack
 /devstack/tools/create-stack-user.sh
