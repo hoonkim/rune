@@ -179,7 +179,11 @@ class SentinelInstance():
             self.__networkSend = 0
 
     def updateData(self, address, data):
+        print(data)
 
+        data = json.loads(data)
+
+        print(type(data))
         if not(address is None):
             self.__address = address
 
