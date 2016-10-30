@@ -9,19 +9,14 @@ while true; do
   if [ "$STATUS" == "ACTIVE" ]; then break; fi
 done
 while true; do
-  ping -c 1 $IP
-  if [ $? -eq 0 ]; then
-    echo "vm$NUM ping successful!"
-    sleep 5
-    break
-  else
+  scp -oStrictHostKeyChecking=no post_init.sh ubuntu@$IP:.
+  if [ $? -ne 0 ]; then
     echo "Wait for creating instance vm$NUM..."
     sleep 5
   fi
 done
-scp post_init.sh ubuntu@$IP:.
-ssh ubuntu@$IP ./post_init.sh
+ssh -oStrictHostKeyChecking=no ubuntu@$IP ./post_init.sh
 UUID=`openstack server show vm$NUM -c id -f value`
 SENTINEL=`openstack subnet show public-subnet -c gateway_ip -f value`
-scp post_script.sh ubuntu@$IP:.
+scp -oStrictHostKeyChecking=no post_script.sh ubuntu@$IP:.
 ssh -oStrictHostKeyChecking=no ubuntu@$IP ./post_script.sh $SENTINEL $UUID
