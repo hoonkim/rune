@@ -1,9 +1,13 @@
 #!/bin/bash
-PASS=`openssl rand -hex 10`
+export DATABASE_PASSWORD=0000
+export RABBIT_PASSWORD=0000
+export SERVICE_PASSWORD=0000
+export ADMIN_PASSWORD=0000
+#PASS=`openssl rand -hex 10`
 apt-get -y install git vim sudo
 git clone http://github.com/openstack-dev/devstack /devstack
 /devstack/tools/create-stack-user.sh
-sed -i -- "s/pw=\${!var}/pw=$PASS/g" /devstack/stack.sh
+#sed -i -- "s/pw=\${!var}/pw=$PASS/g" /devstack/stack.sh
 chown -R stack.stack /devstack
 mv /devstack /opt/stack
 usermod -a -G sudo stack
