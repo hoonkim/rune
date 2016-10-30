@@ -169,10 +169,8 @@ sed -i -- "s/^#firewall_driver.*/firewall_driver = iptables_hybrid/g" /etc/neutr
 
 ## [linux_bridge]
 
-LOCAL_IP=`ip addr show dev $PROVIDER_INTERFACE_NAME | grep inet | head -n 1 | cut -d'/' -f1 | awk 'print $2' }`
-
 sed -i -- "s/^#physical_interface_mappings.*/physical_interface_mappings = provider:$PROVIDER_INTERFACE_NAME/g" /etc/neutron/plugins/ml2/linuxbridge_agent.ini
-sed -i -- "s/^#local_ip.*./local_ip = $LOCAL_IP/g" /etc/neutron/plugins/ml2/linuxbridge_agent.ini
+sed -i -- "s/^#local_ip.*./local_ip = $OVERLAY_INTERFACE_IP_ADDRESS/g" /etc/neutron/plugins/ml2/linuxbridge_agent.ini
 
 ## [vxlan]
 

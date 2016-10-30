@@ -30,3 +30,8 @@ service mysql restart
 service rabbitmq-server restart
 rabbitmqctl add_user openstack $RABBIT_PASS
 rabbitmqctl set_permissions openstack ".*" ".*" ".*"
+
+PROVIDER_INTERFACE_NAME=`route -n | head -n 3 | tail -n 1 | awk '{ print $8 }'`
+
+ovs-vsctl add-br br-provider
+ovs-vsctl add-port br-provider $PROVIDER_INTERFACE_NAME
