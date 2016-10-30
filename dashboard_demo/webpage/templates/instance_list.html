@@ -39,51 +39,33 @@
               back 
           </button>
       </div>
-      <h2 class="sub-header">Code list</h2>
+      <h2 class="sub-header">Instance list</h2>
           <div class="table-responsive">
             <table class="table table-striped">
               <thead>
                 <tr>
-                  <th>ID</th>
-                  <th>name</th>
-                  <th>last update time</th>
+                  <th>UUID</th>
+                  <th>address</th>
+                  <th>core</th>
+                  <th>memory</th>
+                  <th>storage</th>
                 </tr>
               </thead>
               <tbody>
-                {% for id, project_id, name, code, last_update_time in list %}
+                {% for item in list %}
                   <tr class="projectList">
-                    <td onclick="javascript:viewCodeWindow({{id}})"> {{id}} </td>
-                    <td onclick="javascript:viewCodeWindow({{id}})"> {{name}} </td>
-                    <td onclick="javascript:viewCodeWindow({{id}})"> {{ last_update_time}} </td>
-                    <td>
-                        <button onclick="removeCode('{{id}}','{{project_id}}', '{{name}}');" class="btn btn-lg btn-primary btn-sm"> 
-                            remove 
-                        </button>
-                    </td>
+                    <td> {{item.uuid}} </td>
+                    <td> {{item.address}} </td>
+                    <td> {{item.core}} </td>
+                    <td> {{item.memory}} </td>
+                    <td> {{item.storage}} </td>
                   </tr>
                 {% endfor %}
               </tbody>
             </table>
           </div>
 
-          <div id="codePopupLayer">
-              <button class="btn btn-lg btn-primary" id="btnCodeAdd"> add </button>
-          </div>
-
     </div> <!-- /container -->
 </body>
 <script   src="http://code.jquery.com/jquery-1.12.4.min.js"   integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ="   crossorigin="anonymous"></script>
-<script language="Javascript">
-  $("#btnCodeAdd").on("click", function(evt){
-    location.href="/set_code?project_id="+{{project_id}}
-  });
-
-  function removeCode(id, projectId, name) {
-    location.href="/remove_code_proc?id=" + id + "&project_id=" + projectId + "&name=" + name;
-  }
-
-  function viewCodeWindow(id){
-    location.href="/set_code?code_id="+id+"&project_id="+{{project_id}}
-  }
-</script>
 </html>

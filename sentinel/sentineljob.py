@@ -153,13 +153,14 @@ class SentinelInstance():
             self.__coreUsage = data["core_usage"]
         else:
             print("no core usage information - default setting: 0")
-            coreUsage = [self.__core]
+
+            coreUsage = [None] * int(self.__core)
             for i in range(0,self.__core):
                 coreUsage[i] = 0
             self.__coreUsage = coreUsage
 
         if "memory" in list(data.keys()):
-            self.__memoryUsage = data["memory_total"]
+            self.__memoryTotal = data["memory"]
         else:
             print("no memory total information - default setting: 1")
             self.__memoryTotal = 0
@@ -171,7 +172,7 @@ class SentinelInstance():
             self.__memoryUsage = 0
 
         if "storage" in list(data.keys()):
-            self.__storageTotal = data["storage_total"]
+            self.__storageTotal = data["storage"]
         else:
             print("no storage total information - default setting: 1")
             self.__storageTotal = 0

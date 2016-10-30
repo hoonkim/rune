@@ -40,16 +40,23 @@
               <thead>
                 <tr>
                   <th>ID</th>
-                  <th>user</yh>
+                  <th>userid</th>
+                  <th>user name</th>
                   <th>name</th>
                 </tr>
               </thead>
               <tbody>
                 {% for id, userid, name in list %}
-                  <tr onclick="javascript:moveCodeList({{id}});" class="projectList">
-                    <td> {{id}} </td>
-                    <td> {{user.1}} </td>
-                    <td> {{name}} </td>
+                  <tr class="projectList">
+                    <td onclick="javascrpit:moveCodeList({{id}});"> {{id}} </td>
+                    <td onclick="javascrpit:moveCodeList({{id}});"> {{userid}} </td>
+                    <td onclick="javascrpit:moveCodeList({{id}});"> {{user.1}} </td>
+                    <td onclick="javascrpit:moveCodeList({{id}});"> {{name}} </td>
+                    <td>
+                        <button onclick="removeProject('{{userid}}','{{name}}');" class="btn btn-lg btn-primary btn-sm"> 
+                            remove 
+                        </button>
+                    </td>
                   </tr>
                 {% endfor %}
               </tbody>
@@ -62,6 +69,10 @@
               <button class="btn btn-lg btn-primary" id="btnProjectAdd"> add </button>
               {% csrf_token %}
             </form>
+          </div>
+
+          <div id="instanceList">
+            <button class="btn btn-lg btn-warning" id="btnInstanceList"> instanceList </button>
           </div>
 
 
@@ -77,21 +88,16 @@
       $("#frmAddProject").submit();
   });
 
+  $("#btnInstanceList").on("click", function(evt){
+      location.href="/instance_list";
+  });
+
+  function removeProject(userid, name) {
+    location.href="/remove_project_proc?userid=" + userid + "&name=" + name;
+  }
+
   function moveCodeList(id){
     location.href="/code_list?project_id="+id;
   }
-/*  
-  $("#test").click(function(e) {
-    e.preventDefault();
-    $.ajax({
-      type: "POST",
-      url: "175.126.112.130:8000",
-      data: { functionData: $("#test").val() },
-      success.function(result) {
-        $("#test").html(result);
-      }
-    });
-  });
-*/
 </script>
 </html>

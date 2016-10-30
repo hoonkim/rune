@@ -25,17 +25,17 @@ machineC["storage"] = 1024
 #requests.post("http://127.0.0.1:8080/invoke", data)
 
 print("add exist instance machineA")
-ret = requests.post("http://127.0.0.1:8000/addExistInstance", machineA)
+ret = requests.post("http://127.0.0.1:8888/addExistInstance", json=machineA)
 print(ret.json())
 
 print("add exist instance machineB")
-ret = requests.post("http://127.0.0.1:8000/addExistInstance", machineB)
+ret = requests.post("http://127.0.0.1:8888/addExistInstance", json=machineB)
 print(ret.json())
 
 print("add exist instance machineC")
-ret = requests.post("http://127.0.0.1:8000/addExistInstance", machineC)
+ret = requests.post("http://127.0.0.1:8888/addExistInstance", json=machineC)
 print(ret.json())
 
 print("get instance list")
-ret = requests.post("http://127.0.0.1:8000/getInstanceList", {})
+ret = requests.post("http://127.0.0.1:8888/getInstanceList", {})
 print(ret.json())

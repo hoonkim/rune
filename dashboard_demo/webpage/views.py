@@ -4,9 +4,14 @@ from django.http import HttpResponse
 
 import sys
 import requests
+import json
+import datetime
+
 sys.path.insert(0, '../runebook')
 
 from runebook import *
+
+SENTINELHOST = "127.0.0.1:8888"
 
 def index(request):
     return render(request, 'login.html', {})
@@ -14,7 +19,7 @@ def index(request):
 
 def loginProc(request):
     cond = {"email": request.POST["email"], "password": request.POST["password"]}
-    result = requests.post("http://175.126.112.130:8888/getAuth", json=cond)
+    result = requests.post("http://"+SENTINELHOST+"/getAuth", json=cond)
 
     if result.text == 'None' or result is ():
         return redirect('index')
@@ -34,14 +39,21 @@ def userSignup(request):
 
 def addUser(request):
     cond = {"email": request.POST["email"], "password": request.POST["password"]}
-    result = requests.post("http://175.126.112.130:8888/addUser", json=cond)
+    result = requests.post("http://"+SENTINELHOST+"/addUser", json=cond)
     return redirect('index')
+
+def instanceList(request):
+    ret = requests.post("http://"+SENTINELHOST+"/getInstanceList", {})
+    print(ret)
+    print(ret.json())
+    print(ret.text)
+    return render(request, 'instance_list.html', {"list": ret.json()})
 
 def projectList(request):
     userInfo = request.session["userinfo"]
     cond = {"user_id": userInfo[0]}
-    ret = requests.post("http://175.126.112.130:8888/getProjectList", json=cond)
-    print(ret)
+    ret = requests.post("http://"+SENTINELHOST+"/getProjectList", json=cond)
+    print(ret.json())
     return render(request, 'project_list.html', {"list": ret.json(), "user": userInfo})
 
 def addProjectProc(request):
@@ -55,7 +67,7 @@ def addProjectProc(request):
     if str(projectName).strip() == "":
         return redirect('project_list')
 
-    ret = requests.post("http://175.126.112.130:8888/addProject", json=cond)
+    ret = requests.post("http://"+SENTINELHOST+"/addProject", json=cond)
     
     return redirect('project_list')
 
@@ -63,6 +75,27 @@ def removeProjectProc(request):
     userInfo = request.session["userinfo"]
     if userInfo is () or userInfo is None:
         return redirect('index')
+    userid = request.GET["userid"]
+    name = request.GET["name"]
+    print(userid)
+    print(name)
+    cond = {"user_id": userid, "name": name}
+    ret = requests.post("http://"+SENTINELHOST+"/removeProject", json=cond)
+    return redirect('project_list')
+
+def removeCodeProc(request):
+    userInfo = request.session["userinfo"]
+    if userInfo is () or userInfo is None:
+        return redirect('index')
+    id = request.GET["id"]
+    project_id = request.GET["project_id"]
+    name = request.GET["name"]
+    print(id)
+    print(project_id)
+    print(name)
+    cond = {"id": id, "project_id": project_id, "name": name}
+    ret = requests.post("http://"+SENTINELHOST+"/removeFunction", json=cond)
+    return redirect('project_list')
 
 def codeList(request):
     projectId = request.GET["project_id"]
@@ -73,19 +106,32 @@ def codeList(request):
 
     cond = {"project_id": projectId}
     print(cond)
-    ret = requests.post("http://175.126.112.130:8888/getFunctionList", json=cond)
-    print(ret)
-    return render(request, 'code_list.html', {"list": ret.json(), "user": request.session["userinfo"], "project_id": projectId})    
+    ret = requests.post("http://"+SENTINELHOST+"/getFunctionList", json=cond)
+
+    retObject = ret.json()
+
+    for item in retObject:
+        if item[4] is None:
+            item[4] = None
+            item[4] = datetime.datetime.now()
+        else:
+            ts = item[4]
+            item[4] = None
+            item[4] = datetime.datetime.fromtimestamp(ts)
+
+    return render(request, 'code_list.html', {"list": retObject, "user": request.session["userinfo"], "project_id": projectId})    
 
 def setCode(request):
     userInfo = request.session["userinfo"]
 
     codeData = None
+    print(codeData)
     if "code_id" in  request.GET.keys():
         cond = {"code_id": request.GET["code_id"]}
-        codeData = requests.post("http://175.126.112.130:8888/getFunction", json=cond)
-
-    return render(request, 'code_form.html', {"code_data" : codeData.json(), "project_id": request.GET["project_id"]})
+        codeData = requests.post("http://"+SENTINELHOST+"/getFunction", json=cond)
+        codeData = codeData.json()
+    print(codeData)
+    return render(request, 'code_form.html', {"code_data" : codeData, "project_id": request.GET["project_id"]})
 
 def setCodeProc(request):
     userInfo = request.session["userinfo"]
@@ -107,9 +153,9 @@ def setCodeProc(request):
 
     if codeId != None:
         cond = {"code_id": codeId, "project_id": projectId, "code_name": codeName, "code_area": codeArea}
-        ret = requests.post("http://175.126.112.130:8888/updateFunction", json=cond)
+        ret = requests.post("http://"+SENTINELHOST+"/updateFunction", json=cond)
     else:
         cond = {"project_id": projectId, "code_name": codeName, "code_area": codeArea}
-        ret = requests.post("http://175.126.112.130:8888/addFunction", json=cond)
+        ret = requests.post("http://"+SENTINELHOST+"/addFunction", json=cond)
 
     return render(request, 'code_form_proc.html', {"ret": ret})

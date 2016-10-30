@@ -137,12 +137,10 @@ if __name__ == "__main__":
         totalStorage = psutil.disk_usage('/').total
         print("Sentinel : " + sentinelAddress)
         headers = {"Contents-Type": "application/json" }
-        
-         
 
         instanceData = {"uuid": uuid, "port" : PORT ,"core" : core, "memory": totalMemory, "storage":totalStorage}
         
-        sentinelAddress = "http://"+sentinelAddress+":9000/addExistInstnace"
+        sentinelAddress = "http://"+sentinelAddress+":9000/addExistInstance"
         print(sentinelAddress)
 
         requests.post(sentinelAddress,instanceData, headers = headers)
