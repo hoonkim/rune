@@ -1,4 +1,8 @@
 #!/bin/bash
+if [ `id -u` -ne 0 ]; then
+  echo "Please run this script with root permission."
+  exit 1
+fi
 PASS=0000
 export DATABASE_PASSWORD=$PASS
 export RABBIT_PASSWORD=$PASS
