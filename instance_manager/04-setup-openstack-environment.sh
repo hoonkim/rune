@@ -128,7 +128,7 @@ sed -i -- "s/^#allow_overlapping_ips.*/allow_overlapping_ips = true/g" /etc/neut
 
 ## [DEFAULT]
 
-sed -i -- "s/^\[DEFAULT\]$/[DEFAULT]\nauth_strategy = keystone\nnotify_nova_on_port_data_changes = True\nnotify_nova_on_port_status_changes = True\nrpc_backend = rabbit\nservice_plugins = router\n/g" /etc/neutron/neutron.conf
+sed -i -- "s/^\[DEFAULT\]$/[DEFAULT]\nauth_strategy = keystone\nnotify_nova_on_port_data_changes = True\nnotify_nova_on_port_status_changes = True\nrpc_backend = rabbit\nservice_plugins = \n/g" /etc/neutron/neutron.conf
 
 ## [oslo_messaging_rabbit]
 
@@ -146,7 +146,7 @@ sed -i -- "s/^\[nova\]$/[nova]\nauth_type = password\nauth_url = http:\/\/contro
 
 ## [ml2]
 
-sed -i -- "s/^\[ml2\]/[ml2]\nextension_drivers = port_security\nmechanism_drivers = linuxbridge\ntenant_network_types =\ntype_drivers = flat,vlan,vxlan,local\n/g" /etc/neutron/plugins/ml2/ml2_conf.ini
+sed -i -- "s/^\[ml2\]/[ml2]\nextension_drivers = port_security\nmechanism_drivers = linuxbridge,openvswitch\ntenant_network_types =\ntype_drivers = flat,vlan,vxlan,local\n/g" /etc/neutron/plugins/ml2/ml2_conf.ini
 
 ## [ml2_type_flat]
 
@@ -163,6 +163,7 @@ sed -i -- "s/^#vni_ranges.*/vni_ranges = 1:1000/g" /etc/neutron/plugins/ml2/ml2_
 ## [securitygroup]
 
 sed -i -- "s/^#enable_ipset.*/enable_ipset = True/g" /etc/neutron/plugins/ml2/ml2_conf.ini
+sed -i -- "s/^#firewall_driver.*/firewall_driver = iptables_hybrid/g" /etc/neutron/plugins/ml2/ml2_conf.ini
 
 # /etc/neutron/plugins/ml2/linuxbridge_agent.ini
 
@@ -185,4 +186,5 @@ sed -i -- "s/^#firewall_driver.*/firewall_driver = neutron.agent.linux.iptables_
 
 sed -i -- "s/^#dhcp_driver.*/dhcp_driver = neutron.agent.linux.dhcp.Dnsmasq/g" /etc/neutron/dhcp_agent.ini
 sed -i -- "s/^#enable_isolated_metadata.*/enable_isolated_metadata = True/g" /etc/neutron/dhcp_agent.ini
-sed -i -- "s/^#interface_driver.*/interface_driver = neutron.agent.linux.interface.BridgeInterfaceDriver/g" /etc/neutron/dhcp_agent.ini
+#sed -i -- "s/^#interface_driver.*/interface_driver = neutron.agent.linux.interface.BridgeInterfaceDriver/g" /etc/neutron/dhcp_agent.ini
+sed -i -- "s/^#interface_driver.*/interface_driver = neutron.agent.linux.interface.OVSInterfaceDriver/g" /etc/neutron/dhcp_agent.ini
