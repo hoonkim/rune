@@ -8,13 +8,16 @@ mv /devstack /opt/stack
 usermod -a -G sudo stack
 usermod -a -G adm stack
 su -c "cd /opt/stack/devstack;./stack.sh" -- stack
-source /devstack/openrc
-source /devstack/stackrc
+source /opt/stack/devstack/openrc
+source /opt/stack/devstack/stackrc
 openstack token issue
 wget https://cloud-images.ubuntu.com/xenial/current/xenial-server-cloudimg-amd64.tar.gz
 tar -zxvf xenial-server-cloudimg-amd64.tar.gz
+openstack image create xenial --file xenial-server-cloudimg-amd64.img --container-format bare --disk-format raw --public
 openstack flavor create --ram 512 --disk 8 default
-ssh-keygen -f /opt/stack/.ssh/id_rsa -q -N ""
+su -c "ssh-keygen -f /opt/stack/.ssh/id_rsa -q -N \"\"" -- stack
 openstack keypair create --public-key /opt/stack/.ssh/id_rsa mykey
 openstack security group rule create --proto icmp default
 openstack security group rule create --proto tcp --dst-port 22 default
+nova floating-ip-create public
+nova floatin
