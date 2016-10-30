@@ -244,16 +244,12 @@ class RuneBookConnect:
         #TBD
         '''
 
-    def deleteProject(self, cond=None, Project=None):
-        query = "delete from project where userid= and name="
-
+    def deleteProject(self, userId=None, name=None):
+        query = "delete from project where userid=\'" +str(userId) +"\' and name=\'" + str(name)+"\'"
+        print(query)
         conditionString = ""
-        if cond != None:
-            conditionString = self.__generateCondition(cond)
-        '''
-        #TBD
-        '''
-
+        ret = self.__runeMysql.sendRawQueryUpdate(query)
+        return ret
 
     def getFunction(self, cond=None):
         query  = "SELECT id, projectId, name, code, UNIX_TIMESTAMP(last_update) FROM code ";
@@ -321,11 +317,12 @@ class RuneBookConnect:
         #TBD
         '''
 
-    def deleteFunction(self, cond=None, function=None):
-        '''
-        #query = "DELETE user FROM code WHERE= "
-        #TBD
-        '''
+    def deleteFunction(self, id=None, projectId=None, name=None):
+        query = "delete from code where id=\'" + str(id) +"\' and projectid=\'" + str(projectId)+"\'"
+        print(query)
+        conditionString = ""
+        ret = self.__runeMysql.sendRawQueryUpdate(query)
+        return ret
 
 
 

@@ -41,7 +41,7 @@ def projectList(request):
     userInfo = request.session["userinfo"]
     cond = {"user_id": userInfo[0]}
     ret = requests.post("http://175.126.112.130:8888/getProjectList", json=cond)
-    print(ret)
+    print(ret.json())
     return render(request, 'project_list.html', {"list": ret.json(), "user": userInfo})
 
 def addProjectProc(request):
@@ -63,6 +63,27 @@ def removeProjectProc(request):
     userInfo = request.session["userinfo"]
     if userInfo is () or userInfo is None:
         return redirect('index')
+    userid = request.GET["userid"]
+    name = request.GET["name"]
+    print(userid)
+    print(name)
+    cond = {"user_id": userid, "name": name}
+    ret = requests.post("http://175.126.112.130:8888/removeProject", json=cond)
+    return redirect('project_list')
+
+def removeCodeProc(request):
+    userInfo = request.session["userinfo"]
+    if userInfo is () or userInfo is None:
+        return redirect('index')
+    id = request.GET["id"]
+    project_id = request.GET["project_id"]
+    name = request.GET["name"]
+    print(id)
+    print(project_id)
+    print(name)
+    cond = {"id": id, "project_id": project_id, "name": name}
+    ret = requests.post("http://175.126.112.130:8888/removeFunction", json=cond)
+    return redirect('project_list')
 
 def codeList(request):
     projectId = request.GET["project_id"]
@@ -81,11 +102,13 @@ def setCode(request):
     userInfo = request.session["userinfo"]
 
     codeData = None
+    print(codeData)
     if "code_id" in  request.GET.keys():
         cond = {"code_id": request.GET["code_id"]}
         codeData = requests.post("http://175.126.112.130:8888/getFunction", json=cond)
+        codeData = codeData.json()
 
-    return render(request, 'code_form.html', {"code_data" : codeData.json(), "project_id": request.GET["project_id"]})
+    return render(request, 'code_form.html', {"code_data" : codeData, "project_id": request.GET["project_id"]})
 
 def setCodeProc(request):
     userInfo = request.session["userinfo"]

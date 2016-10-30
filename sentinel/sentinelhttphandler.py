@@ -48,9 +48,11 @@ class SentinelHttpHandler(RuneHttpHandler):
         SentinelHttpHandler.__reqList.addRequest("/addUser", SentinelHttpHandler.__addUser)
         SentinelHttpHandler.__reqList.addRequest("/getProjectList", SentinelHttpHandler.__getProjectList)
         SentinelHttpHandler.__reqList.addRequest("/addProject", SentinelHttpHandler.__addProject)
+        SentinelHttpHandler.__reqList.addRequest("/removeProject", SentinelHttpHandler.__removeProject)
         SentinelHttpHandler.__reqList.addRequest("/getFunction", SentinelHttpHandler.__getFunction)
         SentinelHttpHandler.__reqList.addRequest("/getFunctionList", SentinelHttpHandler.__getFunctionList)
         SentinelHttpHandler.__reqList.addRequest("/addFunction", SentinelHttpHandler.__addFunction)
+        SentinelHttpHandler.__reqList.addRequest("/removeFunction", SentinelHttpHandler.__removeFunction)
         SentinelHttpHandler.__reqList.addRequest("/updateFunction", SentinelHttpHandler.__setFunction)
         SentinelHttpHandler.__reqList.addRequest("/addExistInstance", SentinelHttpHandler.__addExistInstance)    
         SentinelHttpHandler.__reqList.addRequest("/getInstanceList", SentinelHttpHandler.__getInstanceList)
@@ -209,9 +211,11 @@ class SentinelHttpHandler(RuneHttpHandler):
         '''
 
     def __removeProject(self, requestData):
-        '''
-        TBD
-        '''
+        userId =  requestData["user_id"];
+        name = requestData["name"];
+        ret = self.__runebookConnect.deleteProject(userId, name)
+        return json.dumps(ret)
+
 
     def __getFunction(self,requestData):
         print("requestData", str(requestData), type(requestData))
@@ -262,9 +266,12 @@ class SentinelHttpHandler(RuneHttpHandler):
         return json.dumps(ret)
 
     def __removeFunction(self, requestData):
-        '''
+        id =  requestData["id"];
+        projectId =  requestData["project_id"];
+        name = requestData["name"];
+        ret = self.__runebookConnect.deleteFunction(id,projectId,name)
+        return json.dumps(ret)
         TBD
-        '''
 
     def __updateServerState(self, uuid, requestData):
         targetInstance = req.__jobDistributer.findInstance(uuid)
