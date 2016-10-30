@@ -1,4 +1,8 @@
 #!/bin/bash
+source /opt/stack/devstack/openrc
+source /opt/stack/devstack/stackrc
+source /opt/stack/admin-openrc
+openstack token issue
 NUM=`openstack server list -c Name -f value | grep '^vm' | sort -r | head -n 1 | sed 's/vm//'`
 if [ -z $NUM ]; then NUM=1; fi
 openstack server create --flavor default --key-name default --nic net-id=private --image xenial --security-group default vm$NUM
