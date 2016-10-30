@@ -131,9 +131,16 @@ if __name__ == "__main__":
         print("Sentinel : localhost")
     else: 
         sentinelAddress = sys.argv[1]
+        uuid = sys.argv[2]
+        core = psutil.cpu_count()
+        totalMemory =  psutil.virtual_memory().total
+        totalStorage = psutil.disk_usage('/').total
         print("Sentinel : " + sentinelAddress)
         headers = {"Contents-Type": "application/json" }
-        instanceData = {"uuid": "juggler", "port" : PORT }
+        
+         
+
+        instanceData = {"uuid": uuid, "port" : PORT ,"core" : core, "memory": totalMemory, "storage":totalStorage}
         
         sentinelAddress = "http://"+sentinelAddress+":9000/addExistInstnace"
         print(sentinelAddress)
