@@ -12,11 +12,10 @@ sys.path.insert(0, '../runeconnect')
 from request import *
 from handler import *
 
-
 import json
 import threading
 import urllib
-
+import socket
 
 class JugglerHttpHandler(RuneHttpHandler):
     instManager = None
@@ -122,9 +121,25 @@ class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
     """Handle requests in a separate thread."""
 
 if __name__ == "__main__":
-    #create server
+    sentinelAddress = ""
     PORT = 8000
+
     server = ThreadedHTTPServer(('127.0.0.1', PORT), JugglerHttpHandler)
+    
+    if(len(sys.argv)-1 == 0):
+        #create server
+        print("Sentinel : localhost")
+    else: 
+        sentinelAddress = sys.argv[1]
+        print("Sentinel : " + sentinelAddress)
+        headers = {"Contents-Type": "application/json" }
+        instanceData = {"uuid": "juggler", "port" : PORT }
+        
+        sentinelAddress = "http://"+sentinelAddress+":9000/addInstnace"
+        print(sentinelAddress)
+
+        requests.post(sentinelAddress,instanceData, headers = headers)
+    
     print('Starting server, use <Ctrl-C> to stop')
     print('Waiting API call')
     server.serve_forever()
