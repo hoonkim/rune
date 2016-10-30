@@ -2,7 +2,7 @@
 apt-get -y install git vim sudo
 git clone http://github.com/openstack-dev/devstack /devstack
 /devstack/tools/create-stack-user.sh
-sed -i -- "s/var=\$1/var=\"0000\"/g" /devstack/stack.sh
+sed -i -- "s/pw=\${!var}/pw=0000/g" /devstack/stack.sh
 chown -R stack.stack /devstack
 mv /devstack /opt/stack
 usermod -a -G sudo stack
