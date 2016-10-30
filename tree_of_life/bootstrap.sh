@@ -28,10 +28,8 @@ openstack token issue
 wget http://cloud-images.ubuntu.com/xenial/current/xenial-server-cloudimg-amd64-disk1.vmdk -O xenial.vmdk
 openstack image create xenial --file xenial.vmdk --container-format bare --disk-format vmdk --public
 openstack flavor create --ram 512 --disk 10 default
-su -c "ssh-keygen -f /opt/stack/.ssh/id_rsa -q -N \"\"" -- stack
-cp /opt/stack/.ssh/id_rsa $HOME/.ssh
-cp /opt/stack/.ssh/id_rsa.pub $HOME/.ssh
-openstack keypair create --public-key /opt/stack/.ssh/id_rsa.pub default
+ssh-keygen -f $HOME/.ssh/id_rsa -q -N ""
+openstack keypair create --public-key $HOME/.ssh/id_rsa.pub default
 for i in `openstack security group list -c ID -f value`; do
   openstack security group rule create --proto icmp $i
   openstack security group rule create --proto tcp --dst-port 22 $i
