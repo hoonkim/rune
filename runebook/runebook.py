@@ -137,9 +137,6 @@ class RuneBookConnect:
 
         result = self.__runeMysql.sendRawQuerySelect(query, 1)
 
-        if len(ret) == 1:
-            ret = ret[0]
-
         return result
 
 
