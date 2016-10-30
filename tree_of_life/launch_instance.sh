@@ -14,6 +14,7 @@ while true; do
     echo "Wait for creating instance vm$NUM..."
     sleep 5
   fi
+  break
 done
 ssh -oStrictHostKeyChecking=no ubuntu@$IP ./post_init.sh
 UUID=`openstack server show vm$NUM -c id -f value`
