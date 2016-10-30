@@ -4,7 +4,7 @@ git clone http://github.com/openstack-dev/devstack /devstack
 /devstack/tools/create-stack-user.sh
 usermod -a -G sudo stack
 usermod -a -G adm stack
-sed -i -- "s/var=$1/var=\"0000\"/g" /devstack/stack.sh
+sed -i -- "s/var=\$1/var=\"0000\"/g" /devstack/stack.sh
 su -c /devstack/stack.sh -- stack
 source /devstack/openrc
 source /devstack/stackrc
