@@ -32,6 +32,9 @@ class SentinelJobDistributer():
         return newInstance
 
     def addExistInstance(self, instance):
+        if self.findInstance(instance.getUUID()) != None:
+            return None
+
         return self.__addExistInstance(instance)
 
     def __addExistInstance(self, instance):
@@ -40,7 +43,9 @@ class SentinelJobDistributer():
 
         self.__instanceList.append(instance)
 
-        return instance
+        print("instance count: ", len(self.__instanceList))
+
+        return instance.getInfoTable()
 
     def findInstance(self, uuid):
         return self.__findInstance(uuid)
@@ -58,15 +63,10 @@ class SentinelJobDistributer():
     def __getInstanceList(self):
         retList = []
         for item in self.__instanceList:
-            retObj = {}
-            retObj["uuid"] = item.getUUID()
-            retObj["address"] = item.getAddress()
-            retObj["core"] = item.getCore()
-            retObj["memory"] = item.getMemory()
-            retObj["storage"] = item.getStorage()
-            retList.append(retObj)
+            retList.append(item.getInfoTable())
 
         return retList
+
 
     def removeInstance(self, uuid):
         return self.__removeInstance(uuid)
@@ -224,6 +224,15 @@ class SentinelInstance():
     def __str__(self):
         return "UUID: "+str(self.getUUID()) + " / Core: "  + str(self.__core) + " core - " + str(self.getCoreUsageTotal())  + " / memory: " + str(self.getMemoryUsage()) + " / storage: " + str(self.getStorageUsage()) +  " / network: " + str(self.getNetworkUsage())
 
+    def getInfoTable(self):
+        retObj = {}
+        retObj["uuid"] = self.getUUID()
+        retObj["address"] = self.getAddress()
+        retObj["core"] = self.getCore()
+        retObj["memory"] = self.getMemory()
+        retObj["storage"] = self.getStorage()
+
+        return retObj
 
     def getUUID(self):
         return self.__uuid
