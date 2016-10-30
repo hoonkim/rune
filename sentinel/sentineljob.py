@@ -74,12 +74,12 @@ class SentinelJobDistributer():
     def __removeInstance(self, uuid):
         targetInstance = self.findInstance(uuid)
         result = requests.delete(novaAddr+"delete/"+uuid)
-        __instnaceList.remove(targetInstance)
+        self.__instanceList.remove(targetInstance)
         return result
 
     def updateInstance(self, uuid, instanceData):
         targetInstance = self.findInstance(uuid)
-        targetInstance.updateData(instnaceData)
+        targetInstance.updateData(instanceData)
         return targetInstance
 
 
