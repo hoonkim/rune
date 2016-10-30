@@ -16,6 +16,11 @@ from handler import *
 
 from runebook import *
 
+DBHOST = "175.126.112.130"
+DBUSER = "rune"
+DBPASS = "fjsld89"
+DBSCHEME = "rune_dev"
+
 class SentinelHttpHandler(RuneHttpHandler):
     __reqList = None
     __jobDistributer = None
@@ -24,7 +29,7 @@ class SentinelHttpHandler(RuneHttpHandler):
     @staticmethod
     def __initHandler():
         if SentinelHttpHandler.__runebookConnect is None:
-            SentinelHttpHandler.__runebookConnect = RuneBookConnect(serverHost="175.126.112.130", userId="rune", userPw="fjsld89", userDb="rune_dev")
+            SentinelHttpHandler.__runebookConnect = RuneBookConnect(serverHost=DBHOST, userId=DBUSER, userPw=DBPASS, userDb=DBSCHEME)
         if SentinelHttpHandler.__reqList is None:
             SentinelHttpHandler.__reqList = SentinelRequestList()
             SentinelHttpHandler.__initReceiver()
