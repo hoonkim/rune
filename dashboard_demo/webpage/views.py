@@ -11,7 +11,7 @@ sys.path.insert(0, '../runebook')
 
 from runebook import *
 
-SENTINELHOST = "175.126.112.130:8888"
+SENTINELHOST = "127.0.0.1:8888"
 
 def index(request):
     return render(request, 'login.html', {})
@@ -41,6 +41,13 @@ def addUser(request):
     cond = {"email": request.POST["email"], "password": request.POST["password"]}
     result = requests.post("http://"+SENTINELHOST+"/addUser", json=cond)
     return redirect('index')
+
+def instanceList(request):
+    ret = requests.post("http://"+SENTINELHOST+"/getInstanceList", {})
+    print(ret)
+    print(ret.json())
+    print(ret.text)
+    return render(request, 'instance_list.html', {"list": ret.json()})
 
 def projectList(request):
     userInfo = request.session["userinfo"]

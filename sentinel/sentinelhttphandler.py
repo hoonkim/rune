@@ -129,7 +129,7 @@ class SentinelHttpHandler(RuneHttpHandler):
             #reqData = json.loads(str(post_data).encode("utf-8"))
 
             result = str(reqResult(self, post_data)).encode("utf-8")
-            print(result)
+            print("result", result)
             self.wfile.write(result)
 
     def __getUser(self,requestData):
@@ -165,6 +165,7 @@ class SentinelHttpHandler(RuneHttpHandler):
 
     def __getInstanceList(self, requestData):
         ret = json.dumps(SentinelHttpHandler.__jobDistributer.getInstanceList())
+        print(ret)
         return ret
 
     def __addUser(self, requestData):
@@ -251,6 +252,9 @@ class SentinelHttpHandler(RuneHttpHandler):
         
         newInstanceData = {}
         newInstanceData["uuid"] = requestData["uuid"]
+        newInstanceData["core"] = requestData["core"]
+        newInstanceData["memory"] = requestData["memory"]
+        newInstanceData["storage"] = requestData["storage"]
         newInstance = SentinelInstance(self.address_string(), newInstanceData)
 
         ret = SentinelHttpHandler.__jobDistributer.addExistInstance(newInstance) 

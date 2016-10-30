@@ -14,5 +14,7 @@ urlpatterns = [
     url(r'^code_list$', views.codeList, name='code_list'),
     url(r'^set_code$', views.setCode, name='set_code'),
     url(r'^set_code_proc$', views.setCodeProc, name='set_code_proc'),
+    url(r'^instance_list$', views.instanceList, name='instance_list'),
+
 
 ]
