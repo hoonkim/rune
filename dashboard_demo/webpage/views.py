@@ -107,7 +107,7 @@ def setCode(request):
         cond = {"code_id": request.GET["code_id"]}
         codeData = requests.post("http://175.126.112.130:8888/getFunction", json=cond)
         codeData = codeData.json()
-
+    print(codeData)
     return render(request, 'code_form.html', {"code_data" : codeData, "project_id": request.GET["project_id"]})
 
 def setCodeProc(request):
