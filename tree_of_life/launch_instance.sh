@@ -10,7 +10,7 @@ while true; do
 done
 while true; do
   ping -c 1 $IP
-  if [ $? -eq 0 ]; then break; else sleep 5; fi
+  if [ $? -eq 0 ]; then break; else echo "Wait for creating instance vm$NUM..."; sleep 5; fi
 done
 scp post_init.sh ubuntu@$IP:.
 ssh ubuntu@$IP ./post_init.sh
