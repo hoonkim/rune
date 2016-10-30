@@ -21,29 +21,53 @@ class SentinelHttpHandler(RuneHttpHandler):
     __jobDistributer = None
     __runebookConnect = None
 
-    def __initHandler(self):
-        if self.__runebookConnect is None:
-            self.__runebookConnect = RuneBookConnect()
-        if self.__reqList is None:
-            self.__reqList = SentinelRequestList()
-            self.__initReceiver()
+    @staticmethod
+    def __initHandler():
+        if SentinelHttpHandler.__runebookConnect is None:
+            SentinelHttpHandler.__runebookConnect = RuneBookConnect(serverHost="175.126.112.130", userId="rune", userPw="fjsld89", userDb="rune_dev")
+        if SentinelHttpHandler.__reqList is None:
+            SentinelHttpHandler.__reqList = SentinelRequestList()
+            SentinelHttpHandler.__initReceiver()
 
-        if self.__jobDistributer is None:
-            self.__jobDistributer = SentinelJobDistributer()
-            self.__initJobDistributer()
+        if SentinelHttpHandler.__jobDistributer is None:
+            SentinelHttpHandler.__jobDistributer = SentinelJobDistributer()
+            SentinelHttpHandler.__initJobDistributer()
 
-    def __initReceiver(self):
+    @staticmethod
+    def __initReceiver():
         #add request function
 
+        #state manage
+        SentinelHttpHandler.__reqList.addRequest("/updateServerState", SentinelHttpHandler.__updateServerState)
+
         #function call
-        self.__reqList.addRequest("/invoke", self.__receiveFunctionCall)
+        SentinelHttpHandler.__reqList.addRequest("/invoke", SentinelHttpHandler.__receiveFunctionCall)
 
-        #runebook connect
+        #db connect
+        SentinelHttpHandler.__reqList.addRequest("/getAuth", SentinelHttpHandler.__loginProc)
+        SentinelHttpHandler.__reqList.addRequest("/addUser", SentinelHttpHandler.__addUser)
+        SentinelHttpHandler.__reqList.addRequest("/getProjectList", SentinelHttpHandler.__getProjectList)
+        SentinelHttpHandler.__reqList.addRequest("/addProject", SentinelHttpHandler.__addProject)
+        SentinelHttpHandler.__reqList.addRequest("/getFunction", SentinelHttpHandler.__getFunction)
+        SentinelHttpHandler.__reqList.addRequest("/getFunctionList", SentinelHttpHandler.__getFunctionList)
+        SentinelHttpHandler.__reqList.addRequest("/addFunction", SentinelHttpHandler.__addFunction)
+        SentinelHttpHandler.__reqList.addRequest("/updateFunction", SentinelHttpHandler.__setFunction)
+        SentinelHttpHandler.__reqList.addRequest("/addExistInstance", SentinelHttpHandler.__addExistInstance)    
+        SentinelHttpHandler.__reqList.addRequest("/getInstanceList", SentinelHttpHandler.__getInstanceList)
 
-    def __initJobDistributer(self):
+        #runebook connect        
+
+    @staticmethod
+    def __initJobDistributer():
         #add Job distributer init
         '''
         '''
+        #test machine - localhost(when finnish server implement, remove)
+        testInstanceData = {}
+        testInstanceData["uuid"] = "kingston"
+        testInstance = SentinelInstance("127.0.0.1", testInstanceData)
+
+        SentinelHttpHandler.__jobDistributer.addExistInstance(testInstance)
 
     def do_GET(self):
         info = self
@@ -66,18 +90,22 @@ class SentinelHttpHandler(RuneHttpHandler):
 
         length = int(self.headers['Content-Length'])
 
+        print("Content-header", self.headers['Content-type'])
+
         if self.headers['Content-Type'] == 'application/json':
             post_data = self.decodeJsonRequest(self.rfile.read(length).decode('utf-8'))
         else:
             post_data = self.decodeDictRequest(self.rfile.read(length).decode('utf-8'))
 
-        print("POST DATA:", post_data)
+        print("POST DATA:", post_data, type(post_data))
 
         self.__initHandler()
 
         requestName = self.path
 
-        reqResult = self.__reqList.findRequest(requestName)
+        print("req name : " + requestName)
+        print("req addr : " +self.address_string())
+        reqResult = SentinelHttpHandler.__reqList.findRequest(requestName)
 
         if reqResult is None:
             self.send_response(404)
@@ -89,33 +117,55 @@ class SentinelHttpHandler(RuneHttpHandler):
             self.end_headers()
 
             #json decode
-            self.wfile.write(bytes("RECEIVED: ","utf-8"))
+            #self.wfile.write(bytes("RECEIVED: ","utf-8"))
             #print("request info: " , type(post_data), str(post_data))
             #reqData = json.loads(str(post_data).encode("utf-8"))
 
-            self.wfile.write(str(reqResult(post_data)).encode("utf-8"))
-
+            result = str(reqResult(self, post_data)).encode("utf-8")
+            print(result)
+            self.wfile.write(result)
 
     def __getUser(self,requestData):
-        cond = requestData["cond"]
+        cond = {"useremail": requestData["email"], "userpw": requestData["password"]}
 
-        ret = self.__runebookConnect.getUser(cond)
+        ret = SentinelHttpHandler.__runebookConnect.getUser(cond)
         return ret
 
+    def __loginProc(self, requestData):
+        cond = {"useremail": requestData["email"], "userpw": requestData["password"]}
+
+        result = SentinelHttpHandler.__runebookConnect.getUser(cond)
+
+        if result is None or result is ():
+            return None
+
+        userInfo = result[0]
+
+        if userInfo is () or userInfo is None:
+            return None
+        print("raw", str(userInfo), "dump", json.dumps(userInfo))
+
+        return json.dumps(userInfo)
+
     def __getUserList(self,requestData):
+        #not fixed
         start = requestData["start"] 
         count = requestData["count"]
         cond = requestData["cond"]
 
-        ret = self.__runebookConnect.getUserList(start, cound, cond)
+        ret = SentinelHttpHandler.__runebookConnect.getUserList(start, cound, cond)
+        return json.dumps(ret)
+
+    def __getInstanceList(self, requestData):
+        ret = json.dumps(SentinelHttpHandler.__jobDistributer.getInstanceList())
         return ret
 
     def __addUser(self, requestData):
-        user = requestData["user"]
-        runeUser = RuneUser(user["userEmail"], user["userPassword"])
-
-        ret = self.__runebookConnect.setUser(runeUser)
-        return ret
+        #not fixed
+        #user = requestData["user"]
+        runeUser = RuneUser(requestData["email"], requestData["password"])
+        ret = SentinelHttpHandler.__runebookConnect.setUser(runeUser)
+        return json.dumps(ret)
 
     def __setUser(self, requestData):
         '''
@@ -128,25 +178,30 @@ class SentinelHttpHandler(RuneHttpHandler):
         '''
 
     def __getProject(self,requestData):
+        #not fixed
         cond = requestData["cond"]
 
-        ret = self.__runebookConnect.getProject(cond)
-        return ret
+        ret = SentinelHttpHandler.__runebookConnect.getProject(cond)
+        return json.dumps(ret)
 
     def __getProjectList(self,requestData):
-        start = requestData["start"] 
-        count = requestData["count"]
-        cond = requestData["cond"]
+        userId = requestData["user_id"]
 
-        ret = self.__runebookConnect.getProjectList(start, cound, cond)
-        return ret
+        ret = SentinelHttpHandler.__runebookConnect.getProjectList(None, None, {"userid": userId})
+        return json.dumps(ret)
 
     def __addProject(self, requestData):
-        project = requestData["project"]
-        runeProject = RuneProject(user["userId"], user["projectName"])
+        userId = requestData["user_id"]
 
-        ret = self.__runebookConnect.setProject(runeProject)
-        return ret
+        projectName = requestData["project_name"]
+
+        if str(projectName).strip() == "":
+            return None
+
+        project = RuneProject(userId, projectName)
+
+        ret = SentinelHttpHandler.__runebookConnect.setProject(project)
+        return json.dumps(ret)
 
     def __setProject(self, requestData):
         '''
@@ -159,36 +214,63 @@ class SentinelHttpHandler(RuneHttpHandler):
         '''
 
     def __getFunction(self,requestData):
-        cond = requestData["cond"]
+        print("requestData", str(requestData), type(requestData))
+        cond = {"id": requestData["code_id"]}
 
-        ret = self.__runebookConnect.getFunction(cond)
-        return ret
+        ret = SentinelHttpHandler.__runebookConnect.getFunction(cond)
+        return json.dumps(ret)
 
     def __getFunctionList(self,requestData):
-        start = requestData["start"] 
-        count = requestData["count"]
-        cond = requestData["cond"]
+        projectId = requestData["project_id"]
+        cond = {"projectid": projectId}
 
-        ret = self.__runebookConnect.getFunctionList(start, cound, cond)
-        return ret
+        ret = SentinelHttpHandler.__runebookConnect.getFunctionList(None, None, cond)
+        return json.dumps(ret)
 
     def __addFunction(self, requestData):
-        code = requestData["function"]
-        runeCode = RuneCode(code["projectId"], code["code"])
+        projectId = requestData["project_id"]
+        name = requestData["code_name"]
+        code = requestData["code_area"]
 
-        ret = self.__runebookConnect.setFunction(runeCode)
-        return ret
+        runeCode = RuneCode(projectId, name, code, None, None)
+
+        ret = SentinelHttpHandler.__runebookConnect.setFunction(runeCode)
+
+        return json.dumps(ret)
+
+    def __addExistInstance(self, requestData):
+        
+        newInstanceData = {}
+        newInstanceData["uuid"] = requestData["uuid"]
+        newInstance = SentinelInstance(self.address_string(), newInstanceData)
+
+        ret = SentinelHttpHandler.__jobDistributer.addExistInstance(newInstance) 
+      
+    
+        return json.dumps(ret)
 
     def __setFunction(self, requestData):
-        '''
-        TBD
-        '''
+        codeId = requestData["code_id"]
+        projectId = requestData["project_id"]
+        name = requestData["code_name"]
+        code = requestData["code_area"]
+
+        runeCode = RuneCode(projectId, name, code, None, codeId)
+
+        ret = SentinelHttpHandler.__runebookConnect.updateFunction({"id":codeId}, runeCode)
+        
+        return json.dumps(ret)
 
     def __removeFunction(self, requestData):
         '''
         TBD
         '''
 
+    def __updateServerState(self, uuid, requestData):
+        targetInstance = req.__jobDistributer.findInstance(uuid)
+        reqAddr = targetInstance.getAddress() + "GetStatus"
+
+        requests.get(reqAddr)
 
     def __receiveFunctionCall(self, requestData):
         '''
@@ -196,28 +278,59 @@ class SentinelHttpHandler(RuneHttpHandler):
             for key2 in requestData[key]:
                 print(key + ": " + key2)
         '''
-        targetInstance = self.__jobDistributer.findUsableInstance()
+        
+        targetInstance = SentinelHttpHandler.__jobDistributer.findUsableInstance()
 
-        #temporary data for test
+        print("targetInstance", str(targetInstance))
+
+        '''
+        # temporary data for test
         functionObject = '{ "uFid" : 1, "function_path" : "/foo/bar/", "revision_seq" : 1, "validation_required" : true}'
         data = '{ "user" : "kim", "project" : "rune", "function_object" : '+functionObject+', "params" : [ "www.google.com" ] }'
-
-
         requestData = json.loads(data)
 
+        ret = requestSender.sendPOST("http://127.0.0.1:8000/test_post")
+        '''
+
+        #generate argument for pass to Juggler
+        codeId = requestData["code_id"]
+        cond = {"id": codeId}
+        codeRow = SentinelHttpHandler.__runebookConnect.getFunction(cond)
+
+        functionObject = {
+            "uFid": codeRow[0],
+            "validation_required": True,
+            #deprecated arguments
+            "function_path": "/foo/bar", 
+            "revision_seq": 1,
+        }
+        
+        print("functionobject", str(functionObject))
+
+        data = {
+            "user": requestData["user_id"],
+            "project": requestData["project_id"],
+            "function_object": functionObject,
+            "params": requestData["params"]
+
+        }
+
         requestObject = RuneRequest()
-        requestObject.insertRequest(requestData)
+        requestObject.insertRequest(data)
 
         requestSender = RuneRequestSender(requestObject)
 
-        ret = requestSender.sendPOST("http://127.0.0.1:8000/test_post")
+        #print(str(targetInstance), "http://" + targetInstance.getAddress() + ":8000/callFunction")
 
-        
+        ret = requestSender.sendPOST("http://" + targetInstance.getAddress() + ":8000/callFunction")
+
         #get json result 
         jsonResult = ret.json()
 
         instanceState = jsonResult["instanceState"]
         functionResult = jsonResult["functionResult"]
+
+        targetInstance.updateData(targetInstance.getAddress(),instanceState )
 
         print("[[ instance State ]]")
         print(instanceState)

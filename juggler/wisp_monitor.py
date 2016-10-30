@@ -41,13 +41,12 @@ class WispMonitor:
         Callback for request to wisp.
         """
         parsed_body = json.loads(self.to_str(body))
-        result = parsed_body['result']
         unique_id = parsed_body['uuid']
 
         # callback = self._callbacks.pop(unique_id)
         # callback(result, unique_id)
 
-        self._callbacks[unique_id] = result
+        self._callbacks[unique_id] = self.to_str(body)
 
     @staticmethod
     def to_str(bytes_or_str):

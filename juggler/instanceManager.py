@@ -1,10 +1,14 @@
 from instanceMonitor import Monitor
 from wisp_monitor import WispMonitor
-from time import strftime, localtime
+from time import strftime, localtime, mktime
 
+import os
 import sys
 import json
+import time
 import psutil
+import urllib
+import datetime
 
 sys.path.insert(0, '../runeconnect')
 from request import *
@@ -45,18 +49,25 @@ class Function :
             print("function path : " + str(self.functionPath))
             print("revision sequence : " + str(self.revisionSeq))
             print("validation required : " + str(self.validationRequired))
-
-
+    
     # this function send response to sentinel
     # THE CALLBACK
-    def ResponseFunctionCall (self, result, uId):
+    def ResponseByFunctionCall (self, functionResult, uId, functionStartTime):
         print("_CALLBACK FUNCTION_")
-        print(result)
         print("uid :" + str(uId))
-        print("function result :" + str(result))
+        print("function result :" + str(functionResult))
+        
         #send Result
         #Result have to contain the system resource info
         #send instance monitor info
+        
+        functionEndTime = localtime() 
+
+        functionStartTime = mktime(functionStartTime)
+        functionEndTime = mktime(functionEndTime)
+
+        elapsedTime = functionEndTime - functionStartTime
+
         instanceMonitor = Monitor()
         instanceMonitor.GetSystemState()
        
@@ -66,55 +77,76 @@ class Function :
         # 3. I/O Status
 
         print(instanceMonitor)
-        resultJson = json.dumps({"functionResult": result, "instanceState":str(instanceMonitor)})
+        resultJson = json.dumps({"functionResult": functionResult, "instanceState":str(instanceMonitor),"elapsedtime" : elapsedTime})
 
-        print(type(resultJson))
-        print(resultJson)
-        
         return resultJson
 
     #send function request to wisp 
     def SendFunctionRequest(self):
-        timestamp = strftime("%Y/%H/%M/%S",localtime())
+        functionStartTime = localtime()
+        
+        #functionObject = {"function_path":"/home/stack/rune/juggler/ServerTime.py", "timestamp": strftime("%Y/%H/%M/%S",functionStartTime),"validation_required":self.validationRequired}
+        functionObject = {"function_path":self.functionPath,"timestamp":strftime("%Y/%H/%M/%S",functionStartTime),"validation_required":self.validationRequired}
 
-        functionObj = {"function_path":"/home/stack/juggler/rune/juggler/ServerTime.py", "timestamp":timestamp,"validation_required":self.validationRequired}
-
-        jsondata = json.dumps({"user":self.userName,"project":self.projectName,"function_object":functionObj, "params":self.parameters})
+        jsondata = json.dumps({"user":self.userName,"project":self.projectName,"uFid": self.uFid,"function_object":functionObject, "params":self.parameters})
        
-        print("send "+jsondata)
-
         #crawl function source        
         callResult = None
+
+
+
         #call the function
-        ret = self.wisp_monitor.call(jsondata, self.uFid)
-
-        ret = self.ResponseFunctionCall(ret, self.uFid)
+        print("wisp call : " + jsondata)
         
-        print(ret)
+
+        uid = int(time.time())
+        print("function uid : " , uid)
+        functionResult = self.wisp_monitor.call(jsondata, uid)
+
+        responseOfFunctionCall = self.ResponseByFunctionCall(functionResult, self.uFid, functionStartTime)
         
-        if(ret) :
-            print("wisp_monitor called successfully")       
-        else:
-            print("fail to call wisp_monitor")
+        print(responseOfFunctionCall)
 
 
-        return ret
+        return responseOfFunctionCall
 
     def FunctionSourceCrawler(self):
-        codePath = ""
         # address of code storage
-        codeStorageLocation = ""
-        
-        #get function code from storage to this instance 
 
-        #open functionFile from code Storage
+        print(type(self.uFid))
+        #write file 
+        if(self.validationRequired is True):
+            print("\n>>> Crawl Source\n")
+            #get function code from storage to this instance 
+            argument = json.dumps({"code_id":self.uFid})
+            headers = {'Content-type': 'application/json'}
+           
+            functionObject = requests.post("http://127.0.0.1:9000/getFunction",argument, headers=headers)
+            functionJson = functionObject.json()
+            
+            print(functionJson)
+           
+            functionCode = self.CodeUnquoter(functionJson[3])
+            #functionCode = functionJson["code"]
+            sourcePath = os.getcwd()+"/sources/"+str(self.uFid) +".py"
+            self.CodeFileWriter(functionCode, sourcePath)
+            self.functionPath = sourcePath
+        else :
+            #no write
+            print("request a function directly")
+            
+        return sourcePath
+    
+    def CodeUnquoter(self, escapedCode):
+        return urllib.parse.unquote(escapedCode)
 
-        #write function File on code storage
-        data = ""
+    def CodeFileWriter(self, code, sourcePath):
+        #write file
+        sourceFile = open(sourcePath,"w")
+        sourceFile.write(code)
+        sourceFile.close()
+        print("request a function after function file is created")
 
-
-        functionFile = open(uFid, 'w')
-        print(str(uFid) + " function file created")
 
 
 # main class of Juggler
@@ -147,7 +179,6 @@ class InstanceManager :
         else :
             print("request fail")
             return False
-
         return True
 
     def SendResponse(self):
@@ -158,7 +189,8 @@ class InstanceManager :
 
     def ReceiveRequest(self, jsonRequest, handler) :
         
-        #get data from Sentinel
+        #get function call from Sentinel
+
         self.jsonRequest = json.loads(jsonRequest)
         print(self.jsonRequest)
 
@@ -168,18 +200,20 @@ class InstanceManager :
 
         params = self.jsonRequest["params"]
         
-
         print("\n[recv data ] \n user : " + str(user) + '\n projcet :  ' + str(project) + '\n func obj :  ' + str(functionObject) + '\n params :  ' + str(params))
-
 
         print("[[ func obj ]]")
         print(type(functionObject))
-        # call functions based on receved data from sentinel
+
+
+        #call functions based on receved data from sentinel
         newFunction = Function(user, project, functionObject, params)
-       
+      
+        #crawl function
+        newFunction.FunctionSourceCrawler()
+
         #call function
         jsonresult = newFunction.SendFunctionRequest()
-       
 
         handler.send_response(200)
         handler.send_header("Content-type", "application/json")
@@ -188,7 +222,6 @@ class InstanceManager :
         print(type(jsonresult))
         print(jsonresult)
         handler.wfile.write(jsonresult.encode("utf-8"))
-
 
         return True
 
