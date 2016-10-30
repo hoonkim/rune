@@ -1,18 +1,18 @@
 #!/bin/bash
 PASS=`openssl rand -hex 10`
-echo "export OS_PROJECT_NAME=admin
-export OS_TENANT_NAME=admin
-export OS_USERNAME=admin
-export OS_PASSWORD=$PASS" > /opt/stack/admin-openrc
 apt-get -y install git vim sudo
 git clone http://github.com/openstack-dev/devstack /devstack
 /devstack/tools/create-stack-user.sh
-sed -i -- "s/pw=\${!var}/pw=0000/g" /devstack/stack.sh
+sed -i -- "s/pw=\${!var}/pw=$PASS/g" /devstack/stack.sh
 chown -R stack.stack /devstack
 mv /devstack /opt/stack
 usermod -a -G sudo stack
 usermod -a -G adm stack
 su -c "cd /opt/stack/devstack;./stack.sh" -- stack
+echo "export OS_PROJECT_NAME=admin
+export OS_TENANT_NAME=admin
+export OS_USERNAME=admin
+export OS_PASSWORD=$PASS" > /opt/stack/admin-openrc
 source /opt/stack/devstack/openrc
 source /opt/stack/devstack/stackrc
 source /opt/stack/admin-openrc
