@@ -10,14 +10,20 @@ usermod -a -G adm stack
 su -c "cd /opt/stack/devstack;./stack.sh" -- stack
 source /opt/stack/devstack/openrc
 source /opt/stack/devstack/stackrc
+export OS_USERNAME=admin
+export OS_PROJECT_NAME=admin
+export OS_TENANT_NAME=admin
 openstack token issue
-wget https://cloud-images.ubuntu.com/xenial/current/xenial-server-cloudimg-amd64.tar.gz
-tar -zxvf xenial-server-cloudimg-amd64.tar.gz
-openstack image create xenial --file xenial-server-cloudimg-amd64.img --container-format bare --disk-format raw --public
-openstack flavor create --ram 512 --disk 8 default
+wget http://cloud-images.ubuntu.com/xenial/current/xenial-server-cloudimg-amd64-disk1.vmdk -O xenial.vmdk
+openstack image create xenial --file xenial.vmdk --container-format bare --disk-format vmdk --public
+openstack flavor create --ram 512 --disk 10 default
 su -c "ssh-keygen -f /opt/stack/.ssh/id_rsa -q -N \"\"" -- stack
-openstack keypair create --public-key /opt/stack/.ssh/id_rsa mykey
-openstack security group rule create --proto icmp default
-openstack security group rule create --proto tcp --dst-port 22 default
-nova floating-ip-create public
-nova floatin
+openstack keypair create --public-key /opt/stack/.ssh/id_rsa.pub default
+for i in `openstack security group list -c ID -f value`; do
+  openstack security group rule create --proto icmp $i
+  openstack security group rule create --proto tcp --dst-port 22 $i
+done
+#nova floating-ip-create public
+#openstack floating ip list -c "Floating IP Address" -f value
+#openstack server create --flavor default --key-name mykey --nic net-id=private --image xenial --security-group default vm1
+#nova floating-ip-associate vm1 172.24.4.10
