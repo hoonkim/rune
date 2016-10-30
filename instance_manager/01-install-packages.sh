@@ -32,4 +32,5 @@ apt-get -y install \
   qemu\
   rabbitmq-server\
   vim\
-  openvswitch-switch
+  openvswitch-switch\
+  neutron-openvswitch-agent
