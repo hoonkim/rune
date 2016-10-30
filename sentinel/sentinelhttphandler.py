@@ -50,7 +50,8 @@ class SentinelHttpHandler(RuneHttpHandler):
         self.__reqList.addRequest("/getFunctionList", self.__getFunctionList)
         self.__reqList.addRequest("/addFunction", self.__addFunction)
         self.__reqList.addRequest("/updateFunction", self.__setFunction)
-        self.__reqList.addRequest("/addExistInstance", self.__addExistInstance)
+        self.__reqList.addRequest("/addExistInstance", self.__addExistInstance)    
+        self.__reqList.addRequest("/getInstanceList", self.__getInstanceList)
 
         #runebook connect        
 
@@ -151,6 +152,10 @@ class SentinelHttpHandler(RuneHttpHandler):
 
         ret = self.__runebookConnect.getUserList(start, cound, cond)
         return json.dumps(ret)
+
+    def __getInstanceList(self, requestData):
+        ret = json.dumps(self.__jobDistributer.getInstanceList())
+        return ret
 
     def __addUser(self, requestData):
         #not fixed
