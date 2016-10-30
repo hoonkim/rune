@@ -1,0 +1,97 @@
+<html>
+<head>
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
+
+    <style type="text/css">
+        body {
+          padding-top: 40px;
+          padding-bottom: 40px;
+          background-color: #eee;
+        }
+
+        input {
+          width: 300px;
+          display: inline;
+          position: relative;
+          height: auto;
+          -webkit-box-sizing: border-box;
+             -moz-box-sizing: border-box;
+                  box-sizing: border-box;
+          padding: 10px;
+          font-size: 16px;
+        }
+
+        #addProject {
+          text-align:right;
+        }
+
+        .projectList {
+          cursor:pointer;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+      <h2 class="sub-header">Project list</h2>
+          <div class="table-responsive">
+            <table class="table table-striped">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>user</yh>
+                  <th>name</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for id, userid, name in list %}
+                  <tr onclick="javascript:moveCodeList({{id}});" class="projectList">
+                    <td> {{id}} </td>
+                    <td> {{user.1}} </td>
+                    <td> {{name}} </td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+
+          <div id="addProject">
+            <form method="POST" action="/add_project_proc" id="frmAddProject">
+              <input type="text" name="project_name" id="inputProjectName" />
+              <button class="btn btn-lg btn-primary" id="btnProjectAdd"> add </button>
+              {% csrf_token %}
+            </form>
+          </div>
+
+
+    </div> <!-- /container -->
+</body>
+<script   src="http://code.jquery.com/jquery-1.12.4.min.js"   integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ="   crossorigin="anonymous"></script>
+<script language="Javascript">
+  $("#btnProjectAdd").on("click", function(evt){
+      if($("#inputProjectName").val().trim() == ""){
+        alert("input project name");
+        return ;
+      }
+      $("#frmAddProject").submit();
+  });
+
+  function moveCodeList(id){
+    location.href="/code_list?project_id="+id;
+  }
+/*  
+  $("#test").click(function(e) {
+    e.preventDefault();
+    $.ajax({
+      type: "POST",
+      url: "175.126.112.130:8000",
+      data: { functionData: $("#test").val() },
+      success.function(result) {
+        $("#test").html(result);
+      }
+    });
+  });
+*/
+</script>
+</html>

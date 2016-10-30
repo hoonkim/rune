@@ -89,7 +89,8 @@ class RuneRequestSender:
         #r = requests.post(requestAddr, self._requestObject.getQueryJson())
 #        r = requests.post(requestAddr, self._requestObject.queries)
         r = requests.post(requestAddr, json=self._requestObject.queries)
-    
+         
+
         return r
 
 

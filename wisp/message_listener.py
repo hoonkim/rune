@@ -1,4 +1,8 @@
+from io import StringIO
+
 import pika
+
+from output_recorder import OutputRecorder
 from utils import *
 
 
@@ -8,6 +12,7 @@ class MessageListener:
     _channel = None
     _connection = None
     _call_queue_name = None
+
 
     def __init__(self, server_ip, call_queue_name):
         """
@@ -36,14 +41,20 @@ class MessageListener:
 
         if mod is not None:
             # Module loaded successfully.
+
+            # Start capturing stdout and stderr.
+            recorder = OutputRecorder()
+            recorder.start()
             result = mod.run()
+            stdout, stderr = recorder.finish()
 
             body = {
                 "result": result,
-                "uuid": uuid
+                "uuid": uuid,
+                "stdout": stdout,
+                "stderr": stderr
             }
 
-            print("fuck : " + result)
             # Sending back result to MQ.
             channel.basic_publish(exchange='',
                                   routing_key=properties.reply_to,
@@ -58,8 +69,6 @@ class MessageListener:
 
         channel.basic_ack(delivery_tag=method.delivery_tag)
 
-
-
     def listen(self):
         """
         Start Listening to MQ Server. Ctrl + C to Exit.
@@ -68,7 +77,5 @@ class MessageListener:
 
         self._channel.basic_consume(MessageListener.callback, queue=self._call_queue_name)
         self._channel.start_consuming()
-
-
 
 

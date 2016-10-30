@@ -12,18 +12,22 @@ sys.path.insert(0, '../runeconnect')
 from request import *
 from handler import *
 
-
 import json
 import threading
 import urllib
-
+import socket
 
 class JugglerHttpHandler(RuneHttpHandler):
     instManager = None
+    requestList = None
+
+
+    def __initReceiver(self):
+        self.requestList.addRequest("/callFunction", self.CallFunction)
+        self.requestList.addRequest("/getSysState", self.GetSysState)
 
     def do_GET(self):
         print('GET REQUEST', self)
-
         info = self
         self.printClientInformation(info)
         self.pathParser(self.path)
@@ -59,7 +63,7 @@ class JugglerHttpHandler(RuneHttpHandler):
         self.send_header("Content-type", "text/html")
         self.end_headers()
         '''
-        return str(post_data)        
+        return True
 
     def printClientInformation(self, info):
         print("client addr - ", info.client_address)
@@ -92,14 +96,50 @@ class JugglerHttpHandler(RuneHttpHandler):
 
         return firstObject
 
+    def GetSysState(self, json):
+        instanceMonitor = Monitor()
+        instanceMonitor.GetSystemState()
+
+        jsonResult = json.dumps({"instanceState" : str(instanceMonitor)})
+
+        #response to sentinel
+        self.wfile.write(jsonResult.encode("utf-8"))
+
+        return True
+
+    def CallFunction(self, json):
+        #run instance manager
+        if self.instManager is None:
+            self.instManager = InstanceManager()
+   
+        self.instManager.RunManager()
+        self.instManager.ReceiveRequest(json.dumps(post_data),self)
+        
+        return True;
+
 class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
     """Handle requests in a separate thread."""
 
-
 if __name__ == "__main__":
-    #create server
+    sentinelAddress = ""
     PORT = 8000
+
     server = ThreadedHTTPServer(('127.0.0.1', PORT), JugglerHttpHandler)
+    
+    if(len(sys.argv)-1 == 0):
+        #create server
+        print("Sentinel : localhost")
+    else: 
+        sentinelAddress = sys.argv[1]
+        print("Sentinel : " + sentinelAddress)
+        headers = {"Contents-Type": "application/json" }
+        instanceData = {"uuid": "juggler", "port" : PORT }
+        
+        sentinelAddress = "http://"+sentinelAddress+":9000/addExistInstnace"
+        print(sentinelAddress)
+
+        requests.post(sentinelAddress,instanceData, headers = headers)
+    
     print('Starting server, use <Ctrl-C> to stop')
     print('Waiting API call')
     server.serve_forever()

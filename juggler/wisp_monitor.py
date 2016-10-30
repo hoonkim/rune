@@ -8,6 +8,7 @@ class WispMonitor:
     """
     WispMontior provides functions to controll wisp.
     """
+
     _corr_id = None
 
     _callbacks = dict()
@@ -40,14 +41,13 @@ class WispMonitor:
         Callback for request to wisp.
         """
         parsed_body = json.loads(self.to_str(body))
-        result = parsed_body['result']
         unique_id = parsed_body['uuid']
 
-        callback = self._callbacks.pop(unique_id)
-        callbackResult = callback(result, unique_id)
-        print("__callback result__")
-        print(callbackResult)
-    
+        # callback = self._callbacks.pop(unique_id)
+        # callback(result, unique_id)
+
+        self._callbacks[unique_id] = self.to_str(body)
+
     @staticmethod
     def to_str(bytes_or_str):
         if isinstance(bytes_or_str, bytes):
@@ -56,7 +56,7 @@ class WispMonitor:
             value = bytes_or_str
         return value
 
-    def call(self, body, unique_id, callback):
+    def call(self, body, unique_id):
         """
         Pass json formatted request to wisp, format is discussed at
         "https://github.com/hoonkim/rune/issues/10".
@@ -89,8 +89,11 @@ class WispMonitor:
                                             ), body=body)
 
         # Save callback in dictionary.
-        self._callbacks[self._corr_id] = callback
 
-        
-        return _callResult
+        self._callbacks[self._corr_id] = None
+
+        while self._callbacks[self._corr_id] is None:
+            pass
+
+        return self._callbacks.pop(self._corr_id)
 

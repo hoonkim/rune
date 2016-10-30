@@ -1,0 +1,80 @@
+<html>
+<head>
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
+
+    <style type="text/css">
+        body {
+          padding-top: 40px;
+          padding-bottom: 40px;
+          background-color: #eee;
+        }
+
+        input {
+          width: 300px;
+          display: inline;
+          position: relative;
+          height: auto;
+          -webkit-box-sizing: border-box;
+             -moz-box-sizing: border-box;
+                  box-sizing: border-box;
+          padding: 10px;
+          font-size: 16px;
+        }
+
+        #codePopupLayer {
+          text-align:right;
+        }
+
+        .projectList {
+          cursor:pointer;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+      <div style="float:right">
+          <button class="btn btn-lg btn-primary" id="backButton" onclick="javascript:window.history.back();"> 
+              back 
+          </button>
+      </div>
+      <h2 class="sub-header">Code list</h2>
+          <div class="table-responsive">
+            <table class="table table-striped">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>name</th>
+                  <th>last update time</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for id, project_id, name, code, last_update_time in list %}
+                  <tr onclick="javascript:viewCodeWindow({{id}})" class="projectList">
+                    <td> {{id}} </td>
+                    <td> {{name}} </td>
+                    <td> {{last_update_time}} </td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+
+          <div id="codePopupLayer">
+              <button class="btn btn-lg btn-primary" id="btnCodeAdd"> add </button>
+          </div>
+
+    </div> <!-- /container -->
+</body>
+<script   src="http://code.jquery.com/jquery-1.12.4.min.js"   integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ="   crossorigin="anonymous"></script>
+<script language="Javascript">
+  $("#btnCodeAdd").on("click", function(evt){
+    location.href="/set_code?project_id="+{{project_id}}
+  });
+
+  function viewCodeWindow(id){
+    location.href="/set_code?code_id="+id+"&project_id="+{{project_id}}
+  }
+</script>
+</html>

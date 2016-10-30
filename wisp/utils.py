@@ -1,5 +1,8 @@
 import importlib
 import importlib.machinery
+
+import sys
+
 from module import Module
 import json
 
@@ -20,30 +23,36 @@ def message_to_function(raw_message):
     if raw_message is None:
         return None
 
-    wisp = None
-
     try:
         wisp = json.loads(raw_message)
     except json.JSONDecodeError:
         return None
 
     function_object = wisp["function_object"]
-    path = wisp["function_path"]
-    params = function_object["params"]
+    path = function_object["function_path"]
+    force_update = function_object["validation_required"]
 
-    loader = importlib.machinery.SourceFileLoader('name', path)
+    params = wisp["params"]
+    name = str(wisp["uFid"])
+
+    loader = importlib.machinery.SourceFileLoader(name, path)
+
+    # if modules exists on the memory.
+    if name in sys.modules.keys():
+        if force_update:
+            del sys.modules[name]
+        else:
+            return Module(sys.modules[name], params)
 
     mod = None
-
-    try :
+    try:
         mod = loader.load_module()
     except FileNotFoundError:
         print("Module not found")
     except Exception:
-        print("Unknown Excpetion")
-    finally :
-        if mod is not None :
+        print("Unknown Exception")
+    finally:
+        if mod is not None:
             wisp_module = Module(mod, params)
             return wisp_module
         return mod
-
