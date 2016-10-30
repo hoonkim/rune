@@ -50,6 +50,7 @@ class SentinelHttpHandler(RuneHttpHandler):
         self.__reqList.addRequest("/getFunctionList", self.__getFunctionList)
         self.__reqList.addRequest("/addFunction", self.__addFunction)
         self.__reqList.addRequest("/updateFunction", self.__setFunction)
+        self.__reqList.addRequest("/addExistInstance", self.__addExistInstance)
 
         #runebook connect        
 
@@ -225,6 +226,17 @@ class SentinelHttpHandler(RuneHttpHandler):
 
         ret = self.__runebookConnect.setFunction(runeCode)
 
+        return json.dumps(ret)
+
+    def __addExistInstance(self, requestData):
+        
+        newInstanceData = {}
+        newInstanceData["uuid"] = requestData["uuid"]
+        newInstance = SentinelInstance(requestData["instance_address"], newInstanceData)
+
+        self.__jobDistributer.addExistInstance(newInstance)
+        
+        
         return json.dumps(ret)
 
     def __setFunction(self, requestData):
