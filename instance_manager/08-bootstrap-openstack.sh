@@ -39,7 +39,7 @@ openstack endpoint create --region RegionOne network admin http://controller:969
 
 unset OS_TOKEN
 openstack token issue
-sed -i -- 's/^OS_TOKEN.*//g' /etc/admin-openrc
+sed -i -- 's/^export OS_TOKEN.*//g' /etc/admin-openrc
 
 openstack flavor create --id 0 --vcpus 1 --ram 64 --disk 1 m1.nano
 ssh-keygen -f ~/.ssh/id_rsa -q -N ""
