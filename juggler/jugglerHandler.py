@@ -135,7 +135,7 @@ if __name__ == "__main__":
         headers = {"Contents-Type": "application/json" }
         instanceData = {"uuid": "juggler", "port" : PORT }
         
-        sentinelAddress = "http://"+sentinelAddress+":9000/addInstnace"
+        sentinelAddress = "http://"+sentinelAddress+":9000/addExistInstnace"
         print(sentinelAddress)
 
         requests.post(sentinelAddress,instanceData, headers = headers)
