@@ -13,6 +13,7 @@ while true; do
   if [ $? -ne 0 ]; then
     echo "Wait for creating instance vm$NUM..."
     sleep 5
+    continue
   fi
   break
 done
