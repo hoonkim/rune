@@ -23,11 +23,12 @@ class Function :
     revisionSeq = None
     validationRequired = False    
 
-    port = 8000
     wisp_monitor = None
     call_queue_name = "wisp"
     receive_queue_name="detonate"
 
+
+    
 
     def __init__(self, userName=None, projectName=None, functionData=None, parameters=None) :
         print("\n\n[[[  Function Object Created ]]]")
@@ -110,10 +111,11 @@ class Function :
 
         return responseOfFunctionCall
 
-    def FunctionSourceCrawler(self):
+    def FunctionSourceCrawler(self, address, port):
         # address of code storage
-
+        sentinelAddress = "http://"+address+":"+str(port)+"/getFunction"
         print(type(self.uFid))
+        print(sentinelAddress)
         #write file 
         if(self.validationRequired is True):
             print("\n>>> Crawl Source\n")
@@ -121,7 +123,7 @@ class Function :
             argument = json.dumps({"code_id":self.uFid})
             headers = {'Content-type': 'application/json'}
            
-            functionObject = requests.post("http://127.0.0.1:9000/getFunction",argument, headers=headers)
+            functionObject = requests.post(sentinelAddress ,argument, headers=headers)
             functionJson = functionObject.json()
             
             print(functionJson)
@@ -154,7 +156,9 @@ class InstanceManager :
     instanceMonitor = None 
     jsonRequest = None
     jsonRespons = None
-
+    
+    sentinelAddress = ""
+    sentinelPort = 9000
 
     def __init__(self) :
         print("\n\n[[[ instanceManager created ]]]")
@@ -165,20 +169,6 @@ class InstanceManager :
         #run monitor 
 
     def SendRequest(self):
-        data = "SystemData"
-        requestObject = RuneRequest()
-        requestObject.insertRequest(data)
-        req = RuneRequestSender(requestObject)
-       
-        #Send to Sentinel
-        ret = req.sendPOST("http://127.0.0.1:8000/test_post")
-        if(ret) :
-            print("POST  REQUEST", ret.content)
-            print("data sent successfully")
-            return True
-        else :
-            print("request fail")
-            return False
         return True
 
     def SendResponse(self):
@@ -208,9 +198,11 @@ class InstanceManager :
 
         #call functions based on receved data from sentinel
         newFunction = Function(user, project, functionObject, params)
-      
+     
+        self.sentinelAddress = handler.address_string()
+        
         #crawl function
-        newFunction.FunctionSourceCrawler()
+        newFunction.FunctionSourceCrawler(self.sentinelAddress, self.sentinelPort)
 
         #call function
         jsonresult = newFunction.SendFunctionRequest()
