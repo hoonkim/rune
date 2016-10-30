@@ -308,7 +308,7 @@ class SentinelHttpHandler(RuneHttpHandler):
         instanceState = jsonResult["instanceState"]
         functionResult = jsonResult["functionResult"]
 
-        targetInstance.updateData(functionResult)
+        targetInstance.updateData(targetInstance.getAddress(),instanceState )
 
         print("[[ instance State ]]")
         print(instanceState)
