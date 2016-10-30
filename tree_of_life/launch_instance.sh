@@ -14,7 +14,7 @@ while true; do
 done
 scp post_init.sh ubuntu@$IP:.
 ssh ubuntu@$IP ./post_init.sh
-UUID=`openstack server show -c id -f value`
+UUID=`openstack server show vm$NUM -c id -f value`
 SENTINEL=`openstack subnet show public-subnet -c gateway_ip -f value`
 scp post_script.sh ubuntu@$IP:.
 ssh -oStrictHostKeyChecking=no ubuntu@$IP ./post_script.sh $SENTINEL $UUID
