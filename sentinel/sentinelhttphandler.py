@@ -99,6 +99,8 @@ class SentinelHttpHandler(RuneHttpHandler):
 
         requestName = self.path
 
+        print("req name : " + requestName)
+        print("req addr : " +self.address_string())
         reqResult = self.__reqList.findRequest(requestName)
 
         if reqResult is None:
@@ -232,11 +234,11 @@ class SentinelHttpHandler(RuneHttpHandler):
         
         newInstanceData = {}
         newInstanceData["uuid"] = requestData["uuid"]
-        newInstance = SentinelInstance(requestData["instance_address"], newInstanceData)
+        newInstance = SentinelInstance(self.address_string(), newInstanceData)
 
-        self.__jobDistributer.addExistInstance(newInstance)
-        
-        
+        ret = self.__jobDistributer.addExistInstance(newInstance) 
+      
+    
         return json.dumps(ret)
 
     def __setFunction(self, requestData):
