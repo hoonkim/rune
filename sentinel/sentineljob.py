@@ -52,6 +52,22 @@ class SentinelJobDistributer():
 
         return None
 
+    def getInstanceList(self):
+        return self.__getInstanceList()
+
+    def __getInstanceList(self):
+        retList = []
+        for item in self.__instanceList:
+            retObj = {}
+            retObj["uuid"] = item.getUUID()
+            retObj["address"] = item.getAddress()
+            retObj["core"] = item.getCore()
+            retObj["memory"] = item.getMemory()
+            retObj["storage"] = item.getStorage()
+            retList.append(retObj)
+
+        return retList
+
     def removeInstance(self, uuid):
         return self.__removeInstance(uuid)
 
@@ -214,6 +230,15 @@ class SentinelInstance():
 
     def getAddress(self):
         return self.__address
+
+    def getCore(self):
+        return self.__core
+
+    def getMemory(self):
+        return self.__memoryTotal
+
+    def getStorage(self):
+        return self.__storageTotal
 
     def getCoreUsageTotal(self):
         sum = 0
