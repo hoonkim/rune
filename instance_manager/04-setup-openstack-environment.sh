@@ -152,6 +152,10 @@ sed -i -- "s/^\[ml2\]/[ml2]\nextension_drivers = port_security\nmechanism_driver
 
 sed -i -- "s/^#flat_networks.*/flat_networks = provider/g" /etc/neutron/plugins/ml2/ml2_conf.ini
 
+## [ml2_type_vlan]
+
+sed -i -- "s/^#network_vlan_ranges.*/network_vlan_range = provider/g" /etc/neutron/plugins/ml2/ml2_conf.ini
+
 ## [ml2_type_vxlan]
 
 sed -i -- "s/^#vni_ranges.*/vni_ranges = 1:1000/g" /etc/neutron/plugins/ml2/ml2_conf.ini

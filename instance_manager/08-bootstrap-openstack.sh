@@ -41,9 +41,12 @@ unset OS_TOKEN
 openstack token issue
 
 openstack flavor create --id 0 --vcpus 1 --ram 64 --disk 1 m1.nano
-ssh-keygen ~/.ssh/id_rsa.pub -q -N ""
+ssh-keygen -f ~/.ssh/id_rsa -q -N ""
 openstack keypair create --public-key ~/.ssh/id_rsa.pub mykey
 openstack keypair list
+
+openstack security group rule create --proto icmp default
+openstack security group rule create --proto tcp --dst-port 22 default
 
 exit 0
 
