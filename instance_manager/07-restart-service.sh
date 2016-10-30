@@ -13,6 +13,7 @@ service neutron-l3-agent restart
 service neutron-linuxbridge-agent restart
 service neutron-metadata-agent restart
 service neutron-server restart
+service neutron-openvswitch-agent restart
 service nova-api restart
 service nova-compute restart
 service nova-conductor restart

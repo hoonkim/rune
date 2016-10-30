@@ -188,3 +188,11 @@ sed -i -- "s/^#dhcp_driver.*/dhcp_driver = neutron.agent.linux.dhcp.Dnsmasq/g" /
 sed -i -- "s/^#enable_isolated_metadata.*/enable_isolated_metadata = True/g" /etc/neutron/dhcp_agent.ini
 #sed -i -- "s/^#interface_driver.*/interface_driver = neutron.agent.linux.interface.BridgeInterfaceDriver/g" /etc/neutron/dhcp_agent.ini
 sed -i -- "s/^#interface_driver.*/interface_driver = neutron.agent.linux.interface.OVSInterfaceDriver/g" /etc/neutron/dhcp_agent.ini
+
+# /etc/neutron/plugins/ml2/openvswitch_agent.ini
+
+## [ovs]
+sed -i -- "s/^#bridge_mappings.*/bridge_mappings = provider:br-provider/g" /etc/neutron/plugins/ml2/openvswitch_agent.ini
+
+## [securitygroup]
+sed -i -- "s/^#firewall_driver.*/firewall_driver = iptables_hybrid/g" /etc/neutron/plugins/ml2/openvswitch_agent.ini
