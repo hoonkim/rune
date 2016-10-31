@@ -27,15 +27,17 @@ source /opt/stack/admin-openrc
 openstack token issue
 wget http://cloud-images.ubuntu.com/xenial/current/xenial-server-cloudimg-amd64-disk1.vmdk -O xenial.vmdk
 openstack image create xenial --file xenial.vmdk --container-format bare --disk-format vmdk --public
-openstack flavor create --ram 512 --disk 10 default
+openstack flavor create --ram 512 --disk 10 --vcpu 2 default
 ssh-keygen -f $HOME/.ssh/id_rsa -q -N ""
 openstack keypair create --public-key $HOME/.ssh/id_rsa.pub default
 for i in `openstack security group list -c ID -f value`; do
   openstack security group rule create --proto icmp $i
   openstack security group rule create --proto tcp --dst-port 22 $i
 done
-git clone http://github.com/hoonkim/rune /rune
+git clone -b Release1.1 http://github.com/hoonkim/rune /rune
 echo create database rune_dev | mysql -uroot -p$PASS
 cat /rune/schema/sentinel.sql | mysql -uroot -p$PASS rune_dev
 nohup python3 /rune/sentinel/run.py 9000 1>/var/log/sentinel.log 2>/var/log/sentinel-error.log &
 nohup python3 /rune/dashboard_demo/manage.py runserver 0.0.0.0:8080 1>/var/log/dashboard.log 2>/var/log/dashboard-error.log &
+PROVIDER_INTERFACE_NAME=`route -n | head -n 3 | tail -n 1 | awk '{ print $8 }'`
+OVERLAY_INTERFACE_IP_ADDRESS=`ifconfig $PROVIDER_INTERFACE_NAME | head -n 2 | tail -n 1 | grep -Eo '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.
