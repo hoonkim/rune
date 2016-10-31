@@ -11,7 +11,7 @@ sys.path.insert(0, '../runebook')
 
 from runebook import *
 
-SENTINELHOST = "127.0.0.1:8888"
+SENTINELHOST = "127.0.0.1:9000"
 
 def index(request):
     return render(request, 'login.html', {})
