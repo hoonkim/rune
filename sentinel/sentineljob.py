@@ -144,7 +144,8 @@ class SentinelInstance():
             raise ValueError("no uuid information")
 
         if "core" in list(data.keys()):
-            self.__core = data["core"]
+            #self.__core = data["core"]
+            self.__core = 1 # temp
         else:
             print("no core information - default setting: 1")
             self.__core = 1

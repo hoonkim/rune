@@ -1,15 +1,16 @@
 import requests
 import json
 
-HOST = "http://127.0.0.1:9000/invoke"
+HOST = "http://192.168.122.162:9000/invoke"
 
 data = dict()
 
-data["project_id"] = 1
-data["code_id"] = 6
-data["user_id"] = 1
+data["project_id"] = 23
+data["code_id"] = 16
+data["user_id"] = 50
 
-param = ["www.google.com"]
+#param = ["www.google.com"]
+param = []
 
 data["params"] = param
 

@@ -1,4 +1,4 @@
-import sys
+mport sys
 import json
 
 sys.path.insert(0, '../runeconnect')
@@ -70,11 +70,13 @@ class SentinelHttpHandler(RuneHttpHandler):
         '''
         '''
         #test machine - localhost(when finnish server implement, remove)
+        """
         testInstanceData = {}
         testInstanceData["uuid"] = "kingston"
         testInstance = SentinelInstance("127.0.0.1", testInstanceData)
 
         SentinelHttpHandler.__jobDistributer.addExistInstance(testInstance)
+        """
 
     def do_GET(self):
         info = self
@@ -255,7 +257,7 @@ class SentinelHttpHandler(RuneHttpHandler):
         newInstanceData["core"] = requestData["core"]
         newInstanceData["memory"] = requestData["memory"]
         newInstanceData["storage"] = requestData["storage"]
-        newInstance = SentinelInstance(self.address_string(), newInstanceData)
+        newInstance = SentinelInstance(str(self.client_address[0]), newInstanceData)
 
         ret = SentinelHttpHandler.__jobDistributer.addExistInstance(newInstance) 
       

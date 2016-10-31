@@ -124,7 +124,7 @@ if __name__ == "__main__":
     sentinelAddress = ""
     PORT = 8000
 
-    server = ThreadedHTTPServer(('127.0.0.1', PORT), JugglerHttpHandler)
+    server = ThreadedHTTPServer(('0.0.0.0', PORT), JugglerHttpHandler)
     
     if(len(sys.argv)-1 == 0):
         #create server
