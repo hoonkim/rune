@@ -1,0 +1,63 @@
+[DEFAULT]
+auth_strategy = keystone
+enabled_apis = osapi_compute,metadata
+firewall_driver = nova.virt.firewall.NoopFirewallDriver
+my_ip = $MANAGEMENT_INTERFACE_IP_ADDRESS
+rpc_backend = rabbit
+use_neutron = True
+
+[api_database]
+
+connection = mysql+pymysql://nova:$NOVA_DBPASS@controller/nova_api
+
+[database]
+
+connection = mysql+pymysql://nova:$NOVA_DBPASS@controller/novaa
+
+[glance]
+
+api_servers = http://controller:9292
+
+[keystone_authtoken]
+
+auth_uri = http://controller:5000
+auth_url = http://controller:35357
+memcached_servers = controller:11211
+auth_type = password
+project_domain_name = default
+user_domain_name = default
+project_name = service
+username = nova
+password = $NOVA_PASS
+
+[neutron]
+
+url = http://controller:9696
+auth_url = http://controller:35357
+auth_type = password
+project_domain_name = default
+user_domain_name = default
+region_name = RegionOne
+project_name = service
+username = neutron
+password = $NEUTRON_PASS
+
+service_metadata_proxy = True
+metadata_proxy_shared_secret = $METADATA_SECRET
+
+[oslo_concurrency]
+
+lock_path = /var/lib/nova/tmp
+
+[oslo_messaging_rabbit]
+
+rabbit_host = controller
+rabbit_userid = openstack
+rabbit_password = $RABBIT_PASS
+
+[vnc]
+
+enabled = True
+vncserver_listen = 0.0.0.0
+vncserver_proxyclient_address = \$my_ip
+novncproxy_base_url = http://controller:6080/vnc_auto.html
