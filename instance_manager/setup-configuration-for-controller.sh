@@ -37,9 +37,9 @@ NET_DEV=`route -n | head -n 3 | tail -n 1 | awk '{ print $8 }'`
 IP=`ifconfig $NET_DEV | head -n 2 | tail -n 1 | grep -Eo '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}' | head -n 1`
 METADATA_SECRET=$ADMIN_PASS
 
-MANAGEMENT_INTERFACE_IP_ADDRESS=10.0.0.1
-PROVIDER_INTERFACE_NAME=enp3s0
-OVERLAY_INTERFACE_IP_ADDRESS=192.168.1.100
+MANAGEMENT_INTERFACE_IP_ADDRESS=10.100.1.101
+PROVIDER_INTERFACE_NAME=ens3
+OVERLAY_INTERFACE_IP_ADDRESS=192.168.122.101
 
 mkdir -p $BASE_DIR/glance
 chown -R glance.glance $BASE_DIR/glance
