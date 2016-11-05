@@ -31,6 +31,10 @@ service rabbitmq-server restart
 rabbitmqctl add_user openstack $RABBIT_PASS
 rabbitmqctl set_permissions openstack ".*" ".*" ".*"
 
+# Init make key
+mkdir -p $HOME/.ssh
+ssh-keygen -f $HOME/.ssh/id_rsa -q -N ""
+
 # Init openstack
 BASE_DIR=/etc
 NET_DEV=`route -n | head -n 3 | tail -n 1 | awk '{ print $8 }'`

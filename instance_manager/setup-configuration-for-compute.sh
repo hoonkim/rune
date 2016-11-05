@@ -32,14 +32,14 @@ chown -R neutron.neutron $BASE_DIR/neutron
 mkdir -p $BASE_DIR/nova
 chown -R nova.nova $BASE_DIR/nova
 
-A=`cat nova/nova.conf | grep -v '^#' | grep -v '^$'`
-eval echo "\"$A\"" > $BASE_DIR/nova/nova.conf.2
+A=`cat nova/nova.conf.2 | grep -v '^#' | grep -v '^$'`
+eval echo "\"$A\"" > $BASE_DIR/nova/nova.conf
 
 A=`cat nova/nova-compute.conf | grep -v '^#' | grep -v '^$'`
 eval echo "\"$A\"" > $BASE_DIR/nova/nova-compute.conf
 
-A=`cat neutron/neutron.conf | grep -v '^#' | grep -v '^$'`
-eval echo "\"$A\"" > $BASE_DIR/neutron/neutron.conf.2
+A=`cat neutron/neutron.conf.2 | grep -v '^#' | grep -v '^$'`
+eval echo "\"$A\"" > $BASE_DIR/neutron/neutron.conf
 
-A=`cat neutron/plugins/ml2/linuxbridge_agent.ini | grep -v '^#' | grep -v '^$'`
-eval echo "\"$A\"" > $BASE_DIR/neutron/plugins/ml2/linuxbridge_agent.ini.2
+A=`cat neutron/plugins/ml2/linuxbridge_agent.ini.2 | grep -v '^#' | grep -v '^$'`
+eval echo "\"$A\"" > $BASE_DIR/neutron/plugins/ml2/linuxbridge_agent.ini
