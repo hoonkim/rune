@@ -43,7 +43,7 @@ sed -i -- 's/^export OS_TOKEN.*//g' /etc/admin-openrc
 
 openstack flavor create --id 0 --vcpus 1 --ram 64 --disk 1 m1.nano
 ssh-keygen -f ~/.ssh/id_rsa -q -N ""
-openstack keypair create --public-key ~/.ssh/id_rsa.pub mykey
+openstack keypair create --public-key $HOME/.ssh/id_rsa.pub mykey
 openstack keypair list
 
 openstack security group rule create --proto icmp default
