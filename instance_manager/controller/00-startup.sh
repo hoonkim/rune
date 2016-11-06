@@ -6,3 +6,4 @@
 ./05-sync-database.sh
 ./06-restart-service.sh
 ./07-bootstarp-openstack.sh
+./08-execute-rune-service.sh
