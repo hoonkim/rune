@@ -37,7 +37,7 @@ openstack flavor create --vcpus 2 --ram 512 --disk 10 rune
 openstack keypair create --public-key $HOME/.ssh/id_rsa.pub mykey
 openstack keypair list
 
-for i in `openstack security group list -f ID -f value`; do
+for i in `openstack security group list -c ID -f value`; do
   openstack security group rule create --proto icmp $i
   openstack security group rule create --proto tcp --dst-port 22 $i
 done
