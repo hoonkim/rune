@@ -37,8 +37,10 @@ openstack flavor create --vcpus 2 --ram 512 --disk 10 rune
 openstack keypair create --public-key $HOME/.ssh/id_rsa.pub mykey
 openstack keypair list
 
-openstack security group rule create --proto icmp default
-openstack security group rule create --proto tcp --dst-port 22 default
+for i in `openstack security group list -f ID -f value`; do
+  openstack security group rule create --proto icmp $i
+  openstack security group rule create --proto tcp --dst-port 22 $i
+done
 
 INTERFACE=`route -n | grep '192.168.' | head -n 1 | awk '{ print $8 }'`
 SUBNET=`ifconfig $INTERFACE | grep 'inet addr' | grep -Eo '([0-9]{1,3}\.){2}[0-9]{1,3}' | head -n 1`
