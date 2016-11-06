@@ -40,6 +40,7 @@ openstack keypair list
 for i in `openstack security group list -c ID -f value`; do
   openstack security group rule create --proto icmp $i
   openstack security group rule create --proto tcp --dst-port 22 $i
+  openstack security group rule create --proto tcp --dst-port 8000 $i
 done
 
 INTERFACE=`route -n | grep '192.168.' | head -n 1 | awk '{ print $8 }'`
