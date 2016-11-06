@@ -1,0 +1,23 @@
+#!/bin/bash
+service apache2 restart
+service chrony restart
+service glance-api restart
+service glance-registry restart
+service keystone restart
+service libvirt-bin restart
+service memcached restart
+service mongodb restart
+service mysql restart
+service neutron-dhcp-agent restart
+service neutron-l3-agent restart
+service neutron-linuxbridge-agent restart
+service neutron-metadata-agent restart
+service neutron-server restart
+service neutron-openvswitch-agent restart
+service nova-api restart
+service nova-compute restart
+service nova-conductor restart
+service nova-consoleauth restart
+service nova-novncproxy restart
+service nova-scheduler restart
+service rabbitmq-server restart
