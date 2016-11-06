@@ -3,7 +3,6 @@ source /etc/admin-openrc
 unset OS_TOKEN
 openstack token issue
 
-cd /rune
 wget https://cloud-images.ubuntu.com/xenial/current/xenial-server-cloudimg-amd64-disk1.vmdk -O xenial.vmdk
 openstack image create xenial --file xenial.vmdk --container-format bare --disk-format vmdk --public
 

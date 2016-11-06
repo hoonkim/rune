@@ -33,9 +33,9 @@ rabbitmqctl add_user openstack $RABBIT_PASS
 rabbitmqctl set_permissions openstack ".*" ".*" ".*"
 
 # Init make key
-mkdir -p $HOME/.ssh
-ssh-keygen -f $HOME/.ssh/id_rsa -q -N ""
-chown -R $UID.$UID $HOME/.ssh
+mkdir -p /rune/ssh
+ssh-keygen -f rune/ssh/id_rsa -q -N ""
+chown -R ubuntu.ubuntu /rune/ssh
 
 # Init openstack
 BASE_DIR=/etc
