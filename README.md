@@ -5,5 +5,35 @@ Rune is an environment to make construction for server easy.  You can add API(fu
 Rune makes server developers happy when they start making services with Rune environment.
 
 Enjoy flexable server environment!
-    
-Rune provides easy way for making server :
+
+# Requirements
+---
+OS: ubuntu 16.04 server LTS
+Hardware: minimal specification like below:
+  - CPU: 700 MHz processor (about Intel Celeron or better)
+  - RAM: 512 MiB + (512 MiB per each vm)
+  - DISK: 5 GB of hard-drive space + (10 GB per each vm)
+
+# How to install?
+---
+Rune consists of two parts, controller and compute node.
+
+Controller node is mandatory and you can install like below step:
+
+    $ git clone -b Release1.1 http://github.com/hoonkim/rune $BASE_DIR
+    $ cd $BASE_DIR/scripts/controller
+    $ sudo ./00-startup.sh
+
+After installing controller completely, essential openstack and rune services will be run on the controller node.
+You can check rune process like below:
+
+    $ ps -ef | grep python3
+
+    sentinel: python3 run.py 9000
+    dashboard: python3 manage.py runserver 0.0.0.0:8080
+
+If you have more server computer, you can extends optional compute node like below:
+
+    $ git clone -b Release1.1 http://github.com/hoonkim/rune $BASE_DIR
+    $ cd $BASE_DIR/scripts/compute
+    $ sudo ./00-startup.sh
