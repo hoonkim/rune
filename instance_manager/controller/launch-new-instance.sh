@@ -1,4 +1,8 @@
 #!/bin/bash
+source /etc/admin-openrc
+unset OS_TOKEN
+openstack token issue
+
 NUM=`openstack server list -c Name -f value | grep '^vm' | sort -r | head -n 1 | sed 's/vm//'`
 if [ -z $NUM ]; then NUM=1; fi
 openstack server create --flavor rune --key-name default --nic net-id=selfservice --image xenial --security-group default vm$NUM
