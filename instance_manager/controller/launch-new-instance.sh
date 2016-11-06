@@ -6,8 +6,8 @@ openstack token issue
 NUM=`openstack server list -c Name -f value | grep '^vm' | sort -r | head -n 1 | sed 's/vm//'`
 if [ -z $NUM ]; then NUM=1; fi
 openstack server create --flavor rune --key-name mykey --nic net-id=selfservice --image xenial --security-group default vm$NUM
-IP=`openstack floating ip create provider -c floating_ip_address -f value`
-nova floating-ip-associate vm1 $IP
+IP=`openstack ip floating create provider -c ip -f value`
+nova floating-ip-associate vm$NUM $IP
 while true; do
   STATUS=`openstack server show vm$NUM -c status -f value`
   if [ "$STATUS" == "ACTIVE" ]; then break; fi
