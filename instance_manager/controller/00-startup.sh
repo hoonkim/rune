@@ -1,5 +1,4 @@
 #!/bin/bash
-./00-startup.sh
 ./01-install-packages.sh
 ./02-generate-admin-openrc.sh
 ./03-setup-configuration.sh
