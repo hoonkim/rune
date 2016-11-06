@@ -32,4 +32,6 @@ apt-get -y install \
   qemu\
   rabbitmq-server\
   sshpass\
+  python3-pip\
   vim
+pip3 install django
