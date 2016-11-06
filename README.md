@@ -13,6 +13,7 @@ Hardware: minimal specification like below:
   - CPU: 700 MHz processor (about Intel Celeron or better)
   - RAM: 512 MiB + (512 MiB per each vm)
   - DISK: 5 GB of hard-drive space + (10 GB per each vm)
+  - NIC: 2+ nic required, one is used to connect external, other is used to manage LAN.
 
 # How to install?
 ---
