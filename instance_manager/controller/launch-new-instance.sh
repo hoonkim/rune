@@ -29,8 +29,8 @@ while true; do
   fi
   break
 done
-ssh -i /ssh/id_rsa -oStrictHostKeyChecking=no ubuntu@$IP ./post_init.sh
+ssh -i /ssh/id_rsa -oStrictHostKeyChecking=no ubuntu@$IP sudo ./post_init.sh
 UUID=`openstack server show vm$NUM -c id -f value`
 SENTINEL=`getent hosts controller | awk '{ print $1 }'`
 scp -i /ssh/id_rsa -oStrictHostKeyChecking=no post_script.sh ubuntu@$IP:.
-ssh -i /ssh/id_rsa -oStrictHostKeyChecking=no ubuntu@$IP ./post_script.sh $SENTINEL $UUID
+ssh -i /ssh/id_rsa -oStrictHostKeyChecking=no ubuntu@$IP sudo ./post_script.sh $SENTINEL $UUID
