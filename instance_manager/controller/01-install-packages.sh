@@ -1,4 +1,6 @@
 #!/bin/bash
+locale-gen en_US.UTF-8
+locale-gen ko_KR.UTF-8
 apt-get -y install \
   apache2\
   chrony\

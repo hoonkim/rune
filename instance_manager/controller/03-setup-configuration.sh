@@ -1,9 +1,6 @@
 #!/bin/bash
 source /etc/admin-openrc
 
-locale-gen en_US.UTF-8
-locale-gen ko_KR.UTF-8
-
 MANAGEMENT_INTERFACE_NAME=`route -n | grep '^10\.' | head -n 1 | awk '{ print $8 }'`
 MANAGEMENT_INTERFACE_IP=`ifconfig $MANAGEMENT_INTERFACE_NAME | grep -Eo '([0-9]{1,3}\.){3}[0-9]{1,3}' | head -n 1`
 PROVIDER_INTERFACE_NAME=`route -n | grep '^192\.168\.' | head -n 1 | awk '{ print $8 }'`
