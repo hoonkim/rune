@@ -11,7 +11,14 @@ IP=`openstack ip floating create provider -c ip -f value`
 nova floating-ip-associate vm$NUM $IP
 while true; do
   STATUS=`openstack server show vm$NUM -c status -f value`
-  if [ "$STATUS" == "ACTIVE" ]; then break; fi
+  if [ "$STATUS" == "ACTIVE" ]; then
+    break
+  elif [ "$STATUS" == "ERROR" ]; then
+     echo "Failed to create instance vm$NUM"
+     exit 1
+  else
+    echo "Wait for starting instance vm$NUM..."
+  fi
 done
 while true; do
   scp -i $HOME/.ssh/id_rsa -oStrictHostKeyChecking=no post_init.sh ubuntu@$IP:.
