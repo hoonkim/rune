@@ -7,8 +7,6 @@ NUM=`openstack server list -c Name -f value | grep '^vm' | sort -r | head -n 1 |
 if [ -z $NUM ]; then NUM=0; fi
 NUM=$((NUM+1))
 openstack server create --flavor rune --key-name mykey --nic net-id=selfservice --image xenial --security-group default vm$NUM
-IP=`openstack ip floating create provider -c ip -f value`
-nova floating-ip-associate vm$NUM $IP
 while true; do
   STATUS=`openstack server show vm$NUM -c status -f value`
   if [ "$STATUS" == "ACTIVE" ]; then
@@ -20,6 +18,8 @@ while true; do
     echo "Wait for starting instance vm$NUM..."
   fi
 done
+IP=`openstack ip floating create provider -c ip -f value`
+nova floating-ip-associate vm$NUM $IP
 while true; do
   scp -i $HOME/.ssh/id_rsa -oStrictHostKeyChecking=no post_init.sh ubuntu@$IP:.
   if [ $? -ne 0 ]; then
