@@ -31,6 +31,7 @@ while true; do
 done
 ssh -i /ssh/id_rsa -oStrictHostKeyChecking=no ubuntu@$IP sudo ./post_init.sh
 UUID=`openstack server show vm$NUM -c id -f value`
-SENTINEL=`getent hosts controller | awk '{ print $1 }'`
+IFNAME=`route -n | head -n 3 | tail -n 1 | awk '{ print $8 }'`
+SENTINEL=`ifconfig $IFNAME | grep 'inet addr' | head -n 1 | grep -Eo '([0-9]{1,3}\.){3}[0-9]{1,3}' | head -n 1`
 scp -i /ssh/id_rsa -oStrictHostKeyChecking=no post_script.sh ubuntu@$IP:.
 ssh -i /ssh/id_rsa -oStrictHostKeyChecking=no ubuntu@$IP sudo ./post_script.sh $SENTINEL $UUID
