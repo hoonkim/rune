@@ -23,7 +23,7 @@ done
 while true; do
   scp -i $HOME/.ssh/id_rsa -oStrictHostKeyChecking=no post_init.sh ubuntu@$IP:.
   if [ $? -ne 0 ]; then
-    echo "Wait for creating instance vm$NUM..."
+    echo "Wait for booting instance vm$NUM..."
     sleep 5
     continue
   fi
