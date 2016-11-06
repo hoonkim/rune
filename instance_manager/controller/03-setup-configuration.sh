@@ -35,7 +35,7 @@ rabbitmqctl set_permissions openstack ".*" ".*" ".*"
 # Init make key
 mkdir -p $HOME/.ssh
 ssh-keygen -f $HOME/.ssh/id_rsa -q -N ""
-chown -R $UID.$GID $HOME/.ssh
+chown -R $UID.$UID $HOME/.ssh
 
 # Init openstack
 BASE_DIR=/etc
