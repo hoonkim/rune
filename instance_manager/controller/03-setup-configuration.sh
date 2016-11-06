@@ -34,7 +34,7 @@ rabbitmqctl set_permissions openstack ".*" ".*" ".*"
 
 # Init make key
 mkdir -p /rune/ssh
-ssh-keygen -f rune/ssh/id_rsa -q -N ""
+ssh-keygen -f /rune/ssh/id_rsa -q -N ""
 chown -R ubuntu.ubuntu /rune/ssh
 
 # Init openstack
