@@ -44,10 +44,11 @@ INTERFACE=`route -n | grep '192.168.' | head -n 1 | awk '{ print $8 }'`
 SUBNET=`ifconfig $INTERFACE | grep 'inet addr' | grep -Eo '([0-9]{1,3}\.){2}[0-9]{1,3}'`
 
 neutron net-create --shared --provider:network_type provider --provider:physical_network provider provider
-neutron subnet-create --allocation-pool start=$SUBNET.150,end=$SUBNET.200 \
+neutron subnet-create --name provider --allocation-pool start=$SUBNET.150,end=$SUBNET.200 \
   --dns-nameserver 8.8.8.8 --gateway $SUBNET.1 provider $SUBNET.0/24
 neutron net-create selfservice
-neutron subnet-create --allocation-pool start=172.16.1.2,end=172.16.1.253 --gateway 172.16.1.1 selfservice 172.16.1.0/24
+neutron subnet-create --name selfservice --allocation-pool start=172.16.1.2,end=172.16.1.253 \
+  --gateway 172.16.1.1 selfservice 172.16.1.0/24
 neutron net-update provider --router:external
 neutron router create router
 neutron router-interface-add router selfservice
