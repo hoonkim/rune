@@ -68,6 +68,9 @@ eval echo "\"$A\"" > $BASE_DIR/glance/glance-registry.conf
 A=`cat nova/nova.conf | grep -v '^#' | grep -v '^$'`
 eval echo "\"$A\"" > $BASE_DIR/nova/nova.conf
 
+A=`cat nova/nova-compute.conf | grep -v '^#' | grep -v '^$'`
+eval echo "\"$A\"" > $BASE_DIR/nova/nova-compute.conf
+
 A=`cat neutron/neutron.conf | grep -v '^#' | grep -v '^$'`
 eval echo "\"$A\"" > $BASE_DIR/neutron/neutron.conf
 
