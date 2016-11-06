@@ -18,7 +18,7 @@ echo -n "Controller username: "
 read CTRL_USER
 echo -n "Controller password: "
 read -s CTRL_PASS
-sshpass -p $CTRL_PASS ssh $CTRL_USER@$CONTROLLER_IP "cat /etc/admin-openrc" > /etc/admin-openrc
+sshpass -p $CTRL_PASS ssh -oStrictHostKeyChecking=no $CTRL_USER@$CONTROLLER_IP "cat /etc/admin-openrc" > /etc/admin-openrc
 
 if [ $? -eq 0 ]; then
   echo 'Fail to pull /etc/admin-openrc fron controller'
