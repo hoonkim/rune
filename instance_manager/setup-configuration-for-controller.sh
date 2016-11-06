@@ -1,12 +1,13 @@
 #!/bin/bash
 source /etc/admin-openrc
 
-# Init host address
-grep -r "controller" /etc/hosts
+MANAGEMENT_INTERFACE_NAME=`route -n | grep '^10\.' | head -n 1 | awk '{ print $8 }'`
+MANAGEMENT_INTERFACE_IP=`ifconfig $MANAGEMENT_INTERFACE_NAME | grep -Eo '([0-9]{1,3}\.){3}[0-9]{1,3}' | head -n 1`
+PROVIDER_INTERFACE_NAME=`route -n | grep '^192\.168\.' | head -n 1 | awk '{ print $8 }'`
+PROVIDER_INTERFACE_IP=`ifconfig $PROVIDER_INTERFACE_NAME | grep -Eo '([0-9]{1,3}\.){3}[0-9]{1,3}' | head -n 1`
 
-if [ $? -ne 0 ]; then
-  echo '192.168.122.101 controller' >> /etc/hosts
-fi
+# Init host address
+echo "127.0.0.1 controller" >> /etc/hosts
 
 # Init web server
 echo "ServerName controller" >> /etc/apache2/apache2.conf
@@ -37,13 +38,10 @@ ssh-keygen -f $HOME/.ssh/id_rsa -q -N ""
 
 # Init openstack
 BASE_DIR=/etc
-NET_DEV=`route -n | head -n 3 | tail -n 1 | awk '{ print $8 }'`
-IP=`ifconfig $NET_DEV | head -n 2 | tail -n 1 | grep -Eo '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}' | head -n 1`
-METADATA_SECRET=$ADMIN_PASS
-
-MANAGEMENT_INTERFACE_IP_ADDRESS=10.100.1.101
-PROVIDER_INTERFACE_NAME=ens3
-OVERLAY_INTERFACE_IP_ADDRESS=192.168.122.101
+METADATA_SECRET=0000
+MANAGEMENT_INTERFACE_IP_ADDRESS=$MANAGEMENT_INTERFACE_IP
+PROVIDER_INTERFACE_NAME=$PROVIDER_INTERFACE_NAME
+OVERLAY_INTERFACE_IP_ADDRESS=$PROVIDER_INTERFACE_IP
 
 mkdir -p $BASE_DIR/glance
 chown -R glance.glance $BASE_DIR/glance

@@ -9,4 +9,5 @@ apt-get -y install \
   openssl\
   python-openstackclient\
   qemu\
+  sshpass\
   vim

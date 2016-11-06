@@ -28,4 +28,5 @@ apt-get -y install \
   python-pymongo\
   python-pymysql\
   rabbitmq-server\
+  sshpass\
   vim
