@@ -7,3 +7,4 @@ sudo apt-get -y install python3-pip rabbitmq-server
 sudo pip3 install psutil pika
 sudo service rabbitmq-server start
 git clone -b Release1.1 http://github.com/hoonkim/rune /home/ubuntu/rune
+mkdir -p /home/ubuntu/rune/juggler/sources
