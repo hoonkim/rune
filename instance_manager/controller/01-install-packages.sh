@@ -34,4 +34,4 @@ apt-get -y install \
   sshpass\
   python3-pip\
   vim
-pip3 install django
+pip3 install django pymysql
