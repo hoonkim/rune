@@ -1,4 +1,4 @@
-mport sys
+import sys
 import json
 
 sys.path.insert(0, '../runeconnect')
