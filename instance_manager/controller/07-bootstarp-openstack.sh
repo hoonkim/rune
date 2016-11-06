@@ -50,7 +50,7 @@ neutron subnet-create --name provider --allocation-pool start=$SUBNET.150,end=$S
   --dns-nameserver 8.8.8.8 --gateway $SUBNET.1 provider $SUBNET.0/24
 neutron net-create selfservice
 neutron subnet-create --name selfservice --allocation-pool start=172.16.1.2,end=172.16.1.253 \
-  --gateway 172.16.1.1 selfservice 172.16.1.0/24
+  --dns-nameserver 8.8.8.8 --gateway 172.16.1.1 selfservice 172.16.1.0/24
 neutron net-update provider --router:external
 neutron router-create router
 neutron router-interface-add router selfservice
