@@ -10,6 +10,8 @@ git clone -b Release1.1 http://github.com/hoonkim/rune /rune
 echo "DROP DATABASE IF EXISTS rune_dev" | mysql
 echo "CREATE DATABASE rune_dev" | mysql
 cat /rune/schema/sentinel.sql | mysql rune_dev
-nohup python3 /rune/sentinel/run.py 9000 1>/var/log/sentinel.log 2>/var/log/sentinel-error.log &
-nohup python3 /rune/dashboard_demo/manage.py runserver 0.0.0.0:8080 1>/var/log/dashboard.log 2>/var/log/dashboard-error.log &
+cd /rune/sentinel
+nohup python3 run.py 9000 1>/var/log/sentinel.log 2>/var/log/sentinel-error.log &
+cd /rune/dashboard_demo
+nohup python3 manage.py runserver 0.0.0.0:8080 1>/var/log/dashboard.log 2>/var/log/dashboard-error.log &
 echo "Rune services run successful"

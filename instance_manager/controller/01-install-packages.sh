@@ -33,5 +33,6 @@ apt-get -y install \
   rabbitmq-server\
   sshpass\
   python3-pip\
+  python-django\
   vim
 pip3 install django pymysql
