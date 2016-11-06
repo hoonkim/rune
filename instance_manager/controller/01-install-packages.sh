@@ -5,7 +5,9 @@ apt-get -y install \
   git\
   glance\
   keystone\
+  kvm\
   libapache2-mod-wsgi\
+  libvirt-bin\
   mariadb-server\
   memcached\
   mongodb-clients\
@@ -27,6 +29,7 @@ apt-get -y install \
   python-openstackclient\
   python-pymongo\
   python-pymysql\
+  qemu\
   rabbitmq-server\
   sshpass\
   vim
