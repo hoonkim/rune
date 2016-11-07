@@ -8,7 +8,6 @@
 body {
   padding-top: 40px;
   padding-bottom: 40px;
-  background-color: #eee;
 }
 
 .form-signin {
@@ -56,14 +55,18 @@ body {
       {% else %}
       <h2 class="sub-header">Update code</h2>
       {% endif %}
-      <!--<input type="text" id="id" name="id" class="form-control" placeholder="Id" autofocus>-->
-      <!--<input type="password" id="pw" name="pw" class="form-control" placeholder="Password">-->
       <label>title</label>
-      <input type="text" name="code_name" id="textCodeName" value="{{code_data.2}}" /> <br />
-      <hr />
+      <input type="text" name="code_name" id="textCodeName" class="form-control" value="{{code_data.2}}" /> <br />
       <label>code</label> <br />
-      <textarea name="code_area" id="textCodeArea" >{{code_data.3}}</textarea>
-      <button class="btn btn-lg btn-primary btn-block" id="btnCodeAdd">add</button>
+      <textarea name="code_area" id="textCodeArea" class="form-control" rows="16" >{{code_data.3}}</textarea>
+      <br>
+      <button class="btn btn-lg btn-primary " id="btnCodeAdd">
+      {% if code_data == None %}
+      add
+      {% else %}
+      update
+      {% endif %}
+      </button>
       {% csrf_token %}
         <input type="hidden" name="project_id" value="{{project_id}}" />
       {% if code_data != None %}
