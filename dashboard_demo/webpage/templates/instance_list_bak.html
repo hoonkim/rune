@@ -1,0 +1,71 @@
+<html>
+<head>
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
+
+    <style type="text/css">
+        body {
+          padding-top: 40px;
+          padding-bottom: 40px;
+          background-color: #eee;
+        }
+
+        input {
+          width: 300px;
+          display: inline;
+          position: relative;
+          height: auto;
+          -webkit-box-sizing: border-box;
+             -moz-box-sizing: border-box;
+                  box-sizing: border-box;
+          padding: 10px;
+          font-size: 16px;
+        }
+
+        #codePopupLayer {
+          text-align:right;
+        }
+
+        .projectList {
+          cursor:pointer;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+      <div style="float:right">
+          <button class="btn btn-lg btn-primary" id="backButton" onclick="javascript:window.history.back();"> 
+              back 
+          </button>
+      </div>
+      <h2 class="sub-header">Instance list</h2>
+          <div class="table-responsive">
+            <table class="table table-striped">
+              <thead>
+                <tr>
+                  <th>UUID</th>
+                  <th>address</th>
+                  <th>core</th>
+                  <th>memory</th>
+                  <th>storage</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for item in list %}
+                  <tr class="projectList">
+                    <td> {{item.uuid}} </td>
+                    <td> {{item.address}} </td>
+                    <td> {{item.core}} </td>
+                    <td> {{item.memory}} </td>
+                    <td> {{item.storage}} </td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+
+    </div> <!-- /container -->
+</body>
+<script   src="http://code.jquery.com/jquery-1.12.4.min.js"   integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ="   crossorigin="anonymous"></script>
+</html>
