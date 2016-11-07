@@ -1,47 +1,100 @@
-<html>
-<head>
-    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
-    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <title>Rune dashboard</title>
 
-    <style type="text/css">
-        body {
-          padding-top: 40px;
-          padding-bottom: 40px;
-          background-color: #eee;
-        }
+    <!-- Bootstrap core CSS -->
+    <link href="./css/bootstrap.min.css" rel="stylesheet">
+    <!--<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">-->
 
-        input {
-          width: 300px;
-          display: inline;
-          position: relative;
-          height: auto;
-          -webkit-box-sizing: border-box;
-             -moz-box-sizing: border-box;
-                  box-sizing: border-box;
-          padding: 10px;
-          font-size: 16px;
-        }
+    <style>
+    body {
+      padding-top: 70px;
+      padding-bottom: 30px;
+      }
 
-        #codePopupLayer {
-          text-align:right;
-        }
+      .theme-dropdown .dropdown-menu {
+        position: static;
+        display: block;
+        margin-bottom: 20px;
+      }
 
-        .projectList {
-          cursor:pointer;
-        }
+      .theme-showcase > p > .btn {
+        margin: 5px 0;
+      }
 
+      .theme-showcase .navbar .container {
+        width: auto;
+      }
+
+      input {
+        width: 300px;
+        display: inline;
+        position: relative;
+        height: auto;
+        -webkit-box-sizing: border-box;
+           -moz-box-sizing: border-box;
+                box-sizing: border-box;
+        padding: 10px;
+        font-size: 16px;
+      }
+
+      .projectList {
+        cursor:pointer;
+      }
     </style>
-</head>
-<body>
-    <div class="container">
-      <div style="float:right">
-          <button class="btn btn-lg btn-primary" id="backButton" onclick="javascript:window.history.back();"> 
-              back 
+  </head>
+
+
+  <body>
+
+    <!-- Fixed navbar -->
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
           </button>
+          <a class="navbar-brand" href="#">Rune</a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+          <ul class="nav navbar-nav">
+            <li class="active"><a href="#">Project list</a></li>
+            <li><a href="#about">Instance list</a></li>
+            <li><a href="#contact">Contact</a></li>
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Dropdown <span class="caret"></span></a>
+              <ul class="dropdown-menu">
+                <li><a href="#">Action</a></li>
+                <li><a href="#">Another action</a></li>
+                <li><a href="#">Something else here</a></li>
+                <li role="separator" class="divider"></li>
+                <li class="dropdown-header">Nav header</li>
+                <li><a href="#">Separated link</a></li>
+                <li><a href="#">One more separated link</a></li>
+              </ul>
+            </li>
+          </ul>
+        </div>
       </div>
-      <h2 class="sub-header">Code list</h2>
-          <div class="table-responsive">
-            <table class="table table-striped">
+    </nav>
+    {% include "./nav_bar.html" %} 
+    <div class="container theme-showcase" role="main">
+      <div class="page-header">
+        <h1>PROJECT LIST</h1>
+      </div>
+      <div class="row">
+        <div class="col-md-10">
+          <table class="table table-striped">
               <thead>
                 <tr>
                   <th>ID</th>
@@ -62,28 +115,43 @@
                     </td>
                   </tr>
                 {% endfor %}
+                <tr>
+                  <td colspan="3"></td>
+                  <td>
+                    <div id="codePopupLayer">
+                        <button class="btn btn-lg btn-primary" id="btnCodeAdd"> add </button>
+                    </div>
+                  </td>
+                </tr>
               </tbody>
             </table>
-          </div>
+        </div>
+    </div>
+<!-- /container -->
 
-          <div id="codePopupLayer">
-              <button class="btn btn-lg btn-primary" id="btnCodeAdd"> add </button>
-          </div>
 
-    </div> <!-- /container -->
-</body>
-<script   src="http://code.jquery.com/jquery-1.12.4.min.js"   integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ="   crossorigin="anonymous"></script>
-<script language="Javascript">
-  $("#btnCodeAdd").on("click", function(evt){
-    location.href="/set_code?project_id="+{{project_id}}
-  });
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script>window.jQuery || document.write('<script src="../../assets/js/vendor/jquery.min.js"><\/script>')</script>
+    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+    <script src="./js/docs.min.js"></script>
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <script src="./js/ie10-viewport-bug-workaround.js"></script>
+    <script   src="http://code.jquery.com/jquery-1.12.4.min.js"   integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ="   crossorigin="anonymous"></script>
+    <script language="Javascript">
+      $("#btnCodeAdd").on("click", function(evt){
+        location.href="/set_code?project_id="+{{project_id}}
+      });
 
-  function removeCode(id, projectId, name) {
-    location.href="/remove_code_proc?id=" + id + "&project_id=" + projectId + "&name=" + name;
-  }
+      function removeCode(id, projectId, name) {
+        location.href="/remove_code_proc?id=" + id + "&project_id=" + projectId + "&name=" + name;
+      }
 
-  function viewCodeWindow(id){
-    location.href="/set_code?code_id="+id+"&project_id="+{{project_id}}
-  }
-</script>
+      function viewCodeWindow(id){
+        location.href="/set_code?code_id="+id+"&project_id="+{{project_id}}
+      }
+    </script>
+  </body>
 </html>

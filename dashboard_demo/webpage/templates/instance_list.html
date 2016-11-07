@@ -10,8 +10,8 @@
     <title>Rune dashboard</title>
 
     <!-- Bootstrap core CSS -->
-    <!--<link href="./css/bootstrap.min.css" rel="stylesheet">-->
-    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+    <link href="./css/bootstrap.min.css" rel="stylesheet">
+    <!--<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">-->
 
     <style>
     body {
@@ -97,7 +97,7 @@
         <h1>INSTANCE LIST</h1>
       </div>
       <div class="row">
-        <div class="col-md-6">
+        <div class="col-md-10">
           <table class="table table-striped">
             <thead>
               <tr>
@@ -120,13 +120,6 @@
               {% endfor %}
             </tbody>
           </table>
-             <div id="addProject">
-              <form method="POST" action="/add_project_proc" id="frmAddProject">
-                <input type="text" name="project_name" id="inputProjectName" />
-                <button class="btn btn-lg btn-primary" id="btnProjectAdd"> add </button>
-                {% csrf_token %}
-              </form>
-            </div>
         </div>
     </div>
 <!-- /container -->
