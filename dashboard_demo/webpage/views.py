@@ -95,7 +95,8 @@ def removeCodeProc(request):
     print(name)
     cond = {"id": id, "project_id": project_id, "name": name}
     ret = requests.post("http://"+SENTINELHOST+"/removeFunction", json=cond)
-    return redirect('project_list')
+    #return redirect('project_list')
+    return render(request, 'code_form_proc.html', {"ret": ret, "project_id": project_id})
 
 def codeList(request):
     projectId = request.GET["project_id"]
@@ -158,4 +159,4 @@ def setCodeProc(request):
         cond = {"project_id": projectId, "code_name": codeName, "code_area": codeArea}
         ret = requests.post("http://"+SENTINELHOST+"/addFunction", json=cond)
 
-    return render(request, 'code_form_proc.html', {"ret": ret})
+    return render(request, 'code_form_proc.html', {"ret": ret, "project_id": projectId})

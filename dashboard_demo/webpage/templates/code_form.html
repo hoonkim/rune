@@ -49,6 +49,28 @@ body {
 
 <body>
   <div class="container">
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/project_list">Rune</a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+          <ul class="nav navbar-nav">
+            <li><a href="/project_list">project list</a></li>
+            <li><a href="/instance_list">instance list</a></li>
+            <li><a href="https://github.com/hoonkim/rune">download</a></li>
+            <li><a href="/">logout</a></li>
+          </ul>
+        </div><!--/.nav-collapse -->
+      </div>
+    </nav>
+
     <form method="POST" action="/set_code_proc" id="frmCodeAdd">
       {% if code_data == None %}
       <h2 class="sub-header">add code</h2>
