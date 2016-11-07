@@ -45,10 +45,6 @@
         font-size: 16px;
       }
 
-      #addProject {
-        text-align:right;
-      }
-
       .projectList {
         cursor:pointer;
       }
@@ -121,15 +117,16 @@
                     </td>
                   </tr>
                 {% endfor %}
-              </tbody>
-            </table>
-             <div id="addProject">
               <form method="POST" action="/add_project_proc" id="frmAddProject">
-                <input type="text" name="project_name" id="inputProjectName" />
-                <button class="btn btn-lg btn-primary" id="btnProjectAdd"> add </button>
+                <tr class="projectList">
+                    <td colspan="3"></td>
+                    <td><input type="text" name="project_name" id="inputProjectName" /></td>
+                    <td><button class="btn btn-lg btn-primary" id="btnProjectAdd"> add </button></td>
+                </tr>
                 {% csrf_token %}
               </form>
-            </div>
+              </tbody>
+            </table>
         </div>
     </div>
 <!-- /container -->
