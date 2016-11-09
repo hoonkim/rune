@@ -45,6 +45,8 @@ body {
   border-top-right-radius: 0;
 }
 </style>
+{% load staticfiles %}
+<link href="{% static "/css/prism.css" %}"rel="stylesheet" />
 </head>
 
 <body>
@@ -72,14 +74,25 @@ body {
     </nav>
 
     <form method="POST" action="/set_code_proc" id="frmCodeAdd">
+      <div class="page-header">
+      <h1>
       {% if code_data == None %}
-      <h2 class="sub-header">add code</h2>
+      Add code
       {% else %}
-      <h2 class="sub-header">Update code</h2>
+      Update code
       {% endif %}
+      </h1>
+      </div>
       <label>title</label>
       <input type="text" name="code_name" id="textCodeName" class="form-control" value="{{code_data.2}}" /> <br />
       <label>code</label> <br />
+      <!--
+      <textarea name="code_area" id="textCodeArea" class="form-control" rows="16" >
+          <pre class="language-python">
+              {{code_data.3}}
+          </pre>
+      </textarea>
+      -->
       <textarea name="code_area" id="textCodeArea" class="form-control" rows="16" >{{code_data.3}}</textarea>
       <br>
       <button class="btn btn-lg btn-primary " id="btnCodeAdd">
@@ -95,12 +108,9 @@ body {
         <input type="hidden" name="id" value="{{code_data.0}}" />
       {% endif %}
     </form>
-    <!--
-    <div id="codePopupLayer">
-        <button class="btn btn-lg btn-primary" id="btnCodeAdd"> add </button>
-    </div>
-    -->
+    <pre><code class="language-javascript">{{code_data.3}}</code></pre>
   </div>
+<script src="{% static "/js/prism.js" %}"></script>
 </body>
 <script   src="http://code.jquery.com/jquery-1.12.4.min.js"   integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ="   crossorigin="anonymous"></script>
 <script language="Javascript">
@@ -109,11 +119,10 @@ body {
   });
   $("#btnCodeAdd").on("click", function(evt){
       var codeArea  =$("#textCodeArea").val();
-      var encodeCodeArea = encodeURI(codeArea);
-      $("#textCodeArea").val(encodeCodeArea);
+//      var encodeCodeArea = encodeURI(codeArea);
+//      $("#textCodeArea").val(encodeCodeArea);
+      $("#textCodeArea").val(codeArea);
       $("#frmCodeAdd").submit();
-      //window.opener.location.reload(false);
-      //window.close();
   });
 
   var codeArea  =$("#textCodeArea").val();
